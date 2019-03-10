@@ -7,13 +7,13 @@ import sys
 import tkinter
 
 #All code done by:   CMDR AweBob    AweBob#3309
-#I'm cool about sharing code, just ask permission on Discord.... I've got no clue about copyright, so if you wanna "steal" it, go for it...
+#I'm cool about sharing code, just ask permission on Discord.... I've got no clue about copyright, so if you wanna "borrow" it, go for it...
 
-#================================================
-#========================================================
-#=============================================
+#================================================================================================================================================================================================
+#========================================================================================================================================================================================================
+#================================================================================================================================================================================================================
 
-def getEngineerData () : #All Module names are in Coriolis Format, if there is a coriolis update core ints won't work, so lemme know if that happens...
+def getEngineerData () : #All Module names are in Coriolis Format, if there is a coriolis update core ints won't work, so lemme know if/when that happens...
     data = {
         'ELVIRA MARTUUK': [ ['frameShiftDrive', 5] , ['Shield Cell Bank' , 1] , ['Shield Generator' , 3] , ['thrusters' , 2] ],
         'THE DWELLER' : [ ['Beam Laser',3], ['Burst Laser',3],['powerDistributor',5],['Pulse Laser',4] ],
@@ -171,9 +171,9 @@ def getEngineerData () : #All Module names are in Coriolis Format, if there is a
     return(data , distanceFromSol, engineerToLocation, coriolisNamingSystem, engineersInaraLinksDict , engineerSystemNames , engineerWhichRequireRareMatsList )
     #MEL BRANDON and ETIENNE DORN and PETRA OLMANOVA and MARSHA HICKS = Colonia Engineers <--- Kinda irelevant, but I thought it was important
 
-#================================================
-#========================================================
-#=============================================
+#================================================================================================================================================================================================
+#========================================================================================================================================================================================================
+#=============================================================================================================================================================================================
 
 def grabLog ( whichNum ) :                                                                                   #input the logFil you want, 0 for latest, 1 for the second latest, and so on
     location = os.path.expanduser('~\Saved Games\Frontier Developments\Elite Dangerous\*.log')               #Won't work for linux users(their .log files are in a different path)
@@ -240,9 +240,9 @@ def logCleaner ( dirtyLogFile , errorPos ) :
     logConverter( cleanLogFile )
 
 
-#================================================
-#========================================================
-#=============================================
+#================================================================================================================================================
+#========================================================================================================================================================
+#=============================================================================================================================================================================================
 
 def howManyLogFiles () :
     location = os.path.expanduser('~\Saved Games\Frontier Developments\Elite Dangerous\*.log')               
@@ -273,7 +273,7 @@ def getCorrectFinalCmdrName (amountLogFiles) :
                 allCmdrNames.append(cmdrName)
             else :
                 return(cmdrName , True, numbers)
-    return('No Other Cmdr Names Not Found - Software Closing' , False, 0)
+    return('No Other Cmdr Names Not Found - Program Closing' , False, 0)
 
 #==================================================================================================================================================================================================================================================================================================================================================================================================================================================================
 
@@ -291,7 +291,7 @@ def refineEngineers (bigEngineers) :
 
 def getCoriolisJson () :
     print('Name your build in Coriolis and click save, then click the export button and copy that. That is your Coriolis output!')
-    apointlessvariableimnotgonnause = input('Get coriolis output on your clipboard (copy it) and press enter - ')
+    nothing = input('Get coriolis output on your clipboard (copy it) and press enter - ')
     tk = tkinter.Tk()
     tk.withdraw()
     stringCoriolis = tk.clipboard_get()
@@ -300,7 +300,7 @@ def getCoriolisJson () :
         print('Import Sucessful!')
         return(jsonCoriolis)
     except Exception :
-        print('Error Converting Input: A. You didnt copy the build to clipboard B. My code doesnt work')
+        print('Error Converting Input: A. You didnt copy the build to clipboard B. My code doesnt work(unlikely, but possible)')
         print('Trying again!')
         print('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=')
         getCoriolisJson()
@@ -309,7 +309,8 @@ def getCoriolisJson () :
 
 def findModules (allCoriolis) :
     allModules = []
-    #Core ints below            WHEN BUG IS FIXED ALL ONE FOR BULKHEADS
+    #Core ints below            WHEN CORIOLISBUG IS FIXED ALL ONE FOR BULKHEADS
+    #Coriolis may change their naming system causing some of this to not work....
     try :
         powerPlant = [ 'Power Plant' , allCoriolis['components']['standard']['powerPlant']['blueprint']['grade']  ]
         allModules.append(powerPlant)
@@ -394,7 +395,7 @@ def checkInputVarNum ( potentiallyNum , text ) :
         if x <= 5 and x >= 1 :
             return(x)
         else :
-            plz = int('plz')      #causes an error (hopefully, sometimes this doesn't work and cuases an error down the line....)
+            plz = int('plz work')      #causes an error (hopefully)
     except :
         print('Your grade input is either not an Integer or the integer wasnt betwwen 1 and 5, try again: ')
         thingInput = input(text)
@@ -426,7 +427,7 @@ def orderEngineers ( engineers ) :
 
 #==================================================================================================================================================================================================================================================================================================================================================================================================================================================================
 
-def claculateWhichEngineers ( unlockedEngineersInOrder , bigModuleData ) :      #I spent way to long on this function
+def claculateWhichEngineers ( unlockedEngineersInOrder , bigModuleData ) :      #I spent way to long on this function and if you ask me i have no clue how this works
     fullEngineerDict , fullEngineerDistanceOrderList , fullEngineerDistanceValueFromSolDict , coriolisNamingSystem , engineersInaraLinkDict, engineerSystemNames , engineerWhichRequireRareMatsList = getEngineerData()
     unlockedEngineersNecessaryBig = []
     modulesAlreadyFound = []
@@ -481,7 +482,6 @@ def claculateWhichEngineers ( unlockedEngineersInOrder , bigModuleData ) :      
                 needToUnlockVeryRefined.append( thing )
         return( unlockedEngineersNecessaryRefined , isComplete , needToUnlockVeryRefined )
 
-
 def removeDuplicatesInList ( initialList ) :
     cleanList = []
     for value in initialList :
@@ -535,6 +535,7 @@ def doesEicNeedCalling ( engineerList ) :
         if engineer in engineerWhichRequireRareMatsList :
             needCall = True
     return( needCall )
+
 #==================================================================================================================================================================================================================================================================================================================================================================================================================================================================
 #=========================MAIN CODE FLOW, CALLS FUNCTIONS, PRINTS INFO=============================================================================================================================================================================================================================================================================================================================================================================================
 #==================================================================================================================================================================================================================================================================================================================================================================================================================================================================
@@ -560,12 +561,12 @@ def main () :
     allBuildModuleData = checkModuleData ( allBuildModuleData )
     unlockedEngineerListInOrder = orderEngineers( unlockedEngineerList )    
     #print( str(allBuildModuleData) )                                                                                     
-    engineers , isComplete , needToUnlock = claculateWhichEngineers ( unlockedEngineerListInOrder , allBuildModuleData  )   #THIS IS CAUSING THE ERRORS
+    engineers , isComplete , needToUnlock = claculateWhichEngineers ( unlockedEngineerListInOrder , allBuildModuleData  )   #Where the magic happens
     engineerSystemList = getEngineerSystemNames ( engineers )
     engineerInaraLinkList = getInaraLink ( needToUnlock )
     callEicQuestionMark = doesEicNeedCalling ( needToUnlock )
     printFinalData ( engineers , isComplete , needToUnlock , engineerSystemList , engineerInaraLinkList , callEicQuestionMark ) #Print out data
-    apointlessvariableimnotgonnause = input( '=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=' + '\n' +'Script Complete!' + '\n' + 'Press enter to close window!')
+    nothing = input( '=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=' + '\n' +'Script Complete!' + '\n' + 'Press enter to close window!')
     
 #==================================================================================================================================================================================================================================================================================================================================================================================================================================================================
 #=========================STARTUP PORTION==========================================================================================================================================================================================================================================================================================================================================================================================================================
@@ -575,24 +576,9 @@ def start () :
     try :
         main ()
     except Exception as error :
-        apointlessvariableimnotgonnause = input('ERROR: ' + '\n \n' + str(error) + '\n' + str(error.args) + '\n \n' + 'Report this issue to GitHub to help me resolve this!' + '\n' + 'Thank You, press Enter to close!' + '\n')                               
+        nothing = input('ERROR: ' + '\n \n' + str(error) + '\n' + str(error.args) + '\n \n' + 'Report this issue to GitHub to help me resolve this!' + '\n' + 'Thank You, press Enter to close!' + '\n')                               
 
-
-start()           #Uncomment for normal operation
+start()             #Uncomment for normal operation
 #main()             #Uncomment for finding exact error messages in testing: obtain log and build before testing
 
-
 #==================================================================================================================================================================================================================================================================================================================================================================================================================================================================
-
-#Objectives:
-
-
-#3. share V0.1 with EIC for testing on other computers
-#4. figure out how to upload this and my other stuff to github - figure out how to make pyinstaller version a "Release" <-- someone told me that's a github feature
-#5. Release V1.0 put on github spread via EDCD Discord, EIC Discord, YT(guide, how to use,purposeOfUsing), and Reddit
-
-#1. Fix documentation, Figure out license, make this code more organized
-#2. Fix bugs (there's probably a lot lmao) :worm:
-#9. Add feature to open links in default browser for inara
-#5. Release V2.0
-
