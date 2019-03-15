@@ -4,7 +4,8 @@ from glob import *
 import glob
 import json
 import sys
-import tkinter
+import clipboard
+import pyperclip
 
 #All code done by:   CMDR AweBob    AweBob#3309
 #I'm cool about sharing code, just ask permission on Discord.... I've got no clue about copyright, so if you wanna "borrow" it, go for it...
@@ -19,8 +20,8 @@ def getEngineerData () : #All Module names are in Coriolis Format, if there is a
         'THE DWELLER' : [ ['Beam Laser',3], ['Burst Laser',3],['powerDistributor',5],['Pulse Laser',4] ],
         'LIZ RYDER': [ ['Hull Reinforcement Package',1],['bulkheads',1],['Mine Launcher',3],['Missile Rack',5],['Seeker Missile Rack',5],['Torpedo Pylon',5] ],
         'TOD THE BLASTER MCQUINN': [ ['Cannon',2],['Fragment Cannon',3],['Multi-cannon',5],['Rail Gun',5] ],
-        'FELICITY FARSEER': [ ['Detailed Surface Scanner',3],['frameShiftDrive',5],['frameShiftDrive Interdictor',1],['powerPlant',1],['sensors',3],['Shield Booster',1],['thrusters',3] ],
-        'MEL BRANDON': [ ['Beam Laser',4],['Burst Laser',2],['frameShiftDrive',2],['frameShiftDrive Interdictor',1],['Pulse Laser',4],['Shield Booster',4],['Shield Cell Bank',3],['Shield Generator',3],['thrusters',5] ],
+        'FELICITY FARSEER': [ ['Detailed Surface Scanner',3],['frameShiftDrive',5],['Frame Shift Drive Interdictor',1],['powerPlant',1],['sensors',3],['Shield Booster',1],['thrusters',3] ],
+        'MEL BRANDON': [ ['Beam Laser',4],['Burst Laser',2],['frameShiftDrive',2],['Frame Shift Drive Interdictor',1],['Pulse Laser',4],['Shield Booster',4],['Shield Cell Bank',3],['Shield Generator',3],['thrusters',5] ],
         'ETIENNE DORN': [ ['Detailed Surface Scanner',1],['Frame Shift Wake Scanner',1],['Kill Warrant Scanner',1],['lifeSupport',3],['Manifest Scanner',1],['Plasma Accelerator',1],['powerDistributor',2],['powerPlant',1],['Rail Gun',1],['sensors',1] ],                                                                                              
         'PETRA OLMANOVA': [ ['Auto Field-Maintenance Unit',1],['Chaff Launcher',2],['Electronic Countermeasure',1],['Heat Sink Launcher',3],['Hull Reinforcement Package',3],['bulkheads',4],['Mine Launcher',1],['Missile Rack',1],['Point Defence',2],['Seeker Missile Rack',1],['Torpedo Pylon',1] ],
         'JURI ISHMAAK' : [ ['Detailed Surface Scanner',5],['Frame Shift Wake Scanner',3],['Kill Warrant Scanner',3],['Manifest Scanner',3],['Mine Launcher',5],['Missile Rack',3],['Seeker Missile Rack',3],['sensors',5],['Torpedo Pylon',3] ],
@@ -28,7 +29,7 @@ def getEngineerData () : #All Module names are in Coriolis Format, if there is a
         'LEI CHEUNG' : [ ['Detailed Surface Scanner',5],['sensors',5],['Shield Booster',3],['Shield Generator',5] ],
         'HERA TANI' : [ ['Detailed Surface Scanner',5],['powerDistributor',3],['powerPlant',5],['sensors',3] ],
         'SELENE JEAN' : [ ['Hull Reinforcement Package',5],['bulkheads',5] ],
-        'COLONEL BRIS DEKKER' : [ ['frameShiftDrive',3],['frameShiftDrive Interdictor',4] ],
+        'COLONEL BRIS DEKKER' : [ ['frameShiftDrive',3],['Frame Shift Drive Interdictor',4] ],
         'MARCO QWENT' : [ ['powerDistributor',3],['powerPlant',4] ],
         'RAM TAH' : [ ['Chaff Launcher',5],['Collector Limpet Controller',4],['Electronic Countermeasure',5],['Fuel Transfer Limpet Controller',4],['Hatch Breaker Limpet Controller',3],['Heat Sink Launcher',5],['Point Defence',5],['Prospector Limpet Controller',4] ],
         'BROO TARQUIN' : [ ['Beam Laser',5],['Burst Laser',5],['Pulse Laser',5] ],
@@ -36,7 +37,7 @@ def getEngineerData () : #All Module names are in Coriolis Format, if there is a
         'THE SARGE' : [ ['Cannon',5],['Collector Limpet Controller',5],['Fuel Transfer Limpet Controller',5],['Hatch Breaker Limpet Controller',5],['Prospector Limpet Controller',5],['Rail Gun',3] ],
         'PROFESSOR PALIN' : [ ['frameShiftDrive',3],['thrusters',5] ],
         'LORI JAMESON' : [ ['Auto Field-Maintenance Unit',4],['Detailed Surface Scanner',5],['Frame Shift Wake Scanner',3],['Fuel Scoop',4],['Kill Warrant Scanner',3],['lifeSupport',4],['Manifest Scanner',3],['Refinery',4],['sensors',5],['Shield Cell Bank',3] ],
-        'TIANA FORTUNE' : [ ['Collector Limpet Controller',5],['Detailed Surface Scanner',3],['frameShiftDrive Interdictor',3],['Frame Shift Wake Scanner',5],['Fuel Transfer Limpet Controller',5],['Hatch Breaker Limpet Controller',5],['Kill Warrant Scanner',5],['Manifest Scanner',5],['Prospector Limpet Controller',5],['sensors',5] ],
+        'TIANA FORTUNE' : [ ['Collector Limpet Controller',5],['Detailed Surface Scanner',3],['Frame Shift Drive Interdictor',3],['Frame Shift Wake Scanner',5],['Fuel Transfer Limpet Controller',5],['Hatch Breaker Limpet Controller',5],['Kill Warrant Scanner',5],['Manifest Scanner',5],['Prospector Limpet Controller',5],['sensors',5] ],
         'BILL TURNER' : [ ['Auto Field-Maintenance Unit',3],['Detailed Surface Scanner',5],['Frame Shift Wake Scanner',3],['Fuel Scoop',3],['Kill Warrant Scanner',3],['lifeSupport',3],['Manifest Scanner',3],['Plasma Accelerator',5],['Refinery',3],['sensors',5] ],
         'MARSHA HICKS' : [ ['Cannon',2],['Collector Limpet Controller',4],['Fragment Cannon',2],['Fuel Scoop',3],['Fuel Transfer Limpet Controller',1],['Hatch Breaker Limpet Controller',1],['Multi-cannon',3],['Prospector Limpet Controller',3],['Refinery',2] ]
         }
@@ -292,9 +293,16 @@ def refineEngineers (bigEngineers) :
 def getCoriolisJson () :
     print('Name your build in Coriolis and click save, then click the export button and copy that. That is your Coriolis output!')
     nothing = input('Get coriolis output on your clipboard (copy it) and press enter - ')
-    tk = tkinter.Tk()
-    tk.withdraw()
-    stringCoriolis = tk.clipboard_get()
+    stringCoriolis = clipboard.paste()      #Imports your clipboard
+
+    if len(stringCoriolis) == 0 :
+        stringCoriolis = pyperclip.paste()
+        if len( stringCoriolis ) == 0 : 
+            print('Either you didnt copy the export or my clipoard importer failed.')
+            print('Trying again!')
+            print('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=')
+            getCoriolisJson()
+
     try :
         jsonCoriolis = json.loads(stringCoriolis)
         print('Import Sucessful!')
@@ -582,3 +590,6 @@ start()             #Uncomment for normal operation
 #main()             #Uncomment for finding exact error messages in testing: obtain log and build before testing
 
 #==================================================================================================================================================================================================================================================================================================================================================================================================================================================================
+
+#Clipboard import is still unstable
+#Algorithm sometimes works...
