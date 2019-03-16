@@ -105,7 +105,12 @@ def grabBind () :
         for grandChild in child :
             try :
                 if grandChild.attrib['Key'] != '' :
-                    bindsDictionary[child.tag] = [ grandChild.attrib['Key'] , grandChild.tag ]
+                    if child.tag not in bindsDictionary.keys() :
+                        bindsDictionary[child.tag] = [ [ grandChild.attrib['Key'] , grandChild.tag ] ]
+                    else :
+                        oldValue = bindsDictionary[child.tag]
+                        newValue = oldValue.append( [ grandChild.attrib['Key'] , grandChild.tag ] )
+                        bindsDictionary[child.tag] = newValue
             except :
                 pass
     return( bindsDictionary )
@@ -116,10 +121,13 @@ def openBind ( bindFileName ) :
     close(openText)
     return( importedBindText )
 
-#binds = grabBind ()                          #Grabes dictionary
-#print(binds['YawAxisRaw'])                   #prints list of info for bind called that
-#print(binds['CommanderCreator_Undo'][0])     #prints the bind key for that bind
-#print(binds['Joy_XAxis'][1])                 #prints the bind type for that bind
+binds = grabBind ()                          #Grabes dictionary
+#print(binds)
+#print(binds['SAAThirdPersonYawAxisRaw'])                   #prints list in a list of info for bind called that
+#print(binds['ExplorationFSSRadioTuningX_Increase'][0])     #prints list of info for bind
+#print(binds['CommanderCreator_Undo'][0][0])                #prints the bind key for that bind
+
+#The only issue with this is that it won't pickup "Modifier"s which are keybinds as well, future change
 
 #=======================================================================================================================================================================================================================
 #=======================================================================================================================================================================================================================
@@ -129,5 +137,5 @@ def openBind ( bindFileName ) :
 #Each parser, seperated by three lines of equals signs
 #At the start of each it has things you need to import, if you copy the entire thing, leave the commented and uncommented ones as is; if you only copy one parser, uncomment all the imports at the start of it
 #Copy and paste the functions as in, if you want to change the output method for them
-#At the bottom there are a few examples of how to use them in other programs, they are just examples, use the output any way necessary for your script
+#At the bottom there are a few examples of how to use them in other programs, they are just examples, use the output any way necessary for your script; there are also a few notes at the bottom of em
 
