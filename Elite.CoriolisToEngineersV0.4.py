@@ -183,7 +183,7 @@ def grabLog ( whichNum ) :                                                      
     for file in logFiles :
         nums = ''
         for charector in file :
-            if charector=='0' or charector=='1' or charector=='2' or charector=='3' or charector=='4' or charector=='5' or charector=='6' or charector=='7' or charector=='8' or charector=='9' :
+            if charector.isdigit()==True :
                 nums = nums + charector
         logFilesNums.append(nums)
     orderedNums = sorted(logFilesNums, key=int, reverse=True)
@@ -192,7 +192,7 @@ def grabLog ( whichNum ) :                                                      
     for files in logFiles :
         nums = ''
         for charector in files :
-            if charector=='0' or charector=='1' or charector=='2' or charector=='3' or charector=='4' or charector=='5' or charector=='6' or charector=='7' or charector=='8' or charector=='9' :
+            if charector.isdigit()==True :
                 nums = nums + charector
         if nums==specificNum :
             latestFile = files
@@ -224,7 +224,7 @@ def logConverter ( cleanLogFile ) :
         error = str(error)
         nums = ''
         for charector in error :
-            if charector=='0' or charector=='1' or charector=='2' or charector=='3' or charector=='4' or charector=='5' or charector=='6' or charector=='7' or charector=='8' or charector=='9' :
+            if charector.isdigit()==True :
                 nums = nums + charector
         errorChar = nums[1:]
         lengthError = int(-1 * (len(errorChar)/2))
@@ -435,7 +435,7 @@ def orderEngineers ( engineers ) :
 
 #==================================================================================================================================================================================================================================================================================================================================================================================================================================================================
 
-def claculateWhichEngineers ( unlockedEngineersInOrder , bigModuleData ) :      #I spent way to long on this function and if you ask me i have no clue how this works
+def claculateWhichEngineers ( unlockedEngineersInOrder , bigModuleData ) :      
     fullEngineerDict , fullEngineerDistanceOrderList , fullEngineerDistanceValueFromSolDict , coriolisNamingSystem , engineersInaraLinkDict, engineerSystemNames , engineerWhichRequireRareMatsList = getEngineerData()
     unlockedEngineersNecessaryBig = []
     modulesAlreadyFound = []
@@ -591,5 +591,7 @@ start()             #Uncomment for normal operation
 
 #==================================================================================================================================================================================================================================================================================================================================================================================================================================================================
 
-#Clipboard import is still unstable
-#Algorithm sometimes works...
+
+#claculateWhichEngineers function split into multiple parts to make it easier to fix
+#Split data function into multiple functions
+#Clipboard import is still unstable - not sure why

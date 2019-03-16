@@ -13,7 +13,7 @@ import win32api
 import win32con
 import win32gui
 import screeninfo
-from ctypes import windll, Structure, c_long, byref #windows only
+from ctypes import windll, Structure, c_long, byref       #windows only I think....
 
 #=======================================================================================================================================================================================================================
 #=======================================THIS GRABS LOG FILE AND CONVERTS IT TO A GLOBAL VARIABLE=============================================================================================================
@@ -26,7 +26,7 @@ def grabLog ( whichNum ) :                                                      
     for file in logFiles :
         nums = ''
         for charector in file :
-            if charector=='0' or charector=='1' or charector=='2' or charector=='3' or charector=='4' or charector=='5' or charector=='6' or charector=='7' or charector=='8' or charector=='9' :
+            if charector.isdigit()==True :
                 nums = nums + charector
         logFilesNums.append(nums)
     orderedNums = sorted(logFilesNums, key=int, reverse=True)
@@ -35,7 +35,7 @@ def grabLog ( whichNum ) :                                                      
     for files in logFiles :
         nums = ''
         for charector in files :
-            if charector=='0' or charector=='1' or charector=='2' or charector=='3' or charector=='4' or charector=='5' or charector=='6' or charector=='7' or charector=='8' or charector=='9' :
+            if charector.isdigit()==True :
                 nums = nums + charector
         if nums==specificNum :
             latestFile = files
@@ -67,7 +67,7 @@ def logConverter ( cleanLogFile ) :
         error = str(error)
         nums = ''
         for charector in error :
-            if charector=='0' or charector=='1' or charector=='2' or charector=='3' or charector=='4' or charector=='5' or charector=='6' or charector=='7' or charector=='8' or charector=='9' :
+            if charector.isdigit()==True :
                 nums = nums + charector
         errorChar = nums[1:]
         lengthError = int(-1 * (len(errorChar)/2))
@@ -92,13 +92,13 @@ def logCleaner ( dirtyLogFile , errorPos ) :
 #======================================EXTRA UTILITIES FOR GRABBING EVENTS AND DATA=====================================================================================================================================
 #=======================================================================================================================================================================================================================
 
-def pullEvents ( whichLog ) :
-    logTransformer(grabLog(whichLog))
-    events = []
-    for lineNum in range(1,(len(convLog))+1) :
-        events.append(convLog[(-1*lineNum)]["event"])
-    logTransformer(grabLog(whichLog))
-    return(events)                                                      #This gets returned as a list of all events in logFile, whichLog is which log file to use
+#def pullEvents ( whichLog ) :                     #this function can ruin loop if used incorrectly, disabled for now
+    #logTransformer(grabLog(whichLog))
+    #events = []
+    #for lineNum in range(1,(len(convLog))+1) :
+        #events.append(convLog[(-1*lineNum)]["event"])
+    #logTransformer(grabLog(whichLog))
+    #return(events)                                                      #This gets returned as a list of all events in logFile, whichLog is which log file to use
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -118,7 +118,7 @@ def normal_findNewLinesOfLog ( ) :
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def pullEvent ( listOfEvents ) :
+def pullEvent ( listOfEvents ) : #Includes choice of log file
     events = []
     for lineNum in range(1,(len(listOfEvents))+1) :
         events.append(listOfEvents[(-1*lineNum)]["event"])
@@ -172,11 +172,9 @@ def get_eliteValueBody () :
                                     body_terraformables.append(lines["BodyName"])
 
             elif lines["event"]=='SAAScanComplete' :
-                #if system_now in lines["BodyName"] :                 #might bec ausing issues    planets showing 
                 bodyName = lines["BodyName"]
                 alreadyScannedPlanetsList.append(bodyName)
     
-
     body_earthLikeWorlds = remove_previouslyMapped(alreadyScannedPlanetsList , body_earthLikeWorlds )
     body_ammonia = remove_previouslyMapped(alreadyScannedPlanetsList , body_ammonia )
     body_waterWorld = remove_previouslyMapped(alreadyScannedPlanetsList , body_waterWorld )
@@ -213,13 +211,6 @@ def remove_systemFromPlanet (current_system , planetsList) :
     return(completePlanetsList)
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-#=======================================================================================================================================================================================================================
-#======================================Visited Geo sites calculation functions=====================================================================================================================================
-#=======================================================================================================================================================================================================================
-
-#This is seeming to be impossible
 
 #=======================================================================================================================================================================================================================
 #======================================Timelapse mode functions=====================================================================================================================================
@@ -338,21 +329,21 @@ def interface_run () :
 
         pilotName = getCMDRName()
         pilotNameRefined = 'CMDR ' + pilotName
-        interface_drawText( pilotNameRefined , 200 , 50 , screen , 13 , (191, 42, 211) )
+        interface_drawText( pilotNameRefined , 200 , 50 , screen , 13 , (191, 42, 211) )      #Cmdr name
 
         valueableBodies = get_eliteValueBody ()
         #print(str(valueableBodies))                                                                                 #HERE FOR TESTING PURPOSES
         formattedInfo_allPlanets = bodyFormatter(200, 265, valueableBodies)                                         
         for planet in formattedInfo_allPlanets :
-            interface_drawText(planet[0], planet[2], planet[1], screen, 18, planet[3])
+            interface_drawText(planet[0], planet[2], planet[1], screen, 18, planet[3])          #Valuable planets
 
         pygame.draw.rect(screen, (50, 193, 162) , (350 , 475 , 45 , 20 ), 0 )                       
-        interface_drawText ('Overlay' , 372 , 485 , screen, 10 , (0, 0, 0) )
+        interface_drawText ('Overlay' , 372 , 485 , screen, 10 , (0, 0, 0) )                         #overlay button
 
         shipName = getShipName()
         discordOnline , RPC = discordUpdate ( discordOnline , yourSolarSystem , shipName , RPC )
 
-        p.display.update()
+        p.display.update()                                       #Updates pygame
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -390,8 +381,8 @@ def overlayWindow (  ) :   #Show valuable bodies exclusively in overlay, update 
         yourSolarSystem = whatSystem()
         shipName = getShipName()
         valueableBodies = get_eliteValueBody ()
-        formattedValueBodies = formatOverlayBodies ( valueableBodies , windowXsize , windowYsize )                                 #THIS SIN'T DONE
-        #print( str( formattedValueBodies ) )                                                                                       #HERE FOR TESTING, comment when done
+        formattedValueBodies = formatOverlayBodies ( valueableBodies , windowXsize , windowYsize )                                 #THIS SIN'T DONE - might be done, needs more testing
+        #print( str( formattedValueBodies ) )                                                                                      #HERE FOR TESTING
         for planetList in formattedValueBodies :                                                                                   #This for loop is used to print info from formattedValueBodies
             interface_drawText( planetList[0] , planetList[1] , planetList[2] , overlay, planetList[3], planetList[4] )            
 
@@ -527,22 +518,22 @@ def getMainMonitorRez () :
 def discordUpdate( discordOnline , yourSolarSystem , shipName , RPC ) :
     if discordOnline==True :
         try :
-            RPC.update( details= yourSolarSystem , state= shipName )
+            RPC.update( details= yourSolarSystem , state= shipName )    #Attempts to update
         except :
-            discordOnline = False
+            discordOnline = False      #If update errors, send back, discord online false
     else :
         try :
-            discord_clientID = '554387312486907918'  
+            discord_clientID = '554387312486907918'   #discord id - this is constant for this application (says client id, but it's really application id)
             RPC = Presence(discord_clientID)  # Initialize the Presence class for discord
             RPC.connect()                     # Start the handshake loop
-            discordOnline = True
+            discordOnline = True              #If the above works it sets discordOnline to true
         except :
-            discordOnline = False
-    return( discordOnline , RPC )
+            discordOnline = False              #If it fails return it failed
+    return( discordOnline , RPC )                #sends back RPC data and if discord sucessfully updated or not
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def interface_mouseClick ( mousePos ) :                      #Use this for future additions 
+def interface_mouseClick ( mousePos ) :                      
     mouseX = mousePos[0]
     mouseY = mousePos[1]
     #Overlay button tuple (350 , 475 , 45 , 20 ) = ( x , y , width , height ) stats from top left, +x and +y is screen
@@ -553,7 +544,7 @@ def interface_mouseClick ( mousePos ) :                      #Use this for futur
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def interface_drawText (importedText , locationX , locationY , screen, size, color ) :          #screen is for "window", its the thing initialzed at the top
+def interface_drawText (importedText , locationX , locationY , screen, size, color ) :          #screen is for "window", its the thing initialzed at the top - used in core loop multiple times
     font = p.font.SysFont("freesans", size)
     text = font.render(importedText, True, color)
     screen.blit(text, (locationX - text.get_width() // 2, locationY - text.get_height() // 2))
@@ -624,7 +615,7 @@ def getCMDRName () :
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-class RECT(Structure):
+class RECT(Structure):       #Class to assist function below
     _fields_ = [
     ('left',    c_long),
     ('top',     c_long),
@@ -635,7 +626,7 @@ class RECT(Structure):
     def height(self): return self.bottom - self.top
 
 
-def onTop(window):
+def onTop(window):                                        #Moves sent window to "always on top" mode
     SetWindowPos = windll.user32.SetWindowPos
     GetWindowRect = windll.user32.GetWindowRect
     rc = RECT()
@@ -644,7 +635,7 @@ def onTop(window):
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def isEliteRunningQuestionMark () :
+def isEliteRunningQuestionMark () :             #Checks if the game is running. Might not work if game crashed on last shutdown
     if convLog[-1]['event']=='Shutdown' :
         return(False)
     else :
@@ -669,9 +660,10 @@ start ()
 
 
 #Notes to myself(aka things to work on):
-    #Overlay feature:
-        #formatOverlayBodies function, finish this, pretty simple
+    #Check if overlay is working, and check for other computers
 
     #ISSUE: Exploration thing doesn't clear thing after surface scan sometimes, rarely tho
     #ISSUE: program closes when starting (aka starting a new log file) This might have been fixed, test it
     #SUGESTION: Add discord rpc ability to track how long you've been flying (look at latest log file, get startup timestamp, use that number) see my bookmarks for more info
+    #SUGESTION: Make discord rpc information toggleable in case people don't want foes to see their location
+    

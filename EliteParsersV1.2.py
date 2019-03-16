@@ -16,7 +16,7 @@ def grabLog ( whichNum ) :                                                      
     for file in logFiles :
         nums = ''
         for charector in file :
-            if charector=='0' or charector=='1' or charector=='2' or charector=='3' or charector=='4' or charector=='5' or charector=='6' or charector=='7' or charector=='8' or charector=='9' :
+            if charector.isdigit()==True :
                 nums = nums + charector
         logFilesNums.append(nums)
     orderedNums = sorted(logFilesNums, key=int, reverse=True)
@@ -25,7 +25,7 @@ def grabLog ( whichNum ) :                                                      
     for files in logFiles :
         nums = ''
         for charector in files :
-            if charector=='0' or charector=='1' or charector=='2' or charector=='3' or charector=='4' or charector=='5' or charector=='6' or charector=='7' or charector=='8' or charector=='9' :
+            if charector.isdigit()==True :
                 nums = nums + charector
         if nums==specificNum :
             latestFile = files
@@ -57,7 +57,7 @@ def logConverter ( cleanLogFile ) :
         error = str(error)
         nums = ''
         for charector in error :
-            if charector=='0' or charector=='1' or charector=='2' or charector=='3' or charector=='4' or charector=='5' or charector=='6' or charector=='7' or charector=='8' or charector=='9' :
+            if charector.isdigit()==True :
                 nums = nums + charector
         errorChar = nums[1:]
         lengthError = int(-1 * (len(errorChar)/2))
@@ -91,7 +91,7 @@ def logCleaner ( dirtyLogFile , errorPos ) :
 import xml.etree.ElementTree as ET
 
 def grabBind () :
-    location = os.path.expanduser('~\AppData\Local\\frontier developments\elite dangerous\options\\bindings\*.binds') #File path different for linux
+    location = os.path.expanduser('~\AppData\Local\\frontier developments\elite dangerous\options\\bindings\*.binds')         #File path different for linux
     bindFilePath = glob.glob(location)
     if len(bindFilePath) == 0 :
         nothing = input('No binds found!')
@@ -109,11 +109,13 @@ def grabBind () :
                         bindsDictionary[child.tag] = [ [ grandChild.attrib['Key'] , grandChild.tag ] ]
                     else :
                         oldValue = bindsDictionary[child.tag]
-                        newValue = oldValue.append( [ grandChild.attrib['Key'] , grandChild.tag ] )
-                        bindsDictionary[child.tag] = newValue
+                        oldValue.append( [ grandChild.attrib['Key'] , grandChild.tag ] )
+                        bindsDictionary[child.tag] = oldValue
             except :
                 pass
+
     return( bindsDictionary )
+
 
 def openBind ( bindFileName ) :
     openText = open(bindFileName , O_RDONLY)
@@ -121,13 +123,14 @@ def openBind ( bindFileName ) :
     close(openText)
     return( importedBindText )
 
-binds = grabBind ()                          #Grabes dictionary
+#binds = grabBind ()                          #Grabes dictionary
 #print(binds)
 #print(binds['SAAThirdPersonYawAxisRaw'])                   #prints list in a list of info for bind called that
 #print(binds['ExplorationFSSRadioTuningX_Increase'][0])     #prints list of info for bind
 #print(binds['CommanderCreator_Undo'][0][0])                #prints the bind key for that bind
+#print(binds['ExplorationFSSZoomIn'])
 
-#The only issue with this is that it won't pickup "Modifier"s which are keybinds as well, future change
+#The only issue with this is that it won't pickup "Modifier"s which are keybinds as well, this seems very difficult to figure out
 
 #=======================================================================================================================================================================================================================
 #=======================================================================================================================================================================================================================
