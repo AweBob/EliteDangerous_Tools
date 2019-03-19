@@ -1,9 +1,11 @@
 import asyncio
 
-#ROLE_IN_MINIGAME = 'Attacker'    # 'Attacker', 'Defender' , or 'ScannedGuy'
+
+SERVER_IP_ADRESS = '127.0.0.1'                #string
+SERVER_PORT = 13723                            #must be the same as the Server   integer
 
 async def tcp_echo_client(message, loop):
-    reader, writer = await asyncio.open_connection('127.0.0.1', 8888,
+    reader, writer = await asyncio.open_connection(SERVER_IP_ADRESS, SERVER_PORT,
                                                    loop=loop)
 
     print('Sending: %r' % message)

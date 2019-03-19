@@ -2,7 +2,9 @@ import asyncio
 import string     #only for random words func
 import random     #only for rand word fu
 
-#LENGTH_OF_MINIGAME = 120    #In seconds ( or put a 60 times then minutes)
+#You must port forward following info, type is FTP or TCP 
+SERVER_IP_ADRESS = '127.0.0.1'    #string
+SERVER_PORT = 13723                               #13722 13723 13780 13781 13784 13750 13760 13745        <---- example ports you can use, just pick a random one   integer
 
 async def handle_echo(reader, writer):
     data = await reader.read(100)
@@ -24,10 +26,9 @@ def randomWords () :
     return( str(strin) )
 
 loop = asyncio.get_event_loop()
-coro = asyncio.start_server(handle_echo, '127.0.0.1', 8888, loop=loop)
+coro = asyncio.start_server(handle_echo, SERVER_IP_ADRESS, SERVER_PORT, loop=loop)
 server = loop.run_until_complete(coro)
 
 print('Serving on {}'.format(server.sockets[0].getsockname()))
 loop.run_forever()
 
-#figure out how ot make this work over the internet
