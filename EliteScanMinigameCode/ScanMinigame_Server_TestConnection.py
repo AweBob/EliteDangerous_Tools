@@ -5,6 +5,7 @@ import random     #only for rand word fu
 #port forward this info with TCP format
 SERVER_IP_ADRESS = '192.168.1.4'                 #string - internal ip adress of your wifi network (use this ip in port forwarding)
 SERVER_PORT = 13723                              #13722 13723 13780 13781 13784 13750 13760 13745        <---- example ports you can use, just pick a random one   integer (port forward and copy to client)
+SERVER_PASSWORD = '' #Random string, as long as both server and client have this same thing isn't fine
 
 async def handle_echo(reader, writer):
     data = await reader.read(100)

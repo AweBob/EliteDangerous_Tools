@@ -2,6 +2,7 @@ import asyncio
 
 SERVER_IP_ADRESS = '192.168.1.4'               #string   - Server external IP adress
 SERVER_PORT = 13723                            #must be the same as the Server   integer
+SERVER_PASSWORD = ''
 
 async def tcp_echo_client(message, loop):
     reader, writer = await asyncio.open_connection(SERVER_IP_ADRESS, SERVER_PORT,
