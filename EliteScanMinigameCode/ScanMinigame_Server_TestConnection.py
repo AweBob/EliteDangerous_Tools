@@ -2,9 +2,9 @@ import asyncio
 import string     #only for random words func
 import random     #only for rand word fu
 
-#You must port forward following info, type is FTP or TCP 
-SERVER_IP_ADRESS = '127.0.0.1'    #string
-SERVER_PORT = 13723                               #13722 13723 13780 13781 13784 13750 13760 13745        <---- example ports you can use, just pick a random one   integer
+#port forward this info with TCP format
+SERVER_IP_ADRESS = '192.168.1.4'                 #string - internal ip adress of your wifi network (use this ip in port forwarding)
+SERVER_PORT = 13723                              #13722 13723 13780 13781 13784 13750 13760 13745        <---- example ports you can use, just pick a random one   integer (port forward and copy to client)
 
 async def handle_echo(reader, writer):
     data = await reader.read(100)
