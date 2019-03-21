@@ -10,7 +10,7 @@ SERVER_PASSWORD = input('Type in server password(i.e. pLzWoRk123) - ')
 
 #===========================================================================================================================================================================================
 
-def calculateResponse ( stringRecieved ) :
+def calculateResponse ( stringRecieved ) : #Use global variables
     listRecieved = stringRecieved.split()   #0 = password 1 = type 2 = data
     if listRecieved[0] == SERVER_PASSWORD :
         #In here this needs more development, issue is idk what kinda data this should transfer
