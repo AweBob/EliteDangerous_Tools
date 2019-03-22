@@ -9,25 +9,9 @@ import json
 def grabLog ( whichNum ) :                                                                                   #input the logFil you want, 0 for latest, 1 for the second latest, and so on
     location = os.path.expanduser('~\Saved Games\Frontier Developments\Elite Dangerous\*.log')               #Won't work for linux users
     logFiles = glob.glob(location)
-    logFilesNums = []
-    for file in logFiles :
-        nums = ''
-        for charector in file :
-            if charector.isdigit()==True :
-                nums = nums + charector
-        logFilesNums.append(nums)
-    orderedNums = sorted(logFilesNums, key=int, reverse=True)
-    specificNum = orderedNums[whichNum]
-
-    for files in logFiles :
-        nums = ''
-        for charector in files :
-            if charector.isdigit()==True :
-                nums = nums + charector
-        if nums==specificNum :
-            latestFile = files
-    return(latestFile)
-
+    orderedLogs = sorted(logFiles, reverse=True)       #will error on date "2099-12-31", if your playing elite by then, just don't
+    fileName = orderedLogs[whichNum]
+    return( fileName )
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def logTransformer ( logFile ) :
@@ -73,7 +57,8 @@ def logCleaner ( dirtyLogFile , errorPos ) :
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 #EXAMPLES
-#logTransformer(grabLog(0))     #updates convLog variable with latest log file
-#print(convLog)                 #prints out the entire latest log file
-#print(convLog[-1])             #Prints latest line
-#print(convLog[0]['event'])     #prints first line event
+#logTransformer(grabLog(0))       #updates convLog variable with latest log file
+#print(convLog)                   #prints out the entire latest log file
+#print(convLog[-1])               #Prints latest line
+#print(convLog[0]['event'])       #prints first line event
+#print(convLog[0]['timestamp'])   #prints first line timestamp

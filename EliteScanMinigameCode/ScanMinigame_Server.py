@@ -11,12 +11,13 @@ SERVER_PASSWORD = input('Type in server password(i.e. pLzWoRk123) - ')
 #===========================================================================================================================================================================================
 
 def calculateResponse ( stringRecieved ) : #Use global variables
-    listRecieved = stringRecieved.split()   #0 = password 1 = type 2 = data
+    listRecieved = stringRecieved.split()   #0 = password ||| 1 = Message Type ||| 2 = role in miningame, integer( 0= None 1= Defender 2= Scanner  3= Ship Defneding From Scans  4= Spectator ) ||| 3 = data of message ||| 4=CMDR name  
     if listRecieved[0] == SERVER_PASSWORD :
-        #In here this needs more development, issue is idk what kinda data this should transfer
-        stringToSend = '. MESSAGERECEIVED .'
+        if listRecieved[1] == 'testConnection' :
+            stringToSend = SERVER_PASSWORD + ' connectionSucessful None 0' 
+        #elif listRecieved[1] == ''
     else :
-        stringToSend = '. INCORRECTPASSWORD .'   #Response password = '.'  type = 'incorpass' data = '.'   #software assumes period as nothing
+        stringToSend = '. incorrectPassword . .'   #Response password = '.'  type = 'incorpass' data = '.'   #software assumes period as nothing
     return( stringToSend )
 
 #===========================================================================================================================================================================================
