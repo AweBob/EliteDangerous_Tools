@@ -5,14 +5,16 @@ import os
 from glob import *
 import glob
 import json
+import win32com.client as wincl
 
 #===========================================================================================================================================================================================
 
+tts = wincl.Dispatch("SAPI.SpVoice") #Will crash here for nonwindows users
 print('Imported libraries Sucessfully:')
 SERVER_IP_ADRESS = input ('Type the external IP of hosting server(i.e. 19.374.922.82) - ')
 SERVER_PORT = int(input('Type port of Server(i.e. 13723) - '))
 SERVER_PASSWORD = input('Type in server password(i.e. pLzWoRk123) - ')
-MINIGAME_ROLE = input('Type in your role - ')                    # 0= None   1= Defender     2= Scanner     3= Ship Defneding From Scans    4= Spectator
+MINIGAME_ROLE = input('Type in your role - ')                    # 0= None(spectating)   1= Defender     2= Scanner     3= Ship Defneding From Scans
 
 #===========================================================================================================================================================================================
 
@@ -36,13 +38,39 @@ def pingServer( ToSend ) :
 
 #===========================================================================================================================================================================================
 #recievedString , ping = pingServer( input('What do you want to send? - ') )
+#tts.speak('test')
 
 def mainCode () :
     testConnection()
+    timeLooped = 0
+    dcPosition = detectChange('')
+    dcDeaths = detectChange('')
+    dcScansPossed = detectChange('')
+    dcScansDropped = detectChange('')
     while True :
         logTransformer(grabLog(0))  #update .log import variable is convLog
-        #CMDR = getCMDRName()
+        if MINIGAME_ROLE == 0 :
+            if timeLooped == 0 :
+                CMDR = getCMDRName()
+                recievedString , ping = pingServer( SERVER_PASSWORD + ' initSpectator ' + CMDR )
+                recievedList = recievedString.split()
+                if recievedList[1] == 'loggedIn'  :
+                    print('Logged in.')
+            else :
+                y = 69 #THIS NEEDS DEVELOPMENT
 
+
+        timeLooped = timeLooped + 1
+
+class detectChange :
+    def __init__ (self , default) :
+        self.oldVar = default
+    def check ( self , newVar ) :
+        if self.oldVar == newVar :
+            return( False )
+        else :
+            self.oldVar = newVar 
+            return( True )
 
 def testConnection () :
     listToSend = [ SERVER_PASSWORD , 'testConnection' , 'None' , '0' ]
@@ -63,6 +91,22 @@ def getCMDRName () :
             return(cmdrName)
     return('None') #Will only happen if game is just starting up
 
+def stateOfSpace () :
+    for line in reversed(convLog) :
+        if line['event']=='Died' :
+            state = 'dead'
+            return(state)
+        elif line['event']=='Docked' :
+            state = 'atStation'
+            return(state)
+        elif line['event']=='FSDJump' or line['event']=='SupercruiseEntry' :
+            state = 'supercruise' 
+            return(state)
+        elif line['event']=='SupercruiseExit' :
+            state = 'normal'
+            return(state)
+    state = 'startingGame'
+    return(state)
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

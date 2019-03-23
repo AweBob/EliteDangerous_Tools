@@ -1,4 +1,5 @@
 import asyncio
+import time
 
 #===========================================================================================================================================================================================
 
@@ -7,15 +8,26 @@ print('Imported libraries Sucessfully:')
 SERVER_IP_ADRESS = input ('Type the external IP of hosting server(i.e. 99.374.922.82) - ')      
 SERVER_PORT = int(input('Type port of Server(i.e. 13723) - '))
 SERVER_PASSWORD = input('Type in server password(i.e. pLzWoRk123) - ')
+SERVER_MODE = int(input('What mode is the server starting in - '))       # 0= pregame      Anything else is time in seconds till game starts in seconds
+LENGTH_EVENT = int(input('How long do you want the game to last in seconds - '))
+SCANS_TO_WIN = int(input('How many scans till the attackers win - '))
 
+if SERVER_MODE != 0 :
+    TIME_AT_START = time.time() + SERVER_MODE
+
+playerList = []
 #===========================================================================================================================================================================================
 
 def calculateResponse ( stringRecieved ) : #Use global variables
-    listRecieved = stringRecieved.split()   #0 = password ||| 1 = Message Type ||| 2 = role in miningame, integer( 0= None 1= Defender 2= Scanner  3= Ship Defneding From Scans  4= Spectator ) ||| 3 = data of message ||| 4=CMDR name  
+    listRecieved = stringRecieved.split()   #0 = password ||| 1 = Message Type ||| 3 = data of message ||| 4 = extra data  
     if listRecieved[0] == SERVER_PASSWORD :
         if listRecieved[1] == 'testConnection' :
             stringToSend = SERVER_PASSWORD + ' connectionSucessful None 0' 
-        #elif listRecieved[1] == ''
+        elif listRecieved[1] == 'whenStart' :
+            stringToSend = SERVER_PASSWORD + ' serverStartTime ' + TIME_AT_START + ' 0'
+        elif listRecieved[1] == 'initSpectator' :
+            playerList.append(listRecieved[2])
+            stringToSend = SERVER_PASSWORD + ' loggedIn'
     else :
         stringToSend = '. incorrectPassword . .'   #Response password = '.'  type = 'incorpass' data = '.'   #software assumes period as nothing
     return( stringToSend )
