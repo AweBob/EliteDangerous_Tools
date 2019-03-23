@@ -7,14 +7,15 @@ import glob
 import json
 import win32com.client as wincl
 
+#This is client code for advanced vessel scanner and station data uploader, when distributing change the below capslocked variables to the actual thing so users don't have to enter it
+
 #===========================================================================================================================================================================================
 
-tts = wincl.Dispatch("SAPI.SpVoice") #Will crash here for nonwindows users
+tts = wincl.Dispatch("SAPI.SpVoice") #Will crash here for nonwindows users - if your playing on mac, im sorry
 print('Imported libraries Sucessfully:')
 SERVER_IP_ADRESS = input ('Type the external IP of hosting server(i.e. 19.374.922.82) - ')
 SERVER_PORT = int(input('Type port of Server(i.e. 13723) - '))
 SERVER_PASSWORD = input('Type in server password(i.e. pLzWoRk123) - ')
-MINIGAME_ROLE = input('Type in your role - ')                    # 0= None(spectating)   1= Defender     2= Scanner     3= Ship Defneding From Scans
 
 #===========================================================================================================================================================================================
 
@@ -42,25 +43,55 @@ def pingServer( ToSend ) :
 
 def mainCode () :
     testConnection()
-    timeLooped = 0
-    dcPosition = detectChange('')
-    dcDeaths = detectChange('')
-    dcScansPossed = detectChange('')
-    dcScansDropped = detectChange('')
+    dc_spaceTtype = detectChange('')       #Space position(normal, supercruise, docked), string
+    dc_posessingScan = detectChange('')    #Does CMDR have scna data aboard, True or false
+    dc_killDeathLog = detectChange('')         #records everyone you've killed and everyone who has killed you
     while True :
+        startClock = time.time()
         logTransformer(grabLog(0))  #update .log import variable is convLog
-        if MINIGAME_ROLE == 0 :
-            if timeLooped == 0 :
-                CMDR = getCMDRName()
-                recievedString , ping = pingServer( SERVER_PASSWORD + ' initSpectator ' + CMDR )
-                recievedList = recievedString.split()
-                if recievedList[1] == 'loggedIn'  :
-                    print('Logged in.')
-            else :
-                y = 69 #THIS NEEDS DEVELOPMENT
+        #Ping server every 10 seconds requesting all info, based on role only display some of it; unless something changes in which case nofity server, which will always respond with the same thing
+        spaceType = stateOfSpace()
+        clientName = getCMDRName()
+        deathsList , killsList = getKillsDeaths()
+        possesion , uploaded = scanCalc() #NOT COMPLEETED
+        #recievedString , ping = pingServer( input('What do you want to send? - ') )
+        endClock = time.time()
+        time.sleep( timeToSleep(startClock , endClock) )
 
 
-        timeLooped = timeLooped + 1
+def scanCalc () :           #NOT EVEN CLOSE TO DONE, this is the major function of this script
+    inPossesion = False
+    uploaded = 0
+    opisoteConvLog = reversed(convLog)
+    lineNumber = 0
+    for line in opisoteConvLog :
+        if line['event']=='Died' :
+            break
+        lineNumber = lineNumber + 1
+    relevantLogLines = opisoteConvLog[:lineNumber]   #it doesn't like this, why, g-d knows
+    for line in relevantLogLines :
+        y = 69 #placeholder
+    
+
+
+def getKillsDeaths ( ) :  #eventondeath: https://prnt.sc/n1y0ex DELETE LATER
+    deathsList = []
+    killsList = []
+    for line in reversed(convLog) :
+        if line['event']=='Died' :
+            deathsList.append( line['KillerName'] )   #Output of this example: "Cmdr Luvarien"
+        if line['event']=='PVPKill' :
+            killsList.append( line['Victim'] )     #UNSURE ABOUT THIS, AWAITTING EXAMPLE
+    return( deathsList , killsList )
+
+
+def timeToSleep ( startTime , endTime ) :
+    timeElapsed = endTime - startTime
+    time = 10 - timeElapsed
+    if time >= 0 :
+        return( time )
+    else :
+        return( 0 )
 
 class detectChange :
     def __init__ (self , default) :
