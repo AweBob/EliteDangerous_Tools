@@ -9,27 +9,52 @@ SERVER_IP_ADRESS = input ('Type the external IP of hosting server(i.e. 99.374.92
 SERVER_PORT = int(input('Type port of Server(i.e. 13723) - '))
 SERVER_PASSWORD = input('Type in server password(i.e. pLzWoRk123) - ')
 EVENT_START_TIME = int(input('What time will the event start? - '))               #Must be in unix time, if your unsure google it, it's seconds since 1 of January 1970
-LENGTH_EVENT = int(input('How long do you want the game to last in seconds - '))
+LENGTH_EVENT = int(input('How long do you want the game to last in seconds - '))   #in seconds
 SCANS_TO_WIN = int(input('How many scans till the attackers win - '))        
 PLAYER_TO_SCAN = input('What is the name of the CMDR people are trying to scan - ')  #Not case sensitive, do not use CMDR in there ie Luvarien 
 
 outputFile = open("ServerOutput.txt","w+")   #Use outputFile.write('text' + '\n') to write a new line to it
-
+written = False
 #===========================================================================================================================================================================================
-#Takes in: User inf(cmdr name; isEliteRunning; spaceType(docked,supercruise,normal); possesion of scan), role, deaths and to who(only within the time limits tho)
-#Sends/Stores: Points scored(who scored em); kill tracker; time left/time till start; 
+#Takes in: kd nothing points or both
+#Sends: event time stats, how many points scored
+#stores: kills deaths and points scored
 
 def calculateResponse ( stringRecieved ) : 
     listRecieved = stringRecieved.split()   #0 = password ||| 1 = Message Type ||| 3 = data of message ||| 4 = extra data  
     if listRecieved[0] == SERVER_PASSWORD :
         if listRecieved[1] == 'testConnection' :
-            stringToSend = SERVER_PASSWORD + ' connectionSucessful ' + PLAYER_TO_SCAN 
-        elif listRecieved[1] == 'normalClientPing' :
-            stringToSend = 69 #PLACEHOLDER
+            stringToSend = SERVER_PASSWORD + ' connectionSucessful ' + PLAYER_TO_SCAN + ' ' + str(LENGTH_EVENT) + ' ' + str(EVENT_START_TIME)
+        elif eventTimeStatus() == 0 : #if event is live
+            if listRecieved[1] == 'normalClientPing' : #No new data sent, but requesting new data
+                y = 69
+            elif listRecieved[1] == 'updateKillsDeaths' : #update the players k/d
+                y = 69
+            elif listRecieved[1] == 'updatePointsScored' : #update the players scans dropped off 
+                y = 69
+            elif listRecieved[1] == 'updateBoth_kdps' : #update points scored and kills and deaths
+                y = 69
+        elif eventTimeStatus() == 1 : #event hasn't started
+            stringToSend = SERVER_PASSWORD + ' eventHasntStarted ' + PLAYER_TO_SCAN + ' ' + str(LENGTH_EVENT) + ' ' + str(EVENT_START_TIME)
+        elif eventTimeStatus() == 2 : #event is over
+            stringToSend = SERVER_PASSWORD + ' eventIsOver ' + PLAYER_TO_SCAN + ' ' + str(LENGTH_EVENT) + ' ' + str(EVENT_START_TIME)
+            if written == False :
+                #outputFile.write('text' + '\n')            #Here write kills deaths and points scored and by who
+                print('\n' + 'Event over. Output file written.')
+                written = True
     else :
         stringToSend = '. incorrectPassword . .'   #Response password = '.'  type = 'incorpass' data = '.'   #software assumes period as nothing
     return( stringToSend )
 
+def eventTimeStatus () :
+    #timeLeft = ( EVENT_START_TIME + LENGTH_EVENT ) - time.time()
+    if time.time() >= EVENT_START_TIME and time.time() <= ( EVENT_START_TIME + LENGTH_EVENT ) :
+        stat = 0 #event is on
+    elif time.time() < EVENT_START_TIME :
+        stat = 1 #event hasn't started
+    else :
+        stat = 2 #event is over
+    return( stat )
 
 class dataListStorage :
     def __init__ ( self ) :

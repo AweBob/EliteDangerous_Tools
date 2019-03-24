@@ -57,22 +57,6 @@ def mainCode () :
         time.sleep( timeToSleep(startClock , endClock) )
 
 
-def scanCalc ( objectiveName ) :           #NOT EVEN CLOSE TO DONE, this is the major function of this script
-    inPossesion = False
-    uploaded = 0
-    opisoteConvLog = convLog[::-1]
-    lineNumber = 0
-    for line in opisoteConvLog :
-        if line['event']=='Died' or line['event']=='Docked' :
-            break
-        lineNumber = lineNumber + 1
-    relevantLogLines = opisoteConvLog[:lineNumber]   #it doesn't like this, why, g-d knows
-    for line in relevantLogLines :
-        y = 69 #placeholder
-    return(0,0)
-    
-
-
 def getKillsDeaths ( ) :  #eventondeath: https://prnt.sc/n1y0ex DELETE LATER
     deathsList = []
     killsList = []
@@ -80,7 +64,7 @@ def getKillsDeaths ( ) :  #eventondeath: https://prnt.sc/n1y0ex DELETE LATER
         if line['event']=='Died' :
             deathsList.append( line['KillerName'] )   #Output of this example: "Cmdr Luvarien"
         if line['event']=='PVPKill' :
-            killsList.append( line['Victim'] )     #UNSURE ABOUT THIS, AWAITTING EXAMPLE
+            killsList.append( line['Victim'] )     #no CMDR or anything in front of it
     return( deathsList , killsList )
 
 
@@ -109,7 +93,7 @@ def testConnection () :
     recievedList = recievedString.split()
     if recievedList[1] == 'connectionSucessful' :
         print('Test ping to server is sucessful; your ping is ' + ping )
-        return( recievedList[2] )
+        return( recievedList[2] ) #This is the objective name
     elif recievedList[1] == 'incorrectPassword' :
         nothing = input('The password you entered is incorrect, but IP and port are correct were correct. Restart code.')
     else :
@@ -148,7 +132,7 @@ def doYaHaveScanData ( objectiveVessel ) :
         if listData[0]=='normal' or listData[0]=='atStation' :
             indexOfNormalSpace.append( [ listData[1] , opsioteSpaceForm[ int(index) + 1 ][1] ] )
 
-    linesWithinNormalSpace = [] #keep in mind this is backwards as well
+    linesWithinNormalSpace = [] #keep in mind this is backwards
     for index , line in enumerate( opisoteConvLog ) :
         for between in indexOfNormalSpace :
             if index <= between[0] and index >= between[1] :
