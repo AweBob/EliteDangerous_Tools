@@ -42,35 +42,34 @@ def pingServer( ToSend ) :
 #tts.speak('test')
 
 def mainCode () :
-    testConnection()
-    dc_spaceTtype = detectChange('')       #Space position(normal, supercruise, docked), string
+    objectiveName = testConnection()
     dc_posessingScan = detectChange('')    #Does CMDR have scna data aboard, True or false
     dc_killDeathLog = detectChange('')         #records everyone you've killed and everyone who has killed you
     while True :
         startClock = time.time()
         logTransformer(grabLog(0))  #update .log import variable is convLog
         #Ping server every 10 seconds requesting all info, based on role only display some of it; unless something changes in which case nofity server, which will always respond with the same thing
-        spaceType = stateOfSpace()
         clientName = getCMDRName()
         deathsList , killsList = getKillsDeaths()
-        possesion , uploaded = scanCalc() #NOT COMPLEETED
+        possesion , uploaded = doYaHaveScanData( objectiveName )  #Needs testing
         #recievedString , ping = pingServer( input('What do you want to send? - ') )
         endClock = time.time()
         time.sleep( timeToSleep(startClock , endClock) )
 
 
-def scanCalc () :           #NOT EVEN CLOSE TO DONE, this is the major function of this script
+def scanCalc ( objectiveName ) :           #NOT EVEN CLOSE TO DONE, this is the major function of this script
     inPossesion = False
     uploaded = 0
-    opisoteConvLog = reversed(convLog)
+    opisoteConvLog = convLog[::-1]
     lineNumber = 0
     for line in opisoteConvLog :
-        if line['event']=='Died' :
+        if line['event']=='Died' or line['event']=='Docked' :
             break
         lineNumber = lineNumber + 1
     relevantLogLines = opisoteConvLog[:lineNumber]   #it doesn't like this, why, g-d knows
     for line in relevantLogLines :
         y = 69 #placeholder
+    return(0,0)
     
 
 
@@ -110,6 +109,7 @@ def testConnection () :
     recievedList = recievedString.split()
     if recievedList[1] == 'connectionSucessful' :
         print('Test ping to server is sucessful; your ping is ' + ping )
+        return( recievedList[2] )
     elif recievedList[1] == 'incorrectPassword' :
         nothing = input('The password you entered is incorrect, but IP and port are correct were correct. Restart code.')
     else :
@@ -122,22 +122,89 @@ def getCMDRName () :
             return(cmdrName)
     return('None') #Will only happen if game is just starting up
 
-def stateOfSpace () :
-    for line in reversed(convLog) :
-        if line['event']=='Died' :
-            state = 'dead'
-            return(state)
+def stateOfSpace ( line ) :
+    if line['event']=='Docked' or line['event']=='Died' :
+        state = 'atStation'
+        return(state)
+    elif line['event']=='FSDJump' or line['event']=='SupercruiseEntry' :
+        state = 'supercruise' 
+        return(state)
+    elif line['event']=='SupercruiseExit' :
+        state = 'normal'
+        return(state)
+    else :
+        return('None')
+
+def doYaHaveScanData ( objectiveVessel ) :
+    opisoteConvLog = convLog[::-1]
+    spaceForm = []
+    for index, line in enumerate(opisoteConvLog) :
+        if stateOfSpace( line ) != 'None' :
+            spaceForm.append( [ stateOfSpace(line) , index ] )  #time in normal space is, time between normal and the supercruise before it
+    
+    indexOfNormalSpace = []
+    opsioteSpaceForm = spaceForm[::-1]
+    for index, listData in enumerate( opsioteSpaceForm ) :
+        if listData[0]=='normal' or listData[0]=='atStation' :
+            indexOfNormalSpace.append( [ listData[1] , opsioteSpaceForm[ int(index) + 1 ][1] ] )
+
+    linesWithinNormalSpace = [] #keep in mind this is backwards as well
+    for index , line in enumerate( opisoteConvLog ) :
+        for between in indexOfNormalSpace :
+            if index <= between[0] and index >= between[1] :
+                linesWithinNormalSpace.append( line )
+    
+    possesionIndex = []
+    deathIndex = []
+    dockIndex = []
+    for index , line in enumerate(linesWithinNormalSpace) :
+        if line['event']=='ShipTargeted' :
+            try :
+                fullname = line['PilotName_Localised']
+                namelist = fullname.split()
+                if namelist[0]=='CMDR' :
+                    del namelist[0]
+                    nameOfScanned = ' '.join( namelist )
+                    if nameOfScanned.upper() == objectiveVessel.upper() :
+                        possesionIndex.append( index )
+            except :
+                pass
         elif line['event']=='Docked' :
-            state = 'atStation'
-            return(state)
-        elif line['event']=='FSDJump' or line['event']=='SupercruiseEntry' :
-            state = 'supercruise' 
-            return(state)
-        elif line['event']=='SupercruiseExit' :
-            state = 'normal'
-            return(state)
-    state = 'startingGame'
-    return(state)
+            dockIndex.append( index )
+        elif line['event']=='Died' :
+            deathIndex.append( index )
+    
+    stuffOrdered = []
+    for orderIndex in range(len(linesWithinNormalSpace)) :
+        for itemIndex in possesionIndex :
+            if itemIndex==orderIndex :
+                stuffOrdered.append('scannedTarget')
+        for itemIndex in deathIndex :
+            if itemIndex==orderIndex :
+                stuffOrdered.append('died')
+        for itemIndex in dockIndex :
+            if itemIndex==orderIndex :
+                stuffOrdered.append('dock')
+    print(stuffOrdered)
+    if len(stuffOrdered) != 0 :
+        if stuffOrdered[0] == 'scannedTarget' :
+            possesion = True
+        else :
+            possesion = False
+        pointsUploaded = 0
+        for index , item in enumerate(stuffOrdered) :
+            if item == 'scannedTarget' :
+                try :
+                    itemAfter = stuffOrdered[ index - 1 ]
+                except :
+                    itemAfter = 'None'
+                if itemAfter == 'dock' :
+                    pointsUploaded = pointsUploaded + 1
+    else :
+        possesion = False
+        pointsUploaded = 0
+    
+    return( possesion , pointsUploaded )
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
