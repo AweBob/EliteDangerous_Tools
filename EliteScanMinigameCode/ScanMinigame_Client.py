@@ -8,10 +8,11 @@ import json
 import win32com.client as wincl
 
 #This is client code for advanced vessel scanner and station data uploader, when distributing change the below capslocked variables to the actual thing so users don't have to enter it
+#You must restart elite before start if you have come into contact with the vessel to scan before the event has started, or killed someone, or died. (or delete your current log file)
 
 #===========================================================================================================================================================================================
 
-tts = wincl.Dispatch("SAPI.SpVoice") #Will crash here for nonwindows users - if your playing on mac, im sorry
+tts = wincl.Dispatch("SAPI.SpVoice") #Will crash here for nonwindows users - if your playing on mac, im sorry, but get a real computer :p 
 print('Imported libraries Sucessfully:')
 SERVER_IP_ADRESS = input ('Type the external IP of hosting server(i.e. 19.374.922.82) - ')
 SERVER_PORT = int(input('Type port of Server(i.e. 13723) - '))
@@ -42,20 +43,61 @@ def pingServer( ToSend ) :
 #tts.speak('test')
 
 def mainCode () :
-    objectiveName = testConnection()
-    dc_posessingScan = detectChange('')    #Does CMDR have scna data aboard, True or false
-    dc_killDeathLog = detectChange('')         #records everyone you've killed and everyone who has killed you
+    objectiveName , eventLength , eventStartTime = testConnection()   #all time is unix time because it's easy
+    dc_posessingScan = detectChange(False)    #Does CMDR have scna data aboard, True or false
+    dc_uploadedScan = detectChange(0)
+    dc_killLog = detectChange([])         #records everyone you've killed 
+    dc_deathLog = detectChange([])
     while True :
         startClock = time.time()
-        logTransformer(grabLog(0))  #update .log import variable is convLog
-        #Ping server every 10 seconds requesting all info, based on role only display some of it; unless something changes in which case nofity server, which will always respond with the same thing
-        clientName = getCMDRName()
-        deathsList , killsList = getKillsDeaths()
-        possesion , uploaded = doYaHaveScanData( objectiveName )  #Needs testing
-        #recievedString , ping = pingServer( input('What do you want to send? - ') )
+        if time.time() >= int(eventStartTime) and time.time() <= ( int(eventLength) + int(eventStartTime) ) : #if event is live
+            logTransformer(grabLog(0))  #update .log import variable is convLog
+
+            clientName = getCMDRName()
+            deathsList , killsList = getKillsDeaths()
+            possesion , uploaded = doYaHaveScanData( objectiveName )  #Needs testing
+
+            c_possesingScan , possesion = dc_posessingScan.check( possesion ) #t/f
+            c_uploadedScan , uploaded = dc_uploadedScan.check( uploaded  )    #int
+            C_killLog , killsList = dc_killLog.check( killsList )             #list
+            c_deathLog , deathsList = dc_deathLog.check( deathsList )         #list
+
+            listToSend = [ SERVER_PASSWORD ]
+            howManyToSend = calcNumberOfDataToSend( c_possesingScan , c_uploadedScan , C_killLog , c_deathLog )
+            if howManyToSend == 0 :
+                listToSend.append( 'normalClientPing' )
+                #Nothing else here, normal ping sends no other data other than password and normal client ping
+            elif howManyToSend == 1 :
+                listToSend.append( 'oneUpdate' )
+                #more stuff here
+            elif howManyToSend == 2 : 
+                listToSend.append( 'twoUpdate' )
+                #more stuff here
+            elif howManyToSend == 3 : 
+                listToSend.append( 'threeUpdate' )
+                #more stuff here
+            elif howManyToSend == 4 : 
+                listToSend.append( 'fourUpdate' )
+                #more stuff here
+
+            #recievedString , ping = pingServer( input('What do you want to send? - ') )
+        elif time.time() <= eventStartTime : #if event hasn't started
+            y = 69 #placeholder
+        elif time.time() >= ( int(eventLength) + int(eventStartTime) ) : #event is over
+            y = 69 #placeholder
+        else :
+            print('Error in main loop, time: ' + str( time.time() )  )
         endClock = time.time()
         time.sleep( timeToSleep(startClock , endClock) )
 
+
+def calcNumberOfDataToSend( c1 , c2 , c3 , c4 ) :
+    dataList = [ c1 , c2 , c3 , c4 ]
+    num = 0
+    for item in dataList :
+        if item == True :
+            num = num + 1
+    return( num )
 
 def getKillsDeaths ( ) :  #eventondeath: https://prnt.sc/n1y0ex DELETE LATER
     deathsList = []
@@ -81,10 +123,19 @@ class detectChange :
         self.oldVar = default
     def check ( self , newVar ) :
         if self.oldVar == newVar :
-            return( False )
+            return( False , newVar ) #no change
         else :
+            try :
+                for item in newVar : #list
+                    if item in self.oldVar :
+                        newVar.remove(item)
+            except :
+                try :
+                    newVar = newVar - self.oldVar #int
+                except :
+                    newVar = newVar #t/f
             self.oldVar = newVar 
-            return( True )
+            return( True , newVar )
 
 def testConnection () :
     listToSend = [ SERVER_PASSWORD , 'testConnection' , 'None' , '0' ]
@@ -93,7 +144,7 @@ def testConnection () :
     recievedList = recievedString.split()
     if recievedList[1] == 'connectionSucessful' :
         print('Test ping to server is sucessful; your ping is ' + ping )
-        return( recievedList[2] ) #This is the objective name
+        return( recievedList[2] , int(recievedList[3]) , int(recievedList[4]) ) #This is the objective name
     elif recievedList[1] == 'incorrectPassword' :
         nothing = input('The password you entered is incorrect, but IP and port are correct were correct. Restart code.')
     else :
@@ -169,7 +220,8 @@ def doYaHaveScanData ( objectiveVessel ) :
         for itemIndex in dockIndex :
             if itemIndex==orderIndex :
                 stuffOrdered.append('dock')
-    print(stuffOrdered)
+    
+    #print(stuffOrdered)
     if len(stuffOrdered) != 0 :
         if stuffOrdered[0] == 'scannedTarget' :
             possesion = True

@@ -28,11 +28,13 @@ def calculateResponse ( stringRecieved ) :
         elif eventTimeStatus() == 0 : #if event is live
             if listRecieved[1] == 'normalClientPing' : #No new data sent, but requesting new data
                 y = 69
-            elif listRecieved[1] == 'updateKillsDeaths' : #update the players k/d
+            elif listRecieved[1] == 'oneUpdate' : 
                 y = 69
-            elif listRecieved[1] == 'updatePointsScored' : #update the players scans dropped off 
+            elif listRecieved[1] == 'twoUpdate' : 
                 y = 69
-            elif listRecieved[1] == 'updateBoth_kdps' : #update points scored and kills and deaths
+            elif listRecieved[1] == 'threeUpdate' : 
+                y = 69
+            elif listRecieved[1] == 'fourUpdate' : 
                 y = 69
         elif eventTimeStatus() == 1 : #event hasn't started
             stringToSend = SERVER_PASSWORD + ' eventHasntStarted ' + PLAYER_TO_SCAN + ' ' + str(LENGTH_EVENT) + ' ' + str(EVENT_START_TIME)
@@ -75,15 +77,16 @@ async def handle_echo(reader, writer):
     data = await reader.read(100)
     message = data.decode()
     addr = writer.get_extra_info('peername')
-    print("Received %r from %r" % (message, addr))
+    #print("Received %r from %r" % (message, addr))
 
     stringToSend = calculateResponse( message )
 
-    print('Sending: %r' % stringToSend )
+    #print('Sending: %r' % stringToSend )
     writer.write( stringToSend.encode() )
     await writer.drain()
 
     writer.close()
+    print('Received: ' + message + '   Sending: ' + stringToSend + '  Time: ' + str( time.time() ) )
 
 loop = asyncio.get_event_loop()
 coro = asyncio.start_server(handle_echo, SERVER_IP_ADRESS, SERVER_PORT, loop=loop)
