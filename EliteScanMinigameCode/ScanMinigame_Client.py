@@ -6,13 +6,14 @@ from glob import *
 import glob
 import json
 import win32com.client as wincl
+import collections
 
 #This is client code for advanced vessel scanner and station data uploader, when distributing change the below capslocked variables to the actual thing so users don't have to enter it
-#You must restart elite before start if you have come into contact with the vessel to scan before the event has started, or killed someone, or died. (or delete your current log file)
 
 #===========================================================================================================================================================================================
 
 tts = wincl.Dispatch("SAPI.SpVoice") #Will crash here for nonwindows users - if your playing on mac, im sorry, but get a real computer :p 
+compare = lambda x, y: collections.Counter(x) == collections.Counter(y) #setup comparing function
 print('Imported libraries Sucessfully:')
 SERVER_IP_ADRESS = input ('Type the external IP of hosting server(i.e. 19.374.922.82) - ')
 SERVER_PORT = int(input('Type port of Server(i.e. 13723) - '))
@@ -121,21 +122,38 @@ def timeToSleep ( startTime , endTime ) :
 class detectChange :
     def __init__ (self , default) :
         self.oldVar = default
+        self.dataType = type(default).__name__
     def check ( self , newVar ) :
-        if self.oldVar == newVar :
-            return( False , newVar ) #no change
+        if self.dataType == 'int' or self.dataType == 'float'  :
+            if newVar == self.oldVar :
+                return( False , newVar )
+            else :
+                returnVar = newVar - self.oldVar
+                self.oldVar = newVar
+                return(True , returnVar)
+        elif self.dataType == 'list' : #this thing needs some work
+            comRes = compare( self.oldVar , newVar )
+            if comRes == True :
+                return( False , newVar )
+            else :
+                returnVar = []
+                for item in newVar :
+                    for item2 in self.oldVar :
+                        if item == item2 :
+                            returnVar.append( item )
+                            break
+                self.oldVar = newVar
+                return( True , returnVar )
+        elif self.dataType == 'bool' : #t/f
+            if self.oldVar == newVar :
+                return( False , newVar )
+            else :
+                self.oldVar = newVar
+                returnVar = newVar
+                return( True , returnVar )
         else :
-            try :
-                for item in newVar : #list
-                    if item in self.oldVar :
-                        newVar.remove(item)
-            except :
-                try :
-                    newVar = newVar - self.oldVar #int
-                except :
-                    newVar = newVar #t/f
-            self.oldVar = newVar 
-            return( True , newVar )
+            print('Error in detect change class')
+            return( False , newVar )
 
 def testConnection () :
     listToSend = [ SERVER_PASSWORD , 'testConnection' , 'None' , '0' ]
