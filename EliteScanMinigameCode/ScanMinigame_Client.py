@@ -64,12 +64,14 @@ def mainCode () :
             c_deathLog , deathsList = dc_deathLog.check( deathsList )         #list
 
             listToSend = [ SERVER_PASSWORD ]
-            howManyToSend = calcNumberOfDataToSend( c_possesingScan , c_uploadedScan , C_killLog , c_deathLog )
+            howManyToSend = calcNumberOfDataToSend( c_uploadedScan , C_killLog , c_deathLog )
             if howManyToSend == 0 :
                 listToSend.append( 'normalClientPing' )
-                #Nothing else here, normal ping sends no other data other than password and normal client ping
+                stringToSend = ' '.join( listToSend )
+                recievedString , ping = pingServer( stringToSend )
             elif howManyToSend == 1 :
                 listToSend.append( 'oneUpdate' )
+                
                 #more stuff here
             elif howManyToSend == 2 : 
                 listToSend.append( 'twoUpdate' )
@@ -80,8 +82,13 @@ def mainCode () :
             elif howManyToSend == 4 : 
                 listToSend.append( 'fourUpdate' )
                 #more stuff here
+            else :
+                print('Error in main loop sending, if you get this one biiiiig mistakes were made')
+                recievedString = 'None'
+                ping = 1
+            
+            #right here process response and read out valuable info
 
-            #recievedString , ping = pingServer( input('What do you want to send? - ') )
         elif time.time() <= eventStartTime : #if event hasn't started
             y = 69 #placeholder
         elif time.time() >= ( int(eventLength) + int(eventStartTime) ) : #event is over
@@ -92,8 +99,8 @@ def mainCode () :
         time.sleep( timeToSleep(startClock , endClock) )
 
 
-def calcNumberOfDataToSend( c1 , c2 , c3 , c4 ) :
-    dataList = [ c1 , c2 , c3 , c4 ]
+def calcNumberOfDataToSend( c1 , c2 , c3 ) :
+    dataList = [ c1 , c2 , c3 ]
     num = 0
     for item in dataList :
         if item == True :
@@ -151,6 +158,8 @@ class detectChange :
                 self.oldVar = newVar
                 returnVar = newVar
                 return( True , returnVar )
+        elif self.dataType == 'dict' :
+            print('Error, if you get this one I really messed up')
         else :
             print('Error in detect change class')
             return( False , newVar )

@@ -15,13 +15,15 @@ PLAYER_TO_SCAN = input('What is the name of the CMDR people are trying to scan -
 
 outputFile = open("ServerOutput.txt","w+")   #Use outputFile.write('text' + '\n') to write a new line to it
 written = False
+#Open all class stuff here (below cuz it has to be, but should be with all this data)
 #===========================================================================================================================================================================================
 #Takes in: kd nothing points or both
 #Sends: event time stats, how many points scored
 #stores: kills deaths and points scored
 
 def calculateResponse ( stringRecieved ) : 
-    listRecieved = stringRecieved.split()   #0 = password ||| 1 = Message Type ||| 3 = data of message ||| 4 = extra data  
+    listRecieved = stringRecieved.split()   #0 = password ||| 1 = Message Type 
+    
     if listRecieved[0] == SERVER_PASSWORD :
         if listRecieved[1] == 'testConnection' :
             stringToSend = SERVER_PASSWORD + ' connectionSucessful ' + PLAYER_TO_SCAN + ' ' + str(LENGTH_EVENT) + ' ' + str(EVENT_START_TIME)
@@ -38,24 +40,44 @@ def calculateResponse ( stringRecieved ) :
                 y = 69
         elif eventTimeStatus() == 1 : #event hasn't started
             stringToSend = SERVER_PASSWORD + ' eventHasntStarted ' + PLAYER_TO_SCAN + ' ' + str(LENGTH_EVENT) + ' ' + str(EVENT_START_TIME)
-        elif eventTimeStatus() == 2 : #event is over
-            stringToSend = SERVER_PASSWORD + ' eventIsOver ' + PLAYER_TO_SCAN + ' ' + str(LENGTH_EVENT) + ' ' + str(EVENT_START_TIME)
+        elif eventTimeStatus() == 2 or eventTimeStatus() == 2.1 : #event is over
+            if eventTimeStatus() == 2 :
+                stringToSend = SERVER_PASSWORD + ' eventIsOver dueToTime ' + PLAYER_TO_SCAN + ' ' + str(LENGTH_EVENT) + ' ' + str(EVENT_START_TIME)
+            elif eventTimeStatus() == 2.1 :
+                stringToSend = SERVER_PASSWORD + ' eventIsOver dueToScore ' + PLAYER_TO_SCAN + ' ' + str(LENGTH_EVENT) + ' ' + str(EVENT_START_TIME)
             if written == False :
-                #outputFile.write('text' + '\n')            #Here write kills deaths and points scored and by who
+                writeFinalData()
                 print('\n' + 'Event over. Output file written.')
                 written = True
     else :
         stringToSend = '. incorrectPassword . .'   #Response password = '.'  type = 'incorpass' data = '.'   #software assumes period as nothing
     return( stringToSend )
 
+
+def writeFinalData () :  
+    outputFile.write('\n' + '\n' + '\n' + '\n' + 'KILLS LIST' + '\n' + '\n' )
+    for d in killsData.getData() :
+        outputFile.write(d[0] + ' ' + d[1])   #killername then victim        
+    outputFile.write('\n' + '\n' + '\n' + '\n' + 'DEATHS LIST' + '\n' + '\n' ) 
+    for d in deathsData.getData() :
+        outputFile.write(d[0] + ' ' + d[1])   #personWho died then their killers name
+    outputFile.write('\n' + '\n' + '\n' + '\n' + 'POINTS SCORED LIST' + '\n' + '\n' ) 
+    for d in pointsScored.getData() :
+        outputFile.write( d[0] )    #person who scored a scan
+    print('Sucessfully wrote data to .txt file in this current directoy. Reference it for developing a post match report.')
+
+
 def eventTimeStatus () :
     #timeLeft = ( EVENT_START_TIME + LENGTH_EVENT ) - time.time()
-    if time.time() >= EVENT_START_TIME and time.time() <= ( EVENT_START_TIME + LENGTH_EVENT ) :
-        stat = 0 #event is on
-    elif time.time() < EVENT_START_TIME :
-        stat = 1 #event hasn't started
-    else :
-        stat = 2 #event is over
+    if len(pointsScored.getData()) >= SCANS_TO_WIN : #if event is over by score
+        stat = 2.1 #event is over due to scored
+    else : #if event isn't over by score
+        if time.time() >= EVENT_START_TIME and time.time() <= ( EVENT_START_TIME + LENGTH_EVENT ) :
+            stat = 0 #event is on
+        elif time.time() < EVENT_START_TIME :
+            stat = 1 #event hasn't started
+        else :
+            stat = 2 #event is over due to time
     return( stat )
 
 class dataListStorage :
@@ -70,6 +92,10 @@ class dataListStorage :
             pass
     def getData ( self ) :
         return( self.data )
+
+killsData = dataListStorage() #Filled with lists like this [ killerName , victim ]
+deathsData = dataListStorage() #Filled with lists like this [ cmdrWhoDied , personWhoKilledThem ]
+pointsScored = dataListStorage() #This is one list filled with names of people who got points
 
 #===========================================================================================================================================================================================
 
