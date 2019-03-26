@@ -29,17 +29,26 @@ def calculateResponse ( stringRecieved ) :
         if listRecieved[1] == 'testConnection' :
             stringToSend = SERVER_PASSWORD + ' connectionSucessful ' + PLAYER_TO_SCAN + ' ' + str(LENGTH_EVENT) + ' ' + str(EVENT_START_TIME)
         elif eventTimeStatus() == 0 : #if event is live
+            senderCMDRname = listRecieved[2]
             if listRecieved[1] == 'normalClientPing' : #No new data sent, but requesting new data
                 y = 69 #placeholder
             elif listRecieved[1] == '1' : 
-                y = 69 #placeholder
-            elif listRecieved[1] == '2' : 
-                y = 69 #placeholder
-            elif listRecieved[1] == '3' : 
-                y = 69 #placeholder
-        elif eventTimeStatus() == 1 : #event hasn't started
+                if listRecieved[3] == 'pointsUploaded' :
+                    y = 69
+                elif listRecieved[3] == 'deathsList' :
+                    y = 69
+                elif listRecieved[3] == 'killsList' :
+                    y = 69
+            elif listRecieved[1] == '2' or listRecieved[1] == '3' : 
+                if listRecieved[3] == 'pointsUploaded' :
+                    y = 69
+                if listRecieved[3] == 'deathsList' :
+                    y = 69
+                if listRecieved[3] == 'killsList' :
+                    y = 69
+        elif eventTimeStatus() == 1 : #event hasn't started , don't log anything
             stringToSend = SERVER_PASSWORD + ' eventHasntStarted ' + PLAYER_TO_SCAN + ' ' + str(LENGTH_EVENT) + ' ' + str(EVENT_START_TIME)
-        elif eventTimeStatus() == 2 or eventTimeStatus() == 2.1 : #event is over
+        elif eventTimeStatus() == 2 or eventTimeStatus() == 2.1 : #event is over, dont log anything
             if eventTimeStatus() == 2 :
                 stringToSend = SERVER_PASSWORD + ' eventIsOver dueToTime ' + PLAYER_TO_SCAN + ' ' + str(LENGTH_EVENT) + ' ' + str(EVENT_START_TIME)
             elif eventTimeStatus() == 2.1 :
@@ -105,7 +114,7 @@ pointsScored = dataListStorage() #This is one list filled with names of people w
 #===========================================================================================================================================================================================
 
 async def handle_echo(reader, writer):
-    data = await reader.read(100)
+    data = await reader.read(1000) #default 100 changed to 1000 might cause errors
     message = data.decode()
     addr = writer.get_extra_info('peername')
     #print("Received %r from %r" % (message, addr))

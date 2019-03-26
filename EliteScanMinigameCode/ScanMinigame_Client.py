@@ -14,6 +14,7 @@ import collections
 
 tts = wincl.Dispatch("SAPI.SpVoice") #Will crash here for nonwindows users - if your playing on mac, im sorry, but get a real computer :p 
 compare = lambda x, y: collections.Counter(x) == collections.Counter(y) #setup comparing function
+
 print('Imported libraries Sucessfully:')
 SERVER_IP_ADRESS = input ('Type the external IP of hosting server(i.e. 19.374.922.82) - ')
 SERVER_PORT = int(input('Type port of Server(i.e. 13723) - '))
@@ -27,7 +28,7 @@ def pingServer( ToSend ) :
                                                     loop=loop)
         startTimer = time.time()
         writer.write(message.encode())
-        data = await reader.read(100)
+        data = await reader.read(1000) #was 100 before - changing this might make it error
         recievedString = data.decode()
         endTimer = time.time()
         writer.close()
@@ -150,17 +151,17 @@ class detectChange :
                 returnVar = newVar - self.oldVar
                 self.oldVar = newVar
                 return(True , returnVar)
-        elif self.dataType == 'list' : #this thing needs some work
+        elif self.dataType == 'list' : 
             comRes = compare( self.oldVar , newVar )
             if comRes == True :
                 return( False , newVar )
             else :
-                returnVar = []
-                for item in newVar :
-                    for item2 in self.oldVar :
-                        if item == item2 :
-                            returnVar.append( item )
-                            break
+                returnVar = newVar
+                for item in self.oldVar:
+                    try:
+                        returnVar.remove(item)
+                    except ValueError:
+                        pass
                 self.oldVar = newVar
                 return( True , returnVar )
         elif self.dataType == 'bool' : #t/f
