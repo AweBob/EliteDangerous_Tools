@@ -14,8 +14,9 @@ SCANS_TO_WIN = int(input('How many scans till the attackers win - '))
 PLAYER_TO_SCAN = input('What is the name of the CMDR people are trying to scan - ')  #Not case sensitive, do not use CMDR in there ie Luvarien 
 
 outputFile = open("ServerOutput.txt","w+")   #Use outputFile.write('text' + '\n') to write a new line to it
-written = False
+written = False #this could be an issue regarding variable not being global
 #Open all class stuff here (below cuz it has to be, but should be with all this data)
+
 #===========================================================================================================================================================================================
 #Takes in: kd nothing points or both
 #Sends: event time stats, how many points scored
@@ -48,7 +49,7 @@ def calculateResponse ( stringRecieved ) :
                 print('\n' + 'Event over. Output file written.')
                 written = True
     else :
-        stringToSend = '. incorrectPassword . .'   #Response password = '.'  type = 'incorpass' data = '.'   #software assumes period as nothing
+        stringToSend = '. incorrectPassword'   #pretty simple
     return( stringToSend )
 
 
@@ -67,6 +68,7 @@ def writeFinalData () :
         outputFile.write('\n' + '\n' + '\n' + '\n' + 'EVENT ENDED DUE TO SCORE' + '\n' + 'SCANNING EQUIPPED VESSELS HAVE WON' ) 
     else :
         outputFile.write('\n' + '\n' + '\n' + '\n' + 'EVENT ENDED DUE TO TIME' + '\n' + 'VESSELS DEFENDING DATA HAVE WON' )
+    outputFile.close()
     print('Sucessfully wrote data to .txt file in this current directoy. Reference it for developing a post match report.')
 
 

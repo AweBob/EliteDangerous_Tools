@@ -66,7 +66,7 @@ def mainCode () :
             listToSend = [ SERVER_PASSWORD ]
             howManyToSend = calcNumberOfDataToSend( c_uploadedScan , C_killLog , c_deathLog )
 
-            completeListToSend = addToSendingList( listToSend , c_uploadedScan , c_deathLog , C_killLog , uploaded , deathsList , killsList , howManyToSend ) #Work on this bad boyo - HE NEEDS A LOTTA HELP
+            completeListToSend = addToSendingList( listToSend , c_uploadedScan , c_deathLog , C_killLog , uploaded , deathsList , killsList , howManyToSend ) #work on dever side for this
             stringToSend = ' '.join( completeListToSend )
             if len( stringToSend ) != 0 : #does a final check to ensure server doesn't crash(sending an empyty message WILL crash the server)
                 recievedString , ping = pingServer( stringToSend )
@@ -94,14 +94,19 @@ def addToSendingList ( listToSend , c_upload , c_death , c_kill , upload , death
         listToSend.append( str(howMany) )
         listToSend.append( str( getCMDRName() ) )
         if c_upload == True :
-            y = 69 #placeholder
+            listToSend.append( 'pointsUploaded' )
+            listToSend.append( str( upload ) ) #integer
         if c_death == True :
-            y = 69 #placeholder
+            listToSend.append( 'deathsList' )
+            listToSend.append( str(len( death )) )
+            for item in death :
+                listToSend.append( item )
         if c_kill == True :
-            y = 69 #placeholder
+            listToSend.append( 'killsList' )
+            listToSend.append( str(len( kill )) )
+            for item in kill :
+                listToSend.append( item )
     return( listToSend )
-
-
 
 def mockPing () :
     stri = SERVER_PASSWORD + ' None'
@@ -124,7 +129,6 @@ def getKillsDeaths ( ) :  #eventondeath: https://prnt.sc/n1y0ex DELETE LATER
         if line['event']=='PVPKill' :
             killsList.append( line['Victim'] )     #no CMDR or anything in front of it
     return( deathsList , killsList )
-
 
 def timeToSleep ( startTime , endTime ) :
     timeElapsed = endTime - startTime
