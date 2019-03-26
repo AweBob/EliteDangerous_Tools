@@ -54,40 +54,27 @@ def mainCode () :
         if time.time() >= int(eventStartTime) and time.time() <= ( int(eventLength) + int(eventStartTime) ) : #if event is live
             logTransformer(grabLog(0))  #update .log import variable is convLog
 
-            clientName = getCMDRName()
+            clientName = getCMDRName() 
             deathsList , killsList = getKillsDeaths()
             possesion , uploaded = doYaHaveScanData( objectiveName )  #Needs testing
 
-            c_possesingScan , possesion = dc_posessingScan.check( possesion ) #t/f
+            c_possesingScan , possesion = dc_posessingScan.check( possesion ) #t/f #say this, but don't send it to server, it doesn't care
             c_uploadedScan , uploaded = dc_uploadedScan.check( uploaded  )    #int
             C_killLog , killsList = dc_killLog.check( killsList )             #list
             c_deathLog , deathsList = dc_deathLog.check( deathsList )         #list
 
             listToSend = [ SERVER_PASSWORD ]
             howManyToSend = calcNumberOfDataToSend( c_uploadedScan , C_killLog , c_deathLog )
-            if howManyToSend == 0 :
-                listToSend.append( 'normalClientPing' )
-                stringToSend = ' '.join( listToSend )
+
+            completeListToSend = addToSendingList( listToSend , c_uploadedScan , c_deathLog , C_killLog , uploaded , deathsList , killsList , howManyToSend ) #Work on this bad boyo - HE NEEDS A LOTTA HELP
+            stringToSend = ' '.join( completeListToSend )
+            if len( stringToSend ) != 0 : #does a final check to ensure server doesn't crash(sending an empyty message WILL crash the server)
                 recievedString , ping = pingServer( stringToSend )
-            elif howManyToSend == 1 :
-                listToSend.append( 'oneUpdate' )
-                
-                #more stuff here
-            elif howManyToSend == 2 : 
-                listToSend.append( 'twoUpdate' )
-                #more stuff here
-            elif howManyToSend == 3 : 
-                listToSend.append( 'threeUpdate' )
-                #more stuff here
-            elif howManyToSend == 4 : 
-                listToSend.append( 'fourUpdate' )
-                #more stuff here
-            else :
-                print('Error in main loop sending, if you get this one biiiiig mistakes were made')
-                recievedString = 'None'
-                ping = 1
+            else:
+                print('Error in server pinging')
+                recievedString , ping = mockPing()
             
-            #right here process response and read out valuable info
+            #right here process response and read out valuable info (including possesing scan which the server won't talk to you bout cuz it dgaf)
 
         elif time.time() <= eventStartTime : #if event hasn't started
             y = 69 #placeholder
@@ -98,6 +85,27 @@ def mainCode () :
         endClock = time.time()
         time.sleep( timeToSleep(startClock , endClock) )
 
+
+def addToSendingList ( listToSend , c_upload , c_death , c_kill , upload , death , kill , howMany ) :
+    if howMany == 0 : #pass - numOfData - CMDRname - (data sent in pairs of 3 ( type , amount , data  ))
+        listToSend.append('normalClientPing')
+        listToSend.append( str( getCMDRName() ) )
+    else :
+        listToSend.append( str(howMany) )
+        listToSend.append( str( getCMDRName() ) )
+        if c_upload == True :
+            y = 69 #placeholder
+        if c_death == True :
+            y = 69 #placeholder
+        if c_kill == True :
+            y = 69 #placeholder
+    return( listToSend )
+
+
+
+def mockPing () :
+    stri = SERVER_PASSWORD + ' None'
+    return( stri , 1 )
 
 def calcNumberOfDataToSend( c1 , c2 , c3 ) :
     dataList = [ c1 , c2 , c3 ]
@@ -321,4 +329,12 @@ def logCleaner ( dirtyLogFile , errorPos ) :
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-mainCode()
+try :
+    mainCode()
+except Exception as error :
+    nothing = input('Key error')
+
+
+
+
+

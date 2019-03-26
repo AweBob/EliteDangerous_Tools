@@ -22,22 +22,20 @@ written = False
 #stores: kills deaths and points scored
 
 def calculateResponse ( stringRecieved ) : 
-    listRecieved = stringRecieved.split()   #0 = password ||| 1 = Message Type 
+    listRecieved = stringRecieved.split()   #0 = password ||| 1 = Message Type ||| 2 = CMDR sending packet
     
     if listRecieved[0] == SERVER_PASSWORD :
         if listRecieved[1] == 'testConnection' :
             stringToSend = SERVER_PASSWORD + ' connectionSucessful ' + PLAYER_TO_SCAN + ' ' + str(LENGTH_EVENT) + ' ' + str(EVENT_START_TIME)
         elif eventTimeStatus() == 0 : #if event is live
             if listRecieved[1] == 'normalClientPing' : #No new data sent, but requesting new data
-                y = 69
-            elif listRecieved[1] == 'oneUpdate' : 
-                y = 69
-            elif listRecieved[1] == 'twoUpdate' : 
-                y = 69
-            elif listRecieved[1] == 'threeUpdate' : 
-                y = 69
-            elif listRecieved[1] == 'fourUpdate' : 
-                y = 69
+                y = 69 #placeholder
+            elif listRecieved[1] == '1' : 
+                y = 69 #placeholder
+            elif listRecieved[1] == '2' : 
+                y = 69 #placeholder
+            elif listRecieved[1] == '3' : 
+                y = 69 #placeholder
         elif eventTimeStatus() == 1 : #event hasn't started
             stringToSend = SERVER_PASSWORD + ' eventHasntStarted ' + PLAYER_TO_SCAN + ' ' + str(LENGTH_EVENT) + ' ' + str(EVENT_START_TIME)
         elif eventTimeStatus() == 2 or eventTimeStatus() == 2.1 : #event is over
@@ -64,6 +62,11 @@ def writeFinalData () :
     outputFile.write('\n' + '\n' + '\n' + '\n' + 'POINTS SCORED LIST' + '\n' + '\n' ) 
     for d in pointsScored.getData() :
         outputFile.write( d[0] )    #person who scored a scan
+    tttt = eventTimeStatus()
+    if tttt == 2.1 :
+        outputFile.write('\n' + '\n' + '\n' + '\n' + 'EVENT ENDED DUE TO SCORE' + '\n' + 'SCANNING EQUIPPED VESSELS HAVE WON' ) 
+    else :
+        outputFile.write('\n' + '\n' + '\n' + '\n' + 'EVENT ENDED DUE TO TIME' + '\n' + 'VESSELS DEFENDING DATA HAVE WON' )
     print('Sucessfully wrote data to .txt file in this current directoy. Reference it for developing a post match report.')
 
 
