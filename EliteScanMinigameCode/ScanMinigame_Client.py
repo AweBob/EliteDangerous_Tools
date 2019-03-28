@@ -7,6 +7,7 @@ import glob
 import json
 import win32com.client as wincl
 import collections
+import ast
 
 #This is client code for advanced vessel scanner and station data uploader, when distributing change the below capslocked variables to the actual thing so users don't have to enter it
 
@@ -22,30 +23,29 @@ SERVER_PASSWORD = input('Type in server password(i.e. pLzWoRk123) - ')
 
 #===========================================================================================================================================================================================
 
-def pingServer( ToSend ) :
+def pingServer( ToSend ) : #ToSend should be a list
     async def tcp_echo_client(message, loop):
         reader, writer = await asyncio.open_connection(SERVER_IP_ADRESS, SERVER_PORT,
                                                     loop=loop)
         startTimer = time.time()
-        writer.write(message.encode())
+        writer.write( json.dumps( ToSend ).encode() )
         data = await reader.read(1000) 
-        recievedString = data.decode()
+        recievedStuff = ast.literal_eval( str( data.decode() ) )
         endTimer = time.time()
         writer.close()
         ping = str( int(( endTimer - startTimer ) * 100) )
-        return( recievedString , ping )
+        return( recievedStuff , ping )
 
-    message = str(ToSend)
     loop = asyncio.get_event_loop()
-    recievedString , ping = loop.run_until_complete(tcp_echo_client(message, loop))
-    return( recievedString , ping )
+    recievedStuff , ping = loop.run_until_complete(tcp_echo_client(ToSend, loop))
+    return( recievedStuff , ping )
 
 #===========================================================================================================================================================================================
-#recievedString , ping = pingServer( input('What do you want to send? - ') )
+#recievedList , ping = pingServer( listToSend )
 #tts.speak('test')
 
 def mainCode () :
-    objectiveName , eventLength , eventStartTime , numberScansToWin = testConnection()   #all time is unix time because it's easy
+    objectiveName , eventLength , eventStartTime , numberScansToWin = testConnection() #NEEDS COMPLETE REWRITE     #all time is unix time because it's easy
     dc_posessingScan = detectChange(False)    #Does CMDR have scna data aboard, True or false
     dc_uploadedScan = detectChange(0)
     dc_killLog = detectChange([])         #records everyone you've killed 
@@ -67,13 +67,12 @@ def mainCode () :
             listToSend = [ SERVER_PASSWORD ]
             howManyToSend = calcNumberOfDataToSend( c_uploadedScan , C_killLog , c_deathLog )
 
-            completeListToSend = addToSendingList( listToSend , c_uploadedScan , c_deathLog , C_killLog , uploaded , deathsList , killsList , howManyToSend ) #work on dever side for this
-            stringToSend = ' '.join( completeListToSend )
-            if len( stringToSend ) != 0 : #does a final check to ensure server doesn't crash(sending an empyty message WILL crash the server)
-                recievedString , ping = pingServer( stringToSend )
+            completeListToSend = addToSendingList( listToSend , c_uploadedScan , c_deathLog , C_killLog , uploaded , deathsList , killsList , howManyToSend ) #NEEDS COMPLETE REWORK
+            if len( completeListToSend ) != 0 : #does a final check to ensure server doesn't crash(sending an empyty message WILL crash the server)
+                recievedList , ping = pingServer( completeListToSend )
             else:
                 print('Error in server pinging')
-                recievedString , ping = mockPing()
+                recievedList , ping = mockPing()
             
             #right here process response and read out valuable info (including possesing scan which the server won't talk to you bout cuz it dgaf)
 
@@ -110,8 +109,8 @@ def addToSendingList ( listToSend , c_upload , c_death , c_kill , upload , death
     return( listToSend )
 
 def mockPing () :
-    stri = SERVER_PASSWORD + ' None'
-    return( stri , 1 )
+    list1 = [SERVER_PASSWORD , 'None']
+    return( list1 , 1 )
 
 def calcNumberOfDataToSend( c1 , c2 , c3 ) :
     dataList = [ c1 , c2 , c3 ]

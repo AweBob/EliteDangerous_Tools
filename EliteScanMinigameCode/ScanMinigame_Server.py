@@ -1,5 +1,6 @@
 import asyncio
 import time
+import json
 
 #===========================================================================================================================================================================================
 
@@ -22,7 +23,7 @@ written = False #this could be an issue regarding variable not being global
 #Sends: event time stats, how many points scored
 #stores: kills deaths and points scored
 
-def calculateResponse ( stringRecieved ) : 
+def calculateResponse ( stringRecieved ) :  #NEEDS A COMPLETE REWRITE - PROLLY GONNA COMPLETELY DELETE AND REWRITE THIS FOR NEXT COMMIT
     listRecieved = stringRecieved.split()   #0 = password ||| 1 = Message Type ||| 2 = CMDR sending packet
     
     if listRecieved[0] == SERVER_PASSWORD :
@@ -125,18 +126,18 @@ pointsScored = dataListStorage() #This is one list filled with names of people w
 
 async def handle_echo(reader, writer):
     data = await reader.read(1000) 
-    message = data.decode()
+    message = json.loads( data )     #no decode - yes this is necessary, i think lmao we'll find out
     addr = writer.get_extra_info('peername')
     #print("Received %r from %r" % (message, addr))
 
-    stringToSend = calculateResponse( message )
+    listToSend = calculateResponse( message )
 
     #print('Sending: %r' % stringToSend )
-    writer.write( stringToSend.encode() )
+    writer.write( json.dumps( listToSend ).encode() )
     await writer.drain()
 
     writer.close()
-    print('Received: ' + message + '   Sending: ' + stringToSend + '  Time: ' + str( time.time() ) )
+    print('Received: ' + str(message) + '   Sending: ' + str( listToSend ) + '  Time: ' + str( time.time() ) + '  From: ' + str( addr ) )
 
 loop = asyncio.get_event_loop()
 coro = asyncio.start_server(handle_echo, SERVER_IP_ADRESS, SERVER_PORT, loop=loop)
