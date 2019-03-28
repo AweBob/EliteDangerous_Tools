@@ -23,58 +23,39 @@ written = False #this could be an issue regarding variable not being global
 #Sends: event time stats, how many points scored
 #stores: kills deaths and points scored
 
-def calculateResponse ( stringRecieved ) :  #NEEDS A COMPLETE REWRITE - PROLLY GONNA COMPLETELY DELETE AND REWRITE THIS FOR NEXT COMMIT
-    listRecieved = stringRecieved.split()   #0 = password ||| 1 = Message Type ||| 2 = CMDR sending packet
+def calculateResponse ( listRecieved ) :  #NEEDS A COMPLETE REWRITE - PROLLY GONNA COMPLETELY DELETE AND REWRITE THIS FOR NEXT COMMIT
+    #0 = password ||| 1= testConnection or normalPing ||| 3= cmdr name
     
-    if listRecieved[0] == SERVER_PASSWORD :
+    if listRecieved[0] == SERVER_PASSWORD : #if password correct
+        listToSend = [SERVER_PASSWORD ]
         if listRecieved[1] == 'testConnection' :
-            stringToSend = SERVER_PASSWORD + ' connectionSucessful ' + PLAYER_TO_SCAN + ' ' + str(LENGTH_EVENT) + ' ' + str(EVENT_START_TIME) + ' ' + str(SCANS_TO_WIN)
-        elif eventTimeStatus() == 0 : #if event is live
-            senderCMDRname = listRecieved[2]
-            stringToSend = SERVER_PASSWORD + pointsScored.getDataString() #If event is live, always send this data
-            if listRecieved[1] == 'normalClientPing' : #No new data sent, but requesting new data
-                nothing = '' #no data to log
-            elif listRecieved[1] == '1' : 
-                listRecievedLength = len(listRecieved)
-                if listRecieved[3] == 'pointsUploaded' :
-                    y = 69 #placeholder
-                elif listRecieved[3] == 'deathsList' :
-                    y = 69
-                elif listRecieved[3] == 'killsList' :
-                    y = 69
-            elif listRecieved[1] == '2' or listRecieved[1] == '3' : 
-                currentListIndex = 4 #changes throughout this function
-                if listRecieved[3] == 'pointsUploaded' :
-                    y = 69
-                if listRecieved[3] == 'deathsList' :
-                    y = 69
-                if listRecieved[3] == 'killsList' :
-                    y = 69
-            #potentially move =='3' back down here
+            listToSend.extend([ 'connectionSucessful' , PLAYER_TO_SCAN , LENGTH_EVENT , EVENT_START_TIME , SCANS_TO_WIN ])
         elif eventTimeStatus() == 1 : #event hasn't started , don't log anything
-            stringToSend = SERVER_PASSWORD + ' eventHasntStarted ' + PLAYER_TO_SCAN + ' ' + str(LENGTH_EVENT) + ' ' + str(EVENT_START_TIME)
+            foo = 'bar' #placeholder
         elif eventTimeStatus() == 2 or eventTimeStatus() == 2.1 : #event is over, dont log anything
+            listToSend.append('eventIsOver')
             if eventTimeStatus() == 2 :
-                stringToSend = SERVER_PASSWORD + ' eventIsOver dueToTime ' + PLAYER_TO_SCAN + ' ' + str(LENGTH_EVENT) + ' ' + str(EVENT_START_TIME)
+                listToSend.append('dueToTime')
             elif eventTimeStatus() == 2.1 :
-                stringToSend = SERVER_PASSWORD + ' eventIsOver dueToScore ' + PLAYER_TO_SCAN + ' ' + str(LENGTH_EVENT) + ' ' + str(EVENT_START_TIME)
+                listToSend.append('dueToScore')
+            listToSend.extend([  PLAYER_TO_SCAN , str(LENGTH_EVENT) , str(EVENT_START_TIME) ])
             if written == False :
                 writeFinalData()
                 print('\n' + 'Event over. Output file written.')
                 written = True
     else :
-        stringToSend = '. incorrectPassword'   #pretty simple
-    return( stringToSend )
+        listToSend = ['.' , 'incorrectPassword']
+    return( listToSend )
 
 
 def writeFinalData () :  
-    outputFile.write('\n' + '\n' + '\n' + '\n' + 'KILLS LIST' + '\n' + '\n' )
+    outputFile.write('\n' + '\n' + '\n' + '\n' + 'KILLS LIST' + '\n'  )
     for d in killsData.getData() :
         outputFile.write(d[0] + ' ' + d[1])   #killername then victim        
-    outputFile.write('\n' + '\n' + '\n' + '\n' + 'DEATHS LIST' + '\n' + '\n' ) 
+    outputFile.write('\n' + '\n' + '\n' + '\n' + 'DEATHS LIST' + '\n'  ) 
     for d in deathsData.getData() :
         outputFile.write(d[0] + ' ' + d[1])   #personWho died then their killers name
-    outputFile.write('\n' + '\n' + '\n' + '\n' + 'POINTS SCORED LIST' + '\n' + '\n' ) 
+    outputFile.write('\n' + '\n' + '\n' + '\n' + 'POINTS SCORED LIST' + '\n'  ) 
     for d in pointsScored.getData() :
         outputFile.write( d[0] )    #person who scored a scan
     tttt = eventTimeStatus()

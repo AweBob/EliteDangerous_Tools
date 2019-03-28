@@ -45,7 +45,7 @@ def pingServer( ToSend ) : #ToSend should be a list
 #tts.speak('test')
 
 def mainCode () :
-    objectiveName , eventLength , eventStartTime , numberScansToWin = testConnection() #NEEDS COMPLETE REWRITE     #all time is unix time because it's easy
+    objectiveName , eventLength , eventStartTime , numberScansToWin = testConnection() #all time is unix time because it's easy - no timezoes, simple mathematic computable formula
     dc_posessingScan = detectChange(False)    #Does CMDR have scna data aboard, True or false
     dc_uploadedScan = detectChange(0)
     dc_killLog = detectChange([])         #records everyone you've killed 
@@ -65,11 +65,11 @@ def mainCode () :
             c_deathLog , deathsList = dc_deathLog.check( deathsList )         #list
 
             listToSend = [ SERVER_PASSWORD ]
-            howManyToSend = calcNumberOfDataToSend( c_uploadedScan , C_killLog , c_deathLog )
+            #howManyToSend = calcNumberOfDataToSend( c_uploadedScan , C_killLog , c_deathLog ) #potentially delete this function entirely, it is legit useless lmao
 
-            completeListToSend = addToSendingList( listToSend , c_uploadedScan , c_deathLog , C_killLog , uploaded , deathsList , killsList , howManyToSend ) #NEEDS COMPLETE REWORK
-            if len( completeListToSend ) != 0 : #does a final check to ensure server doesn't crash(sending an empyty message WILL crash the server)
-                recievedList , ping = pingServer( completeListToSend )
+            listToSend = addToSendingList( listToSend , c_uploadedScan , c_deathLog , C_killLog , uploaded , deathsList , killsList ) #NEEDS MORE WORK
+            if len( listToSend ) != 0 : #does a final check to ensure server doesn't crash(sending an empyty message WILL crash the server)
+                recievedList , ping = pingServer( listToSend )
             else:
                 print('Error in server pinging')
                 recievedList , ping = mockPing()
@@ -86,27 +86,19 @@ def mainCode () :
         time.sleep( timeToSleep(startClock , endClock) )
 
 
-def addToSendingList ( listToSend , c_upload , c_death , c_kill , upload , death , kill , howMany ) :
-    if howMany == 0 : #pass - numOfData - CMDRname - (data sent in pairs of 3 ( type , amount , data  ))
-        listToSend.append('normalClientPing')
-        listToSend.append( str( getCMDRName() ) )
-    else :
-        listToSend.append( str(howMany) )
-        listToSend.append( str( getCMDRName() ) )
-        if c_upload == True :
-            listToSend.append( 'pointsUploaded' )
-            listToSend.append( str( upload ) ) #integer
-        if c_death == True :
-            listToSend.append( 'deathsList' )
-            listToSend.append( str(len( death )) )
-            for item in death :
-                listToSend.append( item )
-        if c_kill == True :
-            listToSend.append( 'killsList' )
-            listToSend.append( str(len( kill )) )
-            for item in kill :
-                listToSend.append( item )
-    return( listToSend )
+def addToSendingList ( listToSend , c_upload , c_death , c_kill , upload , death , kill) :
+    listToSend.append('normalPing')
+    if len( c_upload ) != 0 :
+        uploadList = ['uploadData']
+        uploadList.extend( c_upload )
+        listToSend.append( uploadList )
+    if len( c_death ) != 0 :
+        deathList = ['deathData']
+        #MORE DATA HERE
+    if len( c_kill ) != 0 :
+        killList = ['killData']
+        #MORE DATA HERE
+    return(listToSend)
 
 def mockPing () :
     list1 = [SERVER_PASSWORD , 'None']
@@ -176,11 +168,9 @@ class detectChange :
             print('Error in detect change class')
             return( False , newVar )
 
-def testConnection () :
-    listToSend = [ SERVER_PASSWORD , 'testConnection' , 'None' , '0' ]
-    stringToSend = ' '.join( listToSend )
-    recievedString , ping = pingServer( stringToSend )
-    recievedList = recievedString.split()
+def testConnection () : #Example Call Output: objectiveName , eventLength , eventStartTime , numberScansToWin 
+    listToSend = [ SERVER_PASSWORD , 'testConnection']
+    recievedList , ping = pingServer( listToSend )
     if recievedList[1] == 'connectionSucessful' :
         print('Test ping to server is sucessful; your ping is ' + ping )
         return( recievedList[2] , int(recievedList[3]) , int(recievedList[4]) , int(recievedList[5]) ) #This is the objective name
