@@ -28,7 +28,7 @@ def pingServer( ToSend ) :
                                                     loop=loop)
         startTimer = time.time()
         writer.write(message.encode())
-        data = await reader.read(1000) #was 100 before - changing this might make it error
+        data = await reader.read(1000) 
         recievedString = data.decode()
         endTimer = time.time()
         writer.close()
@@ -45,7 +45,7 @@ def pingServer( ToSend ) :
 #tts.speak('test')
 
 def mainCode () :
-    objectiveName , eventLength , eventStartTime = testConnection()   #all time is unix time because it's easy
+    objectiveName , eventLength , eventStartTime , numberScansToWin = testConnection()   #all time is unix time because it's easy
     dc_posessingScan = detectChange(False)    #Does CMDR have scna data aboard, True or false
     dc_uploadedScan = detectChange(0)
     dc_killLog = detectChange([])         #records everyone you've killed 
@@ -184,7 +184,7 @@ def testConnection () :
     recievedList = recievedString.split()
     if recievedList[1] == 'connectionSucessful' :
         print('Test ping to server is sucessful; your ping is ' + ping )
-        return( recievedList[2] , int(recievedList[3]) , int(recievedList[4]) ) #This is the objective name
+        return( recievedList[2] , int(recievedList[3]) , int(recievedList[4]) , int(recievedList[5]) ) #This is the objective name
     elif recievedList[1] == 'incorrectPassword' :
         nothing = input('The password you entered is incorrect, but IP and port are correct were correct. Restart code.')
     else :

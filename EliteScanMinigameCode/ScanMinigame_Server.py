@@ -27,25 +27,29 @@ def calculateResponse ( stringRecieved ) :
     
     if listRecieved[0] == SERVER_PASSWORD :
         if listRecieved[1] == 'testConnection' :
-            stringToSend = SERVER_PASSWORD + ' connectionSucessful ' + PLAYER_TO_SCAN + ' ' + str(LENGTH_EVENT) + ' ' + str(EVENT_START_TIME)
+            stringToSend = SERVER_PASSWORD + ' connectionSucessful ' + PLAYER_TO_SCAN + ' ' + str(LENGTH_EVENT) + ' ' + str(EVENT_START_TIME) + ' ' + str(SCANS_TO_WIN)
         elif eventTimeStatus() == 0 : #if event is live
             senderCMDRname = listRecieved[2]
+            stringToSend = SERVER_PASSWORD + pointsScored.getDataString() #If event is live, always send this data
             if listRecieved[1] == 'normalClientPing' : #No new data sent, but requesting new data
-                y = 69 #placeholder
+                nothing = '' #no data to log
             elif listRecieved[1] == '1' : 
+                listRecievedLength = len(listRecieved)
                 if listRecieved[3] == 'pointsUploaded' :
-                    y = 69
+                    y = 69 #placeholder
                 elif listRecieved[3] == 'deathsList' :
                     y = 69
                 elif listRecieved[3] == 'killsList' :
                     y = 69
             elif listRecieved[1] == '2' or listRecieved[1] == '3' : 
+                currentListIndex = 4 #changes throughout this function
                 if listRecieved[3] == 'pointsUploaded' :
                     y = 69
                 if listRecieved[3] == 'deathsList' :
                     y = 69
                 if listRecieved[3] == 'killsList' :
                     y = 69
+            #potentially move =='3' back down here
         elif eventTimeStatus() == 1 : #event hasn't started , don't log anything
             stringToSend = SERVER_PASSWORD + ' eventHasntStarted ' + PLAYER_TO_SCAN + ' ' + str(LENGTH_EVENT) + ' ' + str(EVENT_START_TIME)
         elif eventTimeStatus() == 2 or eventTimeStatus() == 2.1 : #event is over, dont log anything
@@ -106,6 +110,12 @@ class dataListStorage :
             pass
     def getData ( self ) :
         return( self.data )
+    def getDataString ( self ) :
+        string = ''
+        for item in self.data :
+            string = string + ' ' + item 
+        return( string )
+
 
 killsData = dataListStorage() #Filled with lists like this [ killerName , victim ]
 deathsData = dataListStorage() #Filled with lists like this [ cmdrWhoDied , personWhoKilledThem ]
@@ -114,7 +124,7 @@ pointsScored = dataListStorage() #This is one list filled with names of people w
 #===========================================================================================================================================================================================
 
 async def handle_echo(reader, writer):
-    data = await reader.read(1000) #default 100 changed to 1000 might cause errors
+    data = await reader.read(1000) 
     message = data.decode()
     addr = writer.get_extra_info('peername')
     #print("Received %r from %r" % (message, addr))

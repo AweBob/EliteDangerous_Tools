@@ -1,6 +1,7 @@
 import asyncio
 import string     #only for random words func
 import random     #only for rand word fu
+import json
 
 #port forward this info with TCP format
 SERVER_IP_ADRESS = '192.168.1.4'                 #string - internal ip adress of your wifi network (use this ip in port forwarding)   YOUR LOCALHOST IP
@@ -8,23 +9,29 @@ SERVER_PORT = 13723                              #13722 13723 13780 13781 13784 
 SERVER_PASSWORD = ''                             #Random string, as long as both server and client have this same thing isn't fine #Unnecessary for test version
 
 async def handle_echo(reader, writer):
-    data = await reader.read(100)
-    message = data.decode()
+    data = await reader.read(1000)
+    message = json.loads( data ) #no decode
     addr = writer.get_extra_info('peername')
-    print("Received %r from %r" % (message, addr))
+    print("Received %r from %r" % ( str(message) , addr))
+    #for i in message : #proof this works
+        #print(i)
 
-    word = randomWords()
-    print('Sending: %r' % word )
-    writer.write( word.encode() )
+    lis = randomList()
+    
+    print('Sending: %r' % str(lis) )
+    writer.write( json.dumps( lis ).encode() ) #encode
     await writer.drain()
 
     writer.close()
 
-def randomWords () :
-    strin = ''
-    for i in range(0,10) :
-        strin = strin + random.choice(string.ascii_letters)
-    return( str(strin) )
+def randomList () :
+    listThang = []
+    for x in range( random.randint(2,5) ) :
+        strin = ''
+        for i in range(0,10) :
+            strin = strin + random.choice(string.ascii_letters)
+        listThang.append( strin )
+    return( listThang )
 
 loop = asyncio.get_event_loop()
 coro = asyncio.start_server(handle_echo, SERVER_IP_ADRESS, SERVER_PORT, loop=loop)

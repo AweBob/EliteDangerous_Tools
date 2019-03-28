@@ -1,7 +1,9 @@
 import asyncio
 import time
+import json
+import ast #testin
 
-SERVER_IP_ADRESS = '11.111.111.11'               #string   - Server public IP adress   #This is an example, not my actual ip, don't even try it :p
+SERVER_IP_ADRESS = '192.168.1.4'               #string   - Server public IP adress   #This is an example, not my actual ip, don't even try it :p
 SERVER_PORT = 13723                            #must be the same as the Server   integer
 SERVER_PASSWORD = ''                           #Unnecessary for test version
 
@@ -10,27 +12,30 @@ def pingServer( ToSend ) :
         reader, writer = await asyncio.open_connection(SERVER_IP_ADRESS, SERVER_PORT,
                                                     loop=loop)
 
-        #print('Sending: %r' % message)
         start = time.time()
-        writer.write(message.encode())
+        writer.write( json.dumps( ToSend ).encode() ) #encoded
 
-        data = await reader.read(100)
+        data = await reader.read(1000)
         end = time.time()
-        recievedString = data.decode()
-        #print('Received: %r' % data.decode())
+        recievedStuff = ast.literal_eval( str( data.decode() ) )
 
         writer.close()
-        totalTime = str(end - start)
-        return( recievedString , totalTime )
+        totalTime = str(  (end - start) * 100 )
+        return( recievedStuff , totalTime ) 
 
-    message = str(ToSend)
     loop = asyncio.get_event_loop()
-    recievedString , totalTime = loop.run_until_complete(tcp_echo_client(message, loop))
-    return( recievedString , totalTime )
+    recievedStuff , totalTime = loop.run_until_complete(tcp_echo_client( ToSend , loop))
+    return( recievedStuff , totalTime )
 
 while True :
-    toSend = input('What do you want to send? - ')    
-    if len( toSend ) == 0 :                     #cuz if u send nothing it will crash server
-        toSend = '.'
-    serverResponse , pingToServer = pingServer( toSend ) 
-    print( 'Recieved: ' + serverResponse + ' from server in ' + pingToServer + ' seconds.' + '\n' )
+    toSend = []
+    numOfThangs = int(input( '\n' + 'How many items do ya wanna send? - '))
+    for i in range( numOfThangs ) :
+        toSend.append( input('What do you want to send? - ') )
+
+    if len( toSend ) != 0 :                     #cuz if u send nothing it will crash server
+        serverResponse , pingToServer = pingServer( toSend ) 
+
+        print( 'Recieved: ' + str(serverResponse) + ' from server in ' + str(pingToServer) + ' ms.' + '\n' )
+        #for i in serverResponse :  #proof that this works
+            #print(i)
