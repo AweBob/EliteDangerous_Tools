@@ -30,8 +30,11 @@ def calculateResponse ( listRecieved ) :  #NEEDS A COMPLETE REWRITE - PROLLY GON
         listToSend = [SERVER_PASSWORD ]
         if listRecieved[1] == 'testConnection' :
             listToSend.extend([ 'connectionSucessful' , PLAYER_TO_SCAN , LENGTH_EVENT , EVENT_START_TIME , SCANS_TO_WIN ])
+        elif eventTimeStatus() == 0 : #event is on, this is everythin!
+            #HERE IS WHERE I PUT IN THE INFORMATION LOGGING
+            listToSend = 'foobar' #Return here number of scans completed
         elif eventTimeStatus() == 1 : #event hasn't started , don't log anything
-            foo = 'bar' #placeholder
+            listToSend.extend([ 'eventHasntStarted' , EVENT_START_TIME , LENGTH_EVENT ])
         elif eventTimeStatus() == 2 or eventTimeStatus() == 2.1 : #event is over, dont log anything
             listToSend.append('eventIsOver')
             if eventTimeStatus() == 2 :

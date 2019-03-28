@@ -55,7 +55,7 @@ def mainCode () :
         if time.time() >= int(eventStartTime) and time.time() <= ( int(eventLength) + int(eventStartTime) ) : #if event is live
             logTransformer(grabLog(0))  #update .log import variable is convLog
 
-            clientName = getCMDRName() 
+            #clientName = getCMDRName()  #unused here, but used elsewhere
             deathsList , killsList = getKillsDeaths()
             possesion , uploaded = doYaHaveScanData( objectiveName )  #Needs testing
 
@@ -67,9 +67,9 @@ def mainCode () :
             listToSend = [ SERVER_PASSWORD ]
             #howManyToSend = calcNumberOfDataToSend( c_uploadedScan , C_killLog , c_deathLog ) #potentially delete this function entirely, it is legit useless lmao
 
-            listToSend = addToSendingList( listToSend , c_uploadedScan , c_deathLog , C_killLog , uploaded , deathsList , killsList ) #NEEDS MORE WORK
-            if len( listToSend ) != 0 : #does a final check to ensure server doesn't crash(sending an empyty message WILL crash the server)
-                recievedList , ping = pingServer( listToSend )
+            listToSend = addToSendingList( listToSend , c_uploadedScan , c_deathLog , C_killLog , uploaded , deathsList , killsList )
+            if len( listToSend ) != 0 : #does a final check to ensure server doesn't crash(sending an empyty message WILL crash the server) - if your edditing this code, for the love of g-d, do not remove this check!!!!
+                recievedList , ping = pingServer( listToSend ) #ping in milliseconds, ms
             else:
                 print('Error in server pinging')
                 recievedList , ping = mockPing()
@@ -87,17 +87,21 @@ def mainCode () :
 
 
 def addToSendingList ( listToSend , c_upload , c_death , c_kill , upload , death , kill) :
+    clientCmdrName = getCMDRName()
     listToSend.append('normalPing')
-    if len( c_upload ) != 0 :
-        uploadList = ['uploadData']
-        uploadList.extend( c_upload )
+    if len( upload ) != 0 :
+        uploadList = ['uploadData' , upload] #int
         listToSend.append( uploadList )
-    if len( c_death ) != 0 :
+    if len( death ) != 0 :
         deathList = ['deathData']
-        #MORE DATA HERE
-    if len( c_kill ) != 0 :
+        for killer in death : #list
+            deathList.append( [ killer , clientCmdrName ] ) #killername  then  victim
+        listToSend.append( deathList )
+    if len( kill ) != 0 :
         killList = ['killData']
-        #MORE DATA HERE
+        for killedPerson in kill : #list
+            killList.append( [ killedPerson , clientCmdrName ] ) #killed person then killer
+        listToSend.append( killList )
     return(listToSend)
 
 def mockPing () :
