@@ -31,8 +31,21 @@ def calculateResponse ( listRecieved ) :  #NEEDS A COMPLETE REWRITE - PROLLY GON
         if listRecieved[1] == 'testConnection' :
             listToSend.extend([ 'connectionSucessful' , PLAYER_TO_SCAN , LENGTH_EVENT , EVENT_START_TIME , SCANS_TO_WIN ])
         elif eventTimeStatus() == 0 : #event is on, this is everythin!
+            try : #try cuz if lists are empty, big crash might happen
+                dataJunkReceived = listRecieved[3:] #remove password, type and CMDR name - leaves everythin else
+                for category in dataJunkReceived :
+                    if category[0] == 'uploadData' :
+                        foo = 'bar'
+                    elif category[0] == '' :
+                        foo = 'bar'
+                    elif category[0] == '' :
+                        foo = 'bar'
+            except :
+                pass
+
             #HERE IS WHERE I PUT IN THE INFORMATION LOGGING
-            listToSend = 'foobar' #Return here number of scans completed
+            #Return here number of scans completed here as well
+
         elif eventTimeStatus() == 1 : #event hasn't started , don't log anything
             listToSend.extend([ 'eventHasntStarted' , EVENT_START_TIME , LENGTH_EVENT ])
         elif eventTimeStatus() == 2 or eventTimeStatus() == 2.1 : #event is over, dont log anything

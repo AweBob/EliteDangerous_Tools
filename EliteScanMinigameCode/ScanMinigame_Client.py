@@ -46,10 +46,15 @@ def pingServer( ToSend ) : #ToSend should be a list
 
 def mainCode () :
     objectiveName , eventLength , eventStartTime , numberScansToWin = testConnection() #all time is unix time because it's easy - no timezoes, simple mathematic computable formula
-    dc_posessingScan = detectChange(False)    #Does CMDR have scna data aboard, True or false
-    dc_uploadedScan = detectChange(0)
-    dc_killLog = detectChange([])         #records everyone you've killed 
-    dc_deathLog = detectChange([])
+
+    logTransformer(grabLog(0)) 
+    deathsList , killsList = getKillsDeaths()
+    possesion , uploaded = doYaHaveScanData( objectiveName )
+    dc_posessingScan = detectChange(False)  #bool  #Does CMDR have scna data aboard, True or false
+    dc_uploadedScan = detectChange(uploaded) #int
+    dc_killLog = detectChange(killsList)    #list     #records everyone you've killed 
+    dc_deathLog = detectChange(deathsList) #list
+
     while True :
         startClock = time.time()
         if time.time() >= int(eventStartTime) and time.time() <= ( int(eventLength) + int(eventStartTime) ) : #if event is live
