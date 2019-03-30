@@ -14,7 +14,6 @@ LENGTH_EVENT = int(input('How long do you want the game to last in seconds - '))
 SCANS_TO_WIN = int(input('How many scans till the attackers win - '))        
 PLAYER_TO_SCAN = input('What is the name of the CMDR people are trying to scan - ')  #Not case sensitive, do not use CMDR in there ie Luvarien 
 
-outputFile = open("ServerOutput.txt","w+")   #Use outputFile.write('text' + '\n') to write a new line to it
 written = False #this could be an issue regarding variable not being global
 #Open all class stuff here (below cuz it has to be, but should be with all this data)
 
@@ -40,6 +39,7 @@ def calculateResponse ( listRecieved ) :  #NEEDS A COMPLETE REWRITE - PROLLY GON
                         foo = 'bar'
                     elif category[0] == '' :
                         foo = 'bar'
+                writeTempData() #in case the server recieves a ping that crashes it, it can be restarted
             except :
                 pass
 
@@ -64,21 +64,39 @@ def calculateResponse ( listRecieved ) :  #NEEDS A COMPLETE REWRITE - PROLLY GON
     return( listToSend )
 
 
-def writeFinalData () :  
+def writeTempData () :
+    tempFile = open('TempServerOutput.txt','w+') #this is incase the server crashs and ya don't wanna lose data
+    tempFile.write('\n' + 'TEMP OUTPUT FROM SERVER' + '\n' )
+    tempFile.write('Current time: ' + str(time.time()) + str(eventTimeStatus()) + '\n' + '\n' ) #unix time - int based on time status so I don't have to do math manually
+    tempFile.write('Standards: ' + PLAYER_TO_SCAN + LENGTH_EVENT + EVENT_START_TIME + SCANS_TO_WIN + SERVER_PASSWORD + SERVER_PORT + SERVER_IP_ADRESS + '\n' + '\n' ) #refer to here for what where
+    tempFile.write('\n' + '\n' + '\n' + '\n' + 'KILLS LIST' + '\n'  )
+    for d in killsData.getData() :
+        tempFile.write(d[0] + ' ' + d[1] + '\n' )   #killername then victim        
+    tempFile.write('\n' + '\n' + '\n' + '\n' + 'DEATHS LIST' + '\n'  ) 
+    for d in deathsData.getData() :
+        tempFile.write(d[0] + ' ' + d[1] + '\n')   #personWho died then their killers name
+    tempFile.write('\n' + '\n' + '\n' + '\n' + 'POINTS SCORED LIST' + '\n'  ) 
+    for d in pointsScored.getData() :
+        tempFile.write( d[0] + '\n' )    #person who scored a scan
+    tempFile.close()
+
+
+def writeFinalData () :
+    outputFile = open("ServerOutput.txt","w+")   #Use outputFile.write('text' + '\n') to write a new line to it
     outputFile.write('\n' + '\n' + '\n' + '\n' + 'KILLS LIST' + '\n'  )
     for d in killsData.getData() :
-        outputFile.write(d[0] + ' ' + d[1])   #killername then victim        
+        outputFile.write(d[0] + ' ' + d[1] + '\n' )   #killername then victim        
     outputFile.write('\n' + '\n' + '\n' + '\n' + 'DEATHS LIST' + '\n'  ) 
     for d in deathsData.getData() :
-        outputFile.write(d[0] + ' ' + d[1])   #personWho died then their killers name
+        outputFile.write(d[0] + ' ' + d[1] + '\n')   #personWho died then their killers name
     outputFile.write('\n' + '\n' + '\n' + '\n' + 'POINTS SCORED LIST' + '\n'  ) 
     for d in pointsScored.getData() :
-        outputFile.write( d[0] )    #person who scored a scan
+        outputFile.write( d[0] + '\n')    #person who scored a scan
     tttt = eventTimeStatus()
     if tttt == 2.1 :
-        outputFile.write('\n' + '\n' + '\n' + '\n' + 'EVENT ENDED DUE TO SCORE' + '\n' + 'SCANNING EQUIPPED VESSELS HAVE WON' ) 
+        outputFile.write('\n' + '\n' + '\n' + '\n' + 'EVENT ENDED DUE TO SCORE' + '\n' + 'SCANNING EQUIPPED VESSELS HAVE WON' + '\n' ) 
     else :
-        outputFile.write('\n' + '\n' + '\n' + '\n' + 'EVENT ENDED DUE TO TIME' + '\n' + 'VESSELS DEFENDING DATA HAVE WON' )
+        outputFile.write('\n' + '\n' + '\n' + '\n' + 'EVENT ENDED DUE TO TIME' + '\n' + 'VESSELS DEFENDING DATA HAVE WON' + '\n' )
     outputFile.close()
     print('Sucessfully wrote data to .txt file in this current directoy. Reference it for developing a post match report.')
 
