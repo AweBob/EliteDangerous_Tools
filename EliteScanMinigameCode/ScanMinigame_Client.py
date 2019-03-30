@@ -45,20 +45,25 @@ def pingServer( ToSend ) : #ToSend should be a list
 #tts.speak('test')
 
 def mainCode () :
+    loopRotations = 0 #loop rotations for main while loop.
     objectiveName , eventLength , eventStartTime , numberScansToWin = testConnection() #all time is unix time because it's easy - no timezoes, simple mathematic computable formula
-
-    logTransformer(grabLog(0)) 
-    deathsList , killsList = getKillsDeaths()
-    possesion , uploaded = doYaHaveScanData( objectiveName )
-    dc_posessingScan = detectChange(False)  #bool  #Does CMDR have scna data aboard, True or false
-    dc_uploadedScan = detectChange(uploaded) #int
-    dc_killLog = detectChange(killsList)    #list     #records everyone you've killed 
-    dc_deathLog = detectChange(deathsList) #list
+    dc_currentLogFileName = detectChange( grabLog(0) ) 
 
     while True :
         startClock = time.time()
         if time.time() >= int(eventStartTime) and time.time() <= ( int(eventLength) + int(eventStartTime) ) : #if event is live
-            logTransformer(grabLog(0))  #update .log import variable is convLog
+
+            c_trueFalseChangeLogFile , d_changeLogFile = dc_currentLogFileName.check( grabLog(0) )
+            if loopRotations == 0 or c_trueFalseChangeLogFile == True :  #code had just started or elite has just started - then - reset detect change classes
+                logTransformer(grabLog(0)) 
+                deathsList , killsList = getKillsDeaths()
+                possesion , uploaded = doYaHaveScanData( objectiveName )
+                dc_posessingScan = detectChange(False)  #bool  #Does CMDR have scna data aboard, True or false
+                dc_uploadedScan = detectChange(uploaded) #int
+                dc_killLog = detectChange(killsList)    #list     #records everyone you've killed 
+                dc_deathLog = detectChange(deathsList) #list
+            else :
+                logTransformer(grabLog(0))  #update .log import variable is convLog - only necessary if it isn't done above
 
             #clientName = getCMDRName()  #unused here, but used elsewhere
             deathsList , killsList = getKillsDeaths()
@@ -82,13 +87,14 @@ def mainCode () :
             #right here process response and read out valuable info (including possesing scan which the server won't talk to you bout cuz it dgaf)
 
         elif time.time() <= eventStartTime : #if event hasn't started
-            y = 69 #placeholder
+            foo = 'bar' #placeholder
         elif time.time() >= ( int(eventLength) + int(eventStartTime) ) : #event is over
-            y = 69 #placeholder
+            bar = 'foo' #placeholder
         else :
             print('Error in main loop, time: ' + str( time.time() )  )
         endClock = time.time()
         time.sleep( timeToSleep(startClock , endClock) )
+        loopRotations = loopRotations + 1
 
 
 def addToSendingList ( listToSend , c_upload , c_death , c_kill , upload , death , kill) :
@@ -173,6 +179,19 @@ class detectChange :
                 return( True , returnVar )
         elif self.dataType == 'dict' :
             print('Error, if you get this one I really messed up')
+        elif self.dataType == 'str' : #TEST THIS
+            if self.oldVar == newVar :
+                return(False , newVar)
+            else :
+                returnVar = ''
+                for index , letter in enumerate(self.oldVar) :
+                    try :
+                        if letter == newVar[index] :
+                            returnVar.append( letter )
+                    except :
+                        pass
+                self.oldVar = newVar
+                return( True , returnVar )
         else :
             print('Error in detect change class')
             return( False , newVar )
