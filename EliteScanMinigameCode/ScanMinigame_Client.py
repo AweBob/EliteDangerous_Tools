@@ -33,7 +33,7 @@ def pingServer( ToSend ) : #ToSend should be a list
         recievedStuff = ast.literal_eval( str( data.decode() ) )
         endTimer = time.time()
         writer.close()
-        ping = str( int(( endTimer - startTimer ) * 100) )
+        ping = str( int(( endTimer - startTimer ) * 1000) ) 
         return( recievedStuff , ping )
 
     loop = asyncio.get_event_loop()
@@ -68,7 +68,6 @@ def mainCode () :
             else :
                 logTransformer(grabLog(0))  #update .log import variable is convLog - only necessary if it isn't done above
 
-            #clientName = getCMDRName()  #unused here, but used elsewhere
             deathsList , killsList = getKillsDeaths()
             possesion , uploaded = doYaHaveScanData( objectiveName )  #Needs testing
 
@@ -78,11 +77,14 @@ def mainCode () :
             c_deathLog , deathsList = dc_deathLog.check( deathsList )         #list
 
             listToSend = [ SERVER_PASSWORD ]
-            #howManyToSend = calcNumberOfDataToSend( c_uploadedScan , C_killLog , c_deathLog ) #potentially delete this function entirely, it is legit useless lmao
 
             listToSend = addToSendingList( listToSend , c_uploadedScan , c_deathLog , C_killLog , uploaded , deathsList , killsList )
-            if len( listToSend ) != 0 : #does a final check to ensure server doesn't crash(sending an empyty message WILL crash the server) - if your edditing this code, for the love of g-d, do not remove this check!!!!
-                recievedList , ping = pingServer( listToSend ) #ping in milliseconds, ms
+            if len( listToSend ) != 0 : #checks that list has any content - going to make it so this won't crash the server here soon, thx Phelbore!
+                try :
+                    recievedList , ping = pingServer( listToSend ) #ping in milliseconds, ms
+                except :
+                    talk('Connection to server has been lost.')
+                    nothing = input('Press enter to close client - ')
             else:
                 print('Error in server pinging')
                 recievedList , ping = mockPing()
@@ -102,7 +104,7 @@ def mainCode () :
                 numPointsAcheived = 0
 
             if ping > 3000 : #ping warning
-                talk('Your ping is above three thousand.') #if ur ping is more than 5 thousand the client will crash
+                talk('Your ping is above three thousand.') #if ur ping is more than 5 thousand the client will stop
             if c_possesingScan == True : 
                 if possesion == True :
                     talk('Data aboard.')
@@ -113,7 +115,7 @@ def mainCode () :
                 talk('You have uploaded ' + str(uploaded) + ' scans. You have ' + str(numScansLeft) + ' left to win.')
             if duringEventRotations == 0 :
                 talk('Event has started!')
-            #no need to read out kills and deaths, it's pretty obvious, unless if someone steals your kill
+            #no need to read out kills and deaths, it's pretty obvious, unless if someone steals your kill - maybe make 2 versions, one reads out kills, the other one doesn't
 
             duringEventRotations = duringEventRotations + 1
         elif time.time() <= eventStartTime : #if event hasn't started 
@@ -139,7 +141,6 @@ def talk (string) :
     print('SAY: ' + str(string))
     tts.speak(str( string ))
 
-
 def addToSendingList ( listToSend , c_upload , c_death , c_kill , upload , death , kill) :
     clientCmdrName = getCMDRName()
     listToSend.append('normalPing')
@@ -162,20 +163,12 @@ def mockPing () :
     list1 = [SERVER_PASSWORD , 'None']
     return( list1 , 1 )
 
-def calcNumberOfDataToSend( c1 , c2 , c3 ) :
-    dataList = [ c1 , c2 , c3 ]
-    num = 0
-    for item in dataList :
-        if item == True :
-            num = num + 1
-    return( num )
-
-def getKillsDeaths ( ) :  #eventondeath: https://prnt.sc/n1y0ex DELETE LATER
+def getKillsDeaths ( ) :
     deathsList = []
     killsList = []
     for line in reversed(convLog) :
         if line['event']=='Died' :
-            deathsList.append( line['KillerName'] )   #Output of this example: "Cmdr Luvarien"
+            deathsList.append( line['KillerName'] )   #Output of this example: "Cmdr Luvarien" #THIS MIGHT NOT WORK IF U GET KILLED MY MULTIPLE PEOPLE
         if line['event']=='PVPKill' :
             killsList.append( line['Victim'] )     #no CMDR or anything in front of it
     return( deathsList , killsList )
@@ -241,7 +234,10 @@ class detectChange :
 
 def testConnection () : #Example Call Output: objectiveName , eventLength , eventStartTime , numberScansToWin 
     listToSend = [ SERVER_PASSWORD , 'testConnection']
-    recievedList , ping = pingServer( listToSend )
+    try :
+        recievedList , ping = pingServer( listToSend )
+    except :
+        recievedList = [SERVER_PASSWORD , 'incorrectIpOrPort']
     if recievedList[1] == 'connectionSucessful' :
         print('Test ping to server is sucessful; your ping is ' + ping )
         return( recievedList[2] , int(recievedList[3]) , int(recievedList[4]) , int(recievedList[5]) ) #This is the objective name
@@ -321,7 +317,6 @@ def doYaHaveScanData ( objectiveVessel ) :
             if itemIndex==orderIndex :
                 stuffOrdered.append('dock')
     
-    #print(stuffOrdered)
     if len(stuffOrdered) != 0 :
         if stuffOrdered[0] == 'scannedTarget' :
             possesion = True
@@ -350,6 +345,7 @@ def grabLog ( whichNum ) :                                                      
     orderedLogs = sorted(logFiles, reverse=True)       #will error on date "2099-12-31", if your playing elite by then, just don't
     fileName = orderedLogs[whichNum]
     return( fileName )
+
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def logTransformer ( logFile ) :
@@ -397,9 +393,4 @@ def logCleaner ( dirtyLogFile , errorPos ) :
 try :
     mainCode()
 except Exception as error :
-    nothing = input('Key error')
-
-
-
-
-
+    nothing = input('Big error!!!')

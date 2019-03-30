@@ -14,8 +14,7 @@ LENGTH_EVENT = int(input('How long do you want the game to last in seconds - '))
 SCANS_TO_WIN = int(input('How many scans till the attackers win - '))        
 PLAYER_TO_SCAN = input('What is the name of the CMDR people are trying to scan - ')  #Not case sensitive, do not use CMDR in there ie Luvarien 
 
-written = False #this could be an issue regarding variable not being global
-#Open all class stuff here (below cuz it has to be, but should be with all this data)
+written = False 
 
 #===========================================================================================================================================================================================
 
@@ -41,7 +40,10 @@ def calculateResponse ( listRecieved ) :
                             killsData.addData( killDataBunch ) #in format 
                     else : #shouldn't happen, except with modded clients
                         print('Received wierd ping from a client!')
-                writeTempData() #in case the server recieves a ping that crashes it, it can be restarted
+                try :
+                    writeTempData() #in case the server recieves a ping that crashes it, it can be restarted
+                except :
+                    pass
             except :
                 pass 
             listToSend.extend([ 'dataLogged' , str(len(pointsScored.getData())) ]) #second variable is how many points have been scored
@@ -58,12 +60,14 @@ def calculateResponse ( listRecieved ) :
                 writeFinalData()
                 print('\n' + 'Event over. Output file written.')
                 written = True
-        else : #this is impossible - but just in case
+            if ((time.time() / 60) - 10) > ((EVENT_START_TIME + LENGTH_EVENT) / 60 ) : #if event has been over for more than 10 minutes
+                print('Game has been over for more than 10 minutes. Closing Server.')
+                raise SystemExit
+        else : #this is impossible - but just in case someone figures it out
             listToSend = [SERVER_PASSWORD]
     else :
         listToSend = ['.' , 'incorrectPassword']
     return( listToSend )
-
 
 def writeTempData () :
     tempFile = open('TempServerOutput.txt','w+') #this is incase the server crashs and ya don't wanna lose data
@@ -80,7 +84,6 @@ def writeTempData () :
     for d in pointsScored.getData() :
         tempFile.write( d[0] + '\n' )    #person who scored a scan
     tempFile.close()
-
 
 def writeFinalData () :
     outputFile = open("ServerOutput.txt","w+")   #Use outputFile.write('text' + '\n') to write a new line to it
@@ -100,7 +103,6 @@ def writeFinalData () :
         outputFile.write('\n' + '\n' + '\n' + '\n' + 'EVENT ENDED DUE TO TIME' + '\n' + 'VESSELS DEFENDING DATA HAVE WON' + '\n' )
     outputFile.close()
     print('Sucessfully wrote data to .txt file in this current directoy. Reference it for developing a post match report.')
-
 
 def eventTimeStatus () :
     #timeLeft = ( EVENT_START_TIME + LENGTH_EVENT ) - time.time()
@@ -133,7 +135,6 @@ class dataListStorage :
             string = string + ' ' + item 
         return( string )
 
-
 killsData = dataListStorage() #Filled with lists like this [ killerName , victim ]
 deathsData = dataListStorage() #Filled with lists like this [ cmdrWhoDied , personWhoKilledThem ]
 pointsScored = dataListStorage() #This is one list filled with names of people who got points
@@ -144,21 +145,15 @@ async def handle_echo(reader, writer):
     data = await reader.read(1000) 
     message = json.loads( data )     #no decode - yes this is necessary, i think lmao we'll find out
     addr = writer.get_extra_info('peername')
-    #print("Received %r from %r" % (message, addr))
-
     listToSend = calculateResponse( message )
-
-    #print('Sending: %r' % stringToSend )
     writer.write( json.dumps( listToSend ).encode() )
     await writer.drain()
-
     writer.close()
     print('Received: ' + str(message) + '   Sending: ' + str( listToSend ) + '  Time: ' + str( time.time() ) + '  From: ' + str( addr ) )
 
 loop = asyncio.get_event_loop()
 coro = asyncio.start_server(handle_echo, SERVER_IP_ADRESS, SERVER_PORT, loop=loop)
 server = loop.run_until_complete(coro)
-
 print('Serving on {}'.format(server.sockets[0].getsockname()))
 loop.run_forever()
 
