@@ -46,6 +46,9 @@ def pingServer( ToSend ) : #ToSend should be a list
 
 def mainCode () :
     loopRotations = 0 #loop rotations for main while loop.
+    beforeEventRotations = 0 #number of times this thing has looped before the event has started
+    afterEventRotations = 0 #times looped after event has ended
+    duringEventRotations = 0 #times looped during event
     objectiveName , eventLength , eventStartTime , numberScansToWin = testConnection() #all time is unix time because it's easy - no timezoes, simple mathematic computable formula
     dc_currentLogFileName = detectChange( grabLog(0) ) 
 
@@ -108,12 +111,24 @@ def mainCode () :
             if c_uploadedScan == True :
                 numScansLeft = int(numberScansToWin) - int(numPointsAcheived)
                 talk('You have uploaded ' + str(uploaded) + ' scans. You have ' + str(numScansLeft) + ' left to win.')
+            if duringEventRotations == 0 :
+                talk('Event has started!')
             #no need to read out kills and deaths, it's pretty obvious, unless if someone steals your kill
 
-        elif time.time() <= eventStartTime : #if event hasn't started
-            foo = 'bar' #placeholder
+            duringEventRotations = duringEventRotations + 1
+        elif time.time() <= eventStartTime : #if event hasn't started 
+            minutesTillStart = int( ( int(eventStartTime) - int(time.time()) ) / 60 )
+            if beforeEventRotations == 0 or ( minutesTillStart < 10 and  beforeEventRotations == 1 ) or ( minutesTillStart < 1 and  beforeEventRotations == 2 ) :
+                talk('Event hasnt started yet. It will begin in ' + str(minutesTillStart) + ' minutes.')
+                beforeEventRotations = beforeEventRotations + 1
         elif time.time() >= ( int(eventLength) + int(eventStartTime) ) : #event is over
-            bar = 'foo' #placeholder
+            minutesSinceEnd = int( ( time.time() - (int(eventStartTime) + int(eventLength)) ) / 60 )
+            if (minutesSinceEnd == 0 and afterEventRotations == 0) or (minutesSinceEnd == 4 and afterEventRotations == 1) :
+                talk('Event is over, feel free to close the software.')
+                afterEventRotations = afterEventRotations + 1
+            elif minutesSinceEnd == 5 :
+                talk('Software closing. Event has been over for more than five minutes.')
+                raise SystemExit
         else :
             print('Error in main loop, time: ' + str( time.time() )  )
         endClock = time.time()

@@ -18,13 +18,8 @@ written = False #this could be an issue regarding variable not being global
 #Open all class stuff here (below cuz it has to be, but should be with all this data)
 
 #===========================================================================================================================================================================================
-#Takes in: kd nothing points or both
-#Sends: event time stats, how many points scored
-#stores: kills deaths and points scored
 
-def calculateResponse ( listRecieved ) :  #NEEDS A COMPLETE REWRITE - PROLLY GONNA COMPLETELY DELETE AND REWRITE THIS FOR NEXT COMMIT
-    #0 = password ||| 1= testConnection or normalPing ||| 3= cmdr name
-    
+def calculateResponse ( listRecieved ) :
     if listRecieved[0] == SERVER_PASSWORD : #if password correct
         listToSend = [SERVER_PASSWORD ]
         if listRecieved[1] == 'testConnection' :
