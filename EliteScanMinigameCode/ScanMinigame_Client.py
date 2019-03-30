@@ -101,7 +101,7 @@ def addToSendingList ( listToSend , c_upload , c_death , c_kill , upload , death
     clientCmdrName = getCMDRName()
     listToSend.append('normalPing')
     if len( upload ) != 0 :
-        uploadList = ['uploadData' , upload] #int
+        uploadList = ['uploadData' , upload , clientCmdrName ] #var upload is an integer
         listToSend.append( uploadList )
     if len( death ) != 0 :
         deathList = ['deathData']

@@ -34,18 +34,22 @@ def calculateResponse ( listRecieved ) :  #NEEDS A COMPLETE REWRITE - PROLLY GON
                 dataJunkReceived = listRecieved[3:] #remove password, type and CMDR name - leaves everythin else
                 for category in dataJunkReceived :
                     if category[0] == 'uploadData' :
-                        foo = 'bar'
-                    elif category[0] == '' :
-                        foo = 'bar'
-                    elif category[0] == '' :
-                        foo = 'bar'
+                        for index in range( int(category[1]) ) : #this is the num of points the cmdr has added
+                            pointsScored.addData( category[2] ) #add the cmdr name for each time they've scored
+                    elif category[0] == 'deathData' :
+                        del category[0]
+                        for deathDataBunch in category :
+                            deathsData.addData( deathDataBunch  ) # in format; [killername , victim]
+                    elif category[0] == 'killData' :
+                        del category[0]
+                        for killDataBunch in category :
+                            killsData.addData( killDataBunch ) #in format 
+                    else : #shouldn't happen, except with modded clients
+                        print('Received wierd ping from a client!')
                 writeTempData() #in case the server recieves a ping that crashes it, it can be restarted
             except :
-                pass
-
-            #HERE IS WHERE I PUT IN THE INFORMATION LOGGING
-            #Return here number of scans completed here as well
-
+                pass 
+            listToSend.extend([ 'dataLogged' , str(len(pointsScored.getData())) ]) #second variable is how many points have been scored
         elif eventTimeStatus() == 1 : #event hasn't started , don't log anything
             listToSend.extend([ 'eventHasntStarted' , EVENT_START_TIME , LENGTH_EVENT ])
         elif eventTimeStatus() == 2 or eventTimeStatus() == 2.1 : #event is over, dont log anything
@@ -59,6 +63,8 @@ def calculateResponse ( listRecieved ) :  #NEEDS A COMPLETE REWRITE - PROLLY GON
                 writeFinalData()
                 print('\n' + 'Event over. Output file written.')
                 written = True
+        else : #this is impossible - but just in case
+            listToSend = [SERVER_PASSWORD]
     else :
         listToSend = ['.' , 'incorrectPassword']
     return( listToSend )
