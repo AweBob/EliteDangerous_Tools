@@ -13,7 +13,7 @@ import ast
 
 #===========================================================================================================================================================================================
 
-tts = wincl.Dispatch("SAPI.SpVoice") #Will crash here for nonwindows users - if your playing on mac, im sorry, but get a real computer :p 
+tts = wincl.Dispatch("SAPI.SpVoice") #Will crash here for nonwindows users - if your playing on mac, im sorry, but get a real computer :p <--- just a joke
 compare = lambda x, y: collections.Counter(x) == collections.Counter(y) #setup comparing function
 
 print('Imported libraries Sucessfully:')
@@ -83,8 +83,32 @@ def mainCode () :
             else:
                 print('Error in server pinging')
                 recievedList , ping = mockPing()
-            
-            #right here process response and read out valuable info (including possesing scan which the server won't talk to you bout cuz it dgaf)
+
+            try :
+                if recievedList[0] == SERVER_PASSWORD :
+                    if recievedList[1] == 'None' :
+                        print('Error: Mock ping in main loop.')
+                    elif recievedList[1] == 'dataLogged' :
+                        numPointsAcheived = recievedList[2]
+                elif recievedList[0] == '.' :
+                    if recievedList[1] == 'incorrectPassword' :
+                        talk('Error, I P and port correct, but incorrect password.')
+                        nothing = input('Press enter to close - ')
+            except :
+                print('ERROR: In received data from server')
+                numPointsAcheived = 0
+
+            if ping > 3000 : #ping warning
+                talk('Your ping is above three thousand.') #if ur ping is more than 5 thousand the client will crash
+            if c_possesingScan == True : 
+                if possesion == True :
+                    talk('Data aboard.')
+                else :
+                    talk('Data lost.')
+            if c_uploadedScan == True :
+                numScansLeft = int(numberScansToWin) - int(numPointsAcheived)
+                talk('You have uploaded ' + str(uploaded) + ' scans. You have ' + str(numScansLeft) + ' left to win.')
+            #no need to read out kills and deaths, it's pretty obvious, unless if someone steals your kill
 
         elif time.time() <= eventStartTime : #if event hasn't started
             foo = 'bar' #placeholder
@@ -95,6 +119,10 @@ def mainCode () :
         endClock = time.time()
         time.sleep( timeToSleep(startClock , endClock) )
         loopRotations = loopRotations + 1
+
+def talk (string) :
+    print('SAY: ' + str(string))
+    tts.speak(str( string ))
 
 
 def addToSendingList ( listToSend , c_upload , c_death , c_kill , upload , death , kill) :
