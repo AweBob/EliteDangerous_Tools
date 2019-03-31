@@ -19,55 +19,64 @@ written = False
 #===========================================================================================================================================================================================
 
 def calculateResponse ( listRecieved ) :
-    if listRecieved[0] == SERVER_PASSWORD : #if password correct
-        listToSend = [SERVER_PASSWORD ]
-        if listRecieved[1] == 'testConnection' :
-            listToSend.extend([ 'connectionSucessful' , PLAYER_TO_SCAN , LENGTH_EVENT , EVENT_START_TIME , SCANS_TO_WIN ])
-        elif eventTimeStatus() == 0 : #event is on, this is everythin!
-            try : #try cuz if lists are empty, big crash might happen
-                dataJunkReceived = listRecieved[3:] #remove password, type and CMDR name - leaves everythin else
-                for category in dataJunkReceived :
-                    if category[0] == 'uploadData' :
-                        for index in range( int(category[1]) ) : #this is the num of points the cmdr has added
-                            pointsScored.addData( category[2] ) #add the cmdr name for each time they've scored
-                    elif category[0] == 'deathData' :
-                        del category[0]
-                        for deathDataBunch in category :
-                            deathsData.addData( deathDataBunch  ) # in format; [killername , victim]
-                    elif category[0] == 'killData' :
-                        del category[0]
-                        for killDataBunch in category :
-                            killsData.addData( killDataBunch ) #in format 
-                    else : #shouldn't happen, except with modded clients
-                        print('Received wierd ping from a client!')
-                try :
-                    writeTempData() #in case the server recieves a ping that crashes it, it can be restarted
+    try : #it could get to this point and be an empty list, so the exception is thrown
+        if listRecieved[0] == SERVER_PASSWORD : #if password correct
+            listToSend = [SERVER_PASSWORD ]
+            if listRecieved[1] == 'testConnection' :
+                listToSend.extend([ 'connectionSucessful' , PLAYER_TO_SCAN , LENGTH_EVENT , EVENT_START_TIME , SCANS_TO_WIN ])
+            elif eventTimeStatus() == 0 : #event is on, this is everythin!
+                try : #try cuz if lists are empty, big crash might happen
+                    dataJunkReceived = listRecieved[3:] #remove password, type and CMDR name - leaves everythin else
+                    for category in dataJunkReceived :
+                        if category[0] == 'uploadData' :
+                            for index in range( int(category[1]) ) : #this is the num of points the cmdr has added
+                                pointsScored.addData( category[2] ) #add the cmdr name for each time they've scored
+                        elif category[0] == 'deathData' :
+                            del category[0]
+                            for deathDataBunch in category :
+                                deathsData.addData( deathDataBunch  ) # in format; [killername , victim]
+                        elif category[0] == 'killData' :
+                            del category[0]
+                            for killDataBunch in category :
+                                killsData.addData( killDataBunch ) #in format 
+                        else : #shouldn't happen, except with modded clients
+                            print('Received wierd ping from a client!')
+                    try :
+                        writeTempData() #in case the server recieves a ping that crashes it, it can be restarted
+                    except :
+                        pass
                 except :
-                    pass
-            except :
-                pass 
-            listToSend.extend([ 'dataLogged' , str(len(pointsScored.getData())) ]) #second variable is how many points have been scored
-        elif eventTimeStatus() == 1 : #event hasn't started , don't log anything
-            listToSend.extend([ 'eventHasntStarted' , EVENT_START_TIME , LENGTH_EVENT ])
-        elif eventTimeStatus() == 2 or eventTimeStatus() == 2.1 : #event is over, dont log anything
-            listToSend.append('eventIsOver')
-            if eventTimeStatus() == 2 :
-                listToSend.append('dueToTime')
-            elif eventTimeStatus() == 2.1 :
-                listToSend.append('dueToScore')
-            listToSend.extend([  PLAYER_TO_SCAN , str(LENGTH_EVENT) , str(EVENT_START_TIME) ])
-            if written == False :
-                writeFinalData()
-                print('\n' + 'Event over. Output file written.')
-                written = True
-            if ((time.time() / 60) - 10) > ((EVENT_START_TIME + LENGTH_EVENT) / 60 ) : #if event has been over for more than 10 minutes
-                print('Game has been over for more than 10 minutes. Closing Server.')
-                raise SystemExit
-        else : #this is impossible - but just in case someone figures it out
-            listToSend = [SERVER_PASSWORD]
-    else :
-        listToSend = ['.' , 'incorrectPassword']
-    return( listToSend )
+                    pass 
+                listToSend.extend([ 'dataLogged' , str(len(pointsScored.getData())) ]) #second variable is how many points have been scored
+            elif eventTimeStatus() == 1 : #event hasn't started , don't log anything
+                listToSend.extend([ 'eventHasntStarted' , EVENT_START_TIME , LENGTH_EVENT ])
+            elif eventTimeStatus() == 2 or eventTimeStatus() == 2.1 : #event is over, dont log anything
+                listToSend.append('eventIsOver')
+                if eventTimeStatus() == 2 :
+                    listToSend.append('dueToTime')
+                elif eventTimeStatus() == 2.1 :
+                    listToSend.append('dueToScore')
+                listToSend.extend([  PLAYER_TO_SCAN , str(LENGTH_EVENT) , str(EVENT_START_TIME) ])
+                if written == False :
+                    writeFinalData()
+                    print('\n' + 'Event over. Output file written.')
+                    written = True
+                if ((time.time() / 60) - 10) > ((EVENT_START_TIME + LENGTH_EVENT) / 60 ) : #if event has been over for more than 10 minutes
+                    print('Game has been over for more than 10 minutes. Closing Server.')
+                    raise SystemExit
+            else : #this is impossible - but just in case someone figures it out
+                listToSend = [SERVER_PASSWORD]
+        else :
+            listToSend = ['.' , 'incorrectPassword']
+        return( listToSend )
+    except :
+        writeErrorData( listRecieved )
+        return(['.' , 'serverError'])
+
+def writeErrorData ( stuffs ) :
+    errorFile = open('ErrorPingsReceived.txt','w+')
+    errorFile.write('\n' + 'Wierd Ping: ' + str(stuffs) )
+    errorFile.close()
 
 def writeTempData () :
     tempFile = open('TempServerOutput.txt','w+') #this is incase the server crashs and ya don't wanna lose data
@@ -142,14 +151,17 @@ pointsScored = dataListStorage() #This is one list filled with names of people w
 #===========================================================================================================================================================================================
 
 async def handle_echo(reader, writer):
-    data = await reader.read(1000) 
-    message = json.loads( data )     #no decode - yes this is necessary, i think lmao we'll find out
-    addr = writer.get_extra_info('peername')
-    listToSend = calculateResponse( message )
-    writer.write( json.dumps( listToSend ).encode() )
-    await writer.drain()
-    writer.close()
-    print('Received: ' + str(message) + '   Sending: ' + str( listToSend ) + '  Time: ' + str( time.time() ) + '  From: ' + str( addr ) )
+    try :
+        data = await reader.read(1000) 
+        message = json.loads( data )     #no decode - yes this is necessary, i think lmao we'll find out
+        addr = writer.get_extra_info('peername')
+        listToSend = calculateResponse( message )
+        writer.write( json.dumps( listToSend ).encode() )
+        await writer.drain()
+        writer.close()
+        print('Received: ' + str(message) + '   Sending: ' + str( listToSend ) + '  Time: ' + str( time.time() ) + '  From: ' + str( addr ) )
+    except :
+        pass #if thing recieved is empty or not in list format, don't respond or do anything
 
 loop = asyncio.get_event_loop()
 coro = asyncio.start_server(handle_echo, SERVER_IP_ADRESS, SERVER_PORT, loop=loop)

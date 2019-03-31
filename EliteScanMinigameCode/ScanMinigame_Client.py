@@ -293,7 +293,7 @@ def doYaHaveScanData ( objectiveVessel ) :
             try :
                 fullname = line['PilotName_Localised']
                 namelist = fullname.split()
-                if namelist[0]=='CMDR' :
+                if namelist[0]=='CMDR' or namelist[0]=='Cmdr' or namelist[0]=='cmdr' :
                     del namelist[0]
                     nameOfScanned = ' '.join( namelist )
                     if nameOfScanned.upper() == objectiveVessel.upper() :
