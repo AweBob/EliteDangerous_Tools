@@ -103,7 +103,7 @@ def mainCode () :
                 print('ERROR: In received data from server')
                 numPointsAcheived = 0
 
-            if ping > 3000 : #ping warning
+            if int(ping) > 3000 : #ping warning, remeber, ping is in string format
                 talk('Your ping is above three thousand.') #if ur ping is more than 5 thousand the client will stop
             if c_possesingScan == True : 
                 if possesion == True :
@@ -144,7 +144,7 @@ def talk (string) :
 def addToSendingList ( listToSend , c_upload , c_death , c_kill , upload , death , kill) :
     clientCmdrName = getCMDRName()
     listToSend.append('normalPing')
-    if len( upload ) != 0 :
+    if upload != 0 :
         uploadList = ['uploadData' , upload , clientCmdrName ] #var upload is an integer
         listToSend.append( uploadList )
     if len( death ) != 0 :
@@ -277,7 +277,10 @@ def doYaHaveScanData ( objectiveVessel ) :
     opsioteSpaceForm = spaceForm[::-1]
     for index, listData in enumerate( opsioteSpaceForm ) :
         if listData[0]=='normal' or listData[0]=='atStation' :
-            indexOfNormalSpace.append( [ listData[1] , opsioteSpaceForm[ int(index) + 1 ][1] ] )
+            try :                                                      #if this function doesn't work, made some modifications here earlier
+                indexOfNormalSpace.append( [ listData[1] , opsioteSpaceForm[ int(index) + 1 ][1] ] )
+            except IndexError : #index error will happen on opisoteSpaceForm is normal or station was the last event in it's list
+                indexOfNormalSpace.append( [ listData[1] , 0 ] ) #If last event is normal or docked then it will last toward the latest line
 
     linesWithinNormalSpace = [] #keep in mind this is backwards
     for index , line in enumerate( opisoteConvLog ) :
@@ -390,7 +393,11 @@ def logCleaner ( dirtyLogFile , errorPos ) :
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-try :
-    mainCode()
-except Exception as error :
-    nothing = input('Big error!!!')
+def safeStart () :
+    try :
+        mainCode()
+    except Exception as error :
+        nothing = input('Big error!!!')
+
+#safeStart()
+mainCode()
