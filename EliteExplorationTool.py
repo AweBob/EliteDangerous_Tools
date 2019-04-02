@@ -14,6 +14,8 @@ import win32con
 import win32gui
 import screeninfo
 from ctypes import windll, Structure, c_long, byref       #windows only I think....
+import time
+import ntpath
 
 #=======================================================================================================================================================================================================================
 #=======================================THIS GRABS LOG FILE AND CONVERTS IT TO A GLOBAL VARIABLE=============================================================================================================
@@ -132,8 +134,7 @@ def whatSystem () :
         if eventLine["event"]=="FSDJump" :
             current_System = eventLine["StarSystem"]
             return (current_System)
-    for eventLine in convLog :
-        if eventLine["event"]=="Location" :
+        elif eventLine["event"]=="Location" :
             current_System = eventLine["StarSystem"]
             return(current_System)
     current_System = 'error'
@@ -312,6 +313,7 @@ def interface_run () :
                 statusLoop = False
             elif event.type == p.MOUSEBUTTONUP :                     #if a mouse button is clicked
                 interface_mouseClick ( p.mouse.get_pos() )         #Call function to process clicks
+        p.event.poll() #here so windows doesn't think its not responding
 
         interface_drawText('ED Exploration Tool', 200 , 20 , screen, 30, (66, 244, 235))         #Title
 
@@ -517,8 +519,12 @@ def getMainMonitorRez () :
 
 def discordUpdate( discordOnline , yourSolarSystem , shipName , RPC ) :
     if discordOnline==True :
+        formattedTime , isEliteOn = whatTimeGameOpenned()
         try :
-            RPC.update( details= yourSolarSystem , state= shipName )    #Attempts to update
+            if isEliteOn == False :
+                RPC.update( details= yourSolarSystem , state= shipName )    #Attempts to update
+            else :
+                RPC.update( details= yourSolarSystem , state= shipName , start= formattedTime )
         except :
             discordOnline = False      #If update errors, send back, discord online false
     else :
@@ -641,6 +647,30 @@ def isEliteRunningQuestionMark () :             #Checks if the game is running. 
     else :
         return(True)
 
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+def whatTimeGameOpenned () : #Update convlog for latest thing first
+    pattern = '%Y.%m.%d %H:%M:%S'
+    if convLog[-1]['event'] != 'Shutdown' :
+        yesOrNo = True
+        rawOutput = ntpath.basename( grabLog(0) )
+        rawOutput_withoutStart = rawOutput[8:]
+        rawOutput_withoutStartFinish = rawOutput_withoutStart[:-7]
+        year = '20' + rawOutput_withoutStartFinish[0] + rawOutput_withoutStartFinish[1]           #Y3K ? - if ur playing elite then( year 2100 ), that's just your fault not mine, I'll be dead by then so I won't be fixin that...
+        month = rawOutput_withoutStartFinish[2] + rawOutput_withoutStartFinish[3]
+        date = rawOutput_withoutStartFinish[4] + rawOutput_withoutStartFinish[5]
+        hour = rawOutput_withoutStartFinish[6] + rawOutput_withoutStartFinish[7]
+        minute = rawOutput_withoutStartFinish[8] + rawOutput_withoutStartFinish[9]
+        second = rawOutput_withoutStartFinish[10] + rawOutput_withoutStartFinish[11]
+        date_time = year + '.' + month + '.' + date + ' ' + hour + ':' + minute + ':' + second 
+        formattedTime = int(time.mktime(time.strptime(date_time, pattern)))
+    else :
+        yesOrNo = False
+        formattedTime = ''
+    return( formattedTime , yesOrNo )
+    
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 #=======================================================================================================================================================================================================================
 #====================================STUFF FOR RUNNING AND TESTING ABOVE FUNCIONS========================================================================================================================================
 #=======================================================================================================================================================================================================================
@@ -662,8 +692,5 @@ start ()
 #Notes to myself(aka things to work on):
     #Check if overlay is working, and check for other computers
 
-    #ISSUE: Exploration thing doesn't clear thing after surface scan sometimes, rarely tho
-    #ISSUE: program closes when starting (aka starting a new log file) This might have been fixed, test it
-    #SUGESTION: Add discord rpc ability to track how long you've been flying (look at latest log file, get startup timestamp, use that number) see my bookmarks for more info
-    #SUGESTION: Make discord rpc information toggleable in case people don't want foes to see their location
-    
+    #ISSUE: Crashes when its open and elite is started, this might be resolved, needs more testing
+    #SUGESTION: Make discord rpc information toggleable in case people don't want foes to see their location or allow users to choose what info discord rpc will send

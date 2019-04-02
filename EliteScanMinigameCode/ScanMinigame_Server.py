@@ -58,9 +58,9 @@ def calculateResponse ( listRecieved ) :
                     listToSend.append('dueToScore')
                 listToSend.extend([  PLAYER_TO_SCAN , str(LENGTH_EVENT) , str(EVENT_START_TIME) ])
                 if written == False :
+                    written = True #ensure this happens first so that other threads running this won't even start writing
                     writeFinalData()
                     print('\n' + 'Event over. Output file written.')
-                    written = True
                 if ((time.time() / 60) - 10) > ((EVENT_START_TIME + LENGTH_EVENT) / 60 ) : #if event has been over for more than 10 minutes
                     print('Game has been over for more than 10 minutes. Closing Server.')
                     raise SystemExit
@@ -82,7 +82,7 @@ def writeTempData () :
     tempFile = open('TempServerOutput.txt','w+') #this is incase the server crashs and ya don't wanna lose data
     tempFile.write('\n' + 'TEMP OUTPUT FROM SERVER' + '\n' )
     tempFile.write('Current time: ' + str(time.time()) + str(eventTimeStatus()) + '\n' + '\n' ) #unix time - int based on time status so I don't have to do math manually
-    tempFile.write('Standards: ' + PLAYER_TO_SCAN + LENGTH_EVENT + EVENT_START_TIME + SCANS_TO_WIN + SERVER_PASSWORD + SERVER_PORT + SERVER_IP_ADRESS + '\n' + '\n' ) #refer to here for what where
+    tempFile.write('Standards: ' + '\n' + PLAYER_TO_SCAN + '\n' + LENGTH_EVENT + '\n' + EVENT_START_TIME + '\n' + SCANS_TO_WIN + '\n' + SERVER_PASSWORD + '\n' + SERVER_PORT + '\n' + SERVER_IP_ADRESS + '\n' + '\n' ) #refer to here for what where
     tempFile.write('\n' + '\n' + '\n' + '\n' + 'KILLS LIST' + '\n'  )
     for d in killsData.getData() :
         tempFile.write(d[0] + ' ' + d[1] + '\n' )   #killername then victim        
