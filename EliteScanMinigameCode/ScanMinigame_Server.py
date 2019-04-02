@@ -86,10 +86,10 @@ def writeTempData () :
     tempFile.write('Standards: ' + '\n' + str(PLAYER_TO_SCAN) + '\n' + str(LENGTH_EVENT) + '\n' + str(EVENT_START_TIME) + '\n' + str(SCANS_TO_WIN) + '\n' + str(SERVER_PASSWORD) + '\n' + str(SERVER_PORT) + '\n' + str(SERVER_IP_ADRESS) + '\n' + '\n' ) #refer to here for what where
     tempFile.write('\n' + '\n' + '\n' + '\n' + 'KILLS LIST' + '\n')
     for d in killsData.getData() :
-        tempFile.write(str(d[0]) + ' ' + str(d[1]) + '\n' )   #killername then victim        
+        tempFile.write(str(d[0]) + ' , ' + str(d[1]) + '\n' )   #killername then victim        
     tempFile.write('\n' + '\n' + '\n' + '\n' + 'DEATHS LIST' + '\n'  ) 
     for d in deathsData.getData() :
-        tempFile.write(str(d[0]) + ' ' + str(d[1]) + '\n')   #personWho died then their killers name
+        tempFile.write(str(d[0]) + ' , ' + str(d[1]) + '\n')   #personWho died then their killers name
     tempFile.write('\n' + '\n' + '\n' + '\n' + 'POINTS SCORED LIST' + '\n'  ) 
     for d in pointsScored.getData() :
         tempFile.write( str(d) + '\n' )    #person who scored a scan
@@ -99,13 +99,13 @@ def writeFinalData () :
     outputFile = open("ServerOutput.txt","w+")   #Use outputFile.write('text' + '\n') to write a new line to it
     outputFile.write('\n' + '\n' + '\n' + '\n' + 'KILLS LIST' + '\n'  )
     for d in killsData.getData() :
-        outputFile.write(d[0] + ' ' + d[1] + '\n' )   #killername then victim        
+        outputFile.write(str(d[0]) + ' , ' + str(d[1]) + '\n' )   #killername then victim        
     outputFile.write('\n' + '\n' + '\n' + '\n' + 'DEATHS LIST' + '\n'  ) 
     for d in deathsData.getData() :
-        outputFile.write(d[0] + ' ' + d[1] + '\n')   #personWho died then their killers name
+        outputFile.write(str(d[0]) + ' , ' + str(d[1]) + '\n')   #personWho died then their killers name
     outputFile.write('\n' + '\n' + '\n' + '\n' + 'POINTS SCORED LIST' + '\n'  ) 
     for d in pointsScored.getData() :
-        outputFile.write( d + '\n')    #person who scored a scan
+        outputFile.write( str(d) + '\n')    #person who scored a scan
     tttt = eventTimeStatus()
     if tttt == 2.1 :
         outputFile.write('\n' + '\n' + '\n' + '\n' + 'EVENT ENDED DUE TO SCORE' + '\n' + 'SCANNING EQUIPPED VESSELS HAVE WON' + '\n' ) 

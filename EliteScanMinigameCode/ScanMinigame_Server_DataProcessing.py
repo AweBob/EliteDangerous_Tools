@@ -20,6 +20,17 @@ def mainCode () :
         mainCode()
 
 def displayFinal () :
+    try :
+        textFile = open('ServerOutput.txt','r') #noit correct
+    except :
+        print('Output file isnt in this directory, try again!' + '\n')
+        mainCode()
+    with textFile as tf :
+        contentList = []
+        for line in tf :
+            contentList.append( line )
+    
+
     root = Tk()
     ui = displayFinalInterface( root )
     root.mainloop()
@@ -29,10 +40,15 @@ def mergeFiles () :
 
 def displayTemp () :
     try :
-        textFile = open('ServerOutput.txt','r')
+        textFile = open('ServerOutput.txt','r') #not correct
     except :
         print('Output file isnt in this directory, try again!' + '\n')
         mainCode()
+    with textFile as tf :
+        contentList = tf.read().splitlines()
+    for item in contentList :
+        foo = 'bar' #placeholde
+
     root = Tk()
     ui = displayTempInterface( root )
     root.mainloop()
