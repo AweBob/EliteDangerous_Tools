@@ -73,9 +73,7 @@ def mainCode () :
             c_possesingScan , possesion = dc_posessingScan.check( possesion ) #t/f #say this, but don't send it to server, it doesn't care
             c_uploadedScan , uploaded = dc_uploadedScan.check( uploaded  )    #int
             C_killLog , killsList = dc_killLog.check( killsList )             #list
-            print(deathsList)
             c_deathLog , deathsList = dc_deathLog.check( deathsList )         #list
-            print(str(c_deathLog) + '     ' + str(deathsList) + '\n')
 
             listToSend = [ SERVER_PASSWORD ]
 
