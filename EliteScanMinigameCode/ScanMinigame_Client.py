@@ -57,16 +57,15 @@ def mainCode () :
         if time.time() >= int(eventStartTime) and time.time() <= ( int(eventLength) + int(eventStartTime) ) : #if event is live
 
             c_trueFalseChangeLogFile , d_changeLogFile = dc_currentLogFileName.check( grabLog(0) )
+            logTransformer(grabLog(0))
             if loopRotations == 0 or c_trueFalseChangeLogFile == True :  #code had just started or elite has just started - then - reset detect change classes
-                logTransformer(grabLog(0)) 
                 deathsList , killsList = getKillsDeaths()
                 possesion , uploaded = doYaHaveScanData( objectiveName )
                 dc_posessingScan = detectChange(False)  #bool  #Does CMDR have scna data aboard, True or false
                 dc_uploadedScan = detectChange(uploaded) #int
                 dc_killLog = detectChange(killsList)    #list     #records everyone you've killed 
                 dc_deathLog = detectChange(deathsList) #list
-            else :
-                logTransformer(grabLog(0))  #update .log import variable is convLog - only necessary if it isn't done above
+
 
             deathsList , killsList = getKillsDeaths()
             possesion , uploaded = doYaHaveScanData( objectiveName )  #Needs testing
@@ -74,7 +73,9 @@ def mainCode () :
             c_possesingScan , possesion = dc_posessingScan.check( possesion ) #t/f #say this, but don't send it to server, it doesn't care
             c_uploadedScan , uploaded = dc_uploadedScan.check( uploaded  )    #int
             C_killLog , killsList = dc_killLog.check( killsList )             #list
+            print(deathsList)
             c_deathLog , deathsList = dc_deathLog.check( deathsList )         #list
+            print(str(c_deathLog) + '     ' + str(deathsList) + '\n')
 
             listToSend = [ SERVER_PASSWORD ]
 
@@ -144,15 +145,15 @@ def talk (string) :
 def addToSendingList ( listToSend , c_upload , c_death , c_kill , upload , death , kill) :
     clientCmdrName = getCMDRName()
     listToSend.append('normalPing')
-    if upload != 0 :
+    if c_upload == True :
         uploadList = ['uploadData' , upload , clientCmdrName ] #var upload is an integer
         listToSend.append( uploadList )
-    if len( death ) != 0 :
+    if c_death == True :
         deathList = ['deathData']
         for killer in death : #list
             deathList.append( [ killer , clientCmdrName ] ) #killername  then  victim
         listToSend.append( deathList )
-    if len( kill ) != 0 :
+    if c_kill == True :
         killList = ['killData']
         for killedPerson in kill : #list
             killList.append( [ killedPerson , clientCmdrName ] ) #killed person then killer
@@ -168,7 +169,10 @@ def getKillsDeaths ( ) :
     killsList = []
     for line in reversed(convLog) :
         if line['event']=='Died' :
-            deathsList.append( line['KillerName'] )   #Output of this example: "Cmdr Luvarien" #THIS MIGHT NOT WORK IF U GET KILLED MY MULTIPLE PEOPLE
+            try :
+                deathsList.append( line['KillerName'] )   #Output of this example: "Cmdr Luvarien" #THIS MIGHT NOT WORK IF U GET KILLED MY MULTIPLE PEOPLE
+            except : #if you kill yourself in game, not real life, positivity....
+                deathsList.append( getCMDRName() )
         if line['event']=='PVPKill' :
             killsList.append( line['Victim'] )     #no CMDR or anything in front of it
     return( deathsList , killsList )
@@ -198,7 +202,9 @@ class detectChange :
             if comRes == True :
                 return( False , newVar )
             else :
-                returnVar = newVar
+                returnVar = []
+                for item in newVar :
+                    returnVar.append(item)
                 for item in self.oldVar:
                     try:
                         returnVar.remove(item)

@@ -28,6 +28,11 @@ def mergeFiles () :
     foo = 'bar'
 
 def displayTemp () :
+    try :
+        textFile = open('ServerOutput.txt','r')
+    except :
+        print('Output file isnt in this directory, try again!' + '\n')
+        mainCode()
     root = Tk()
     ui = displayTempInterface( root )
     root.mainloop()
@@ -37,7 +42,7 @@ def displayTemp () :
 class displayFinalInterface :
     def __init__(self, master):
         self.master = master
-        master.title("Stuff")
+        master.title("Event data")
 
         self.label = Label(master, text="foobar")
         self.label.pack()
