@@ -84,6 +84,7 @@ def mainCode () :
                 except :
                     talk('Connection to server has been lost.')
                     nothing = input('Press enter to close client - ')
+                    raise SystemExit #closes code
             else:
                 print('Error in server pinging')
                 recievedList , ping = mockPing()
@@ -246,9 +247,11 @@ def testConnection () : #Example Call Output: objectiveName , eventLength , even
         print('Test ping to server is sucessful; your ping is ' + ping )
         return( recievedList[2] , int(recievedList[3]) , int(recievedList[4]) , int(recievedList[5]) ) #This is the objective name
     elif recievedList[1] == 'incorrectPassword' :
-        nothing = input('The password you entered is incorrect, but IP and port are correct were correct. Restart code.')
+        nothing = input('The password you entered is incorrect, but IP and port are correct were correct. Please retry.')
+        raise SystemExit #closes code
     else :
-        nothing = input('Ping to server was unsucessful. Incorrect IP or port. Restart the code.')
+        nothing = input('Ping to server was unsucessful. Incorrect IP or port. Press enter to close code. Please try again!')
+        raise SystemExit #closes code
 
 def getCMDRName () :
     for line in convLog :

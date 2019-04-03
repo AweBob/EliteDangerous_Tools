@@ -26,8 +26,10 @@ def calculateResponse ( listRecieved ) :
                 listToSend.extend([ 'connectionSucessful' , PLAYER_TO_SCAN , LENGTH_EVENT , EVENT_START_TIME , SCANS_TO_WIN ])
             elif eventTimeStatus() == 0 : #event is on, this is everythin!
                 try : #try cuz if lists are empty, big crash might happen
-                    dataJunkReceived = listRecieved[3:] #remove password, type and CMDR name - leaves everythin else
+                    dataJunkReceived = listRecieved[2:] #remove password, type - leaves everythin else
+                    print(str(dataJunkReceived))
                     for category in dataJunkReceived :
+                        print(str(category))
                         if category[0] == 'uploadData' :
                             for index in range( int(category[1]) ) : #this is the num of points the cmdr has added
                                 pointsScored.addData( category[2] ) #add the cmdr name for each time they've scored
@@ -35,6 +37,7 @@ def calculateResponse ( listRecieved ) :
                             del category[0]
                             for deathDataBunch in category :
                                 deathsData.addData( deathDataBunch  ) # in format; [killername , victim]
+                                print('data was added')
                         elif category[0] == 'killData' :
                             del category[0]
                             for killDataBunch in category :
@@ -60,8 +63,12 @@ def calculateResponse ( listRecieved ) :
                 listToSend.extend([  PLAYER_TO_SCAN , str(LENGTH_EVENT) , str(EVENT_START_TIME) ])
                 if written == False :
                     written = True #ensure this happens first so that other threads running this won't even start writing
-                    writeFinalData()
-                    print('\n' + 'Event over. Output file written.')
+                    try :
+                        writeFinalData()
+                        print('\n' + 'Event over. Output file written.')
+                    except :
+                        written = False
+                        print('\n' + 'Event is over. Error in writing to output file.')
                 if ((time.time() / 60) - 10) > ((EVENT_START_TIME + LENGTH_EVENT) / 60 ) : #if event has been over for more than 10 minutes
                     print('Game has been over for more than 10 minutes. Closing Server.')
                     raise SystemExit
@@ -81,29 +88,29 @@ def writeErrorData ( stuffs ) :
 
 def writeTempData () :
     tempFile = open('TempServerOutput.txt','w+') #this is incase the server crashs and ya don't wanna lose data
-    tempFile.write('\n' + 'TEMP OUTPUT FROM SERVER' + '\n' )
+    tempFile.write('TEMP OUTPUT FROM SERVER' + '\n' )
     tempFile.write('Current time: ' + '\n' + str( time.time() ) + '\n' + str( eventTimeStatus() ) + '\n' + '\n' ) #unix time - int based on time status so I don't have to do math manually
-    tempFile.write('Standards: ' + '\n' + str(PLAYER_TO_SCAN) + '\n' + str(LENGTH_EVENT) + '\n' + str(EVENT_START_TIME) + '\n' + str(SCANS_TO_WIN) + '\n' + str(SERVER_PASSWORD) + '\n' + str(SERVER_PORT) + '\n' + str(SERVER_IP_ADRESS) + '\n' + '\n' ) #refer to here for what where
-    tempFile.write('\n' + '\n' + '\n' + '\n' + 'KILLS LIST' + '\n')
+    tempFile.write('Standards: ' + '\n' + str(PLAYER_TO_SCAN) + '\n' + str(LENGTH_EVENT) + '\n' + str(EVENT_START_TIME) + '\n' + str(SCANS_TO_WIN) + '\n' + str(SERVER_PASSWORD) + '\n' + str(SERVER_PORT) + '\n' + str(SERVER_IP_ADRESS) + '\n' + '\n'  ) #refer to here for what where
+    tempFile.write( 'KILLS LIST' + '\n')
     for d in killsData.getData() :
         tempFile.write(str(d[0]) + ' , ' + str(d[1]) + '\n' )   #killername then victim        
-    tempFile.write('\n' + '\n' + '\n' + '\n' + 'DEATHS LIST' + '\n'  ) 
+    tempFile.write('\n' + 'DEATHS LIST' + '\n'  ) 
     for d in deathsData.getData() :
         tempFile.write(str(d[0]) + ' , ' + str(d[1]) + '\n')   #personWho died then their killers name
-    tempFile.write('\n' + '\n' + '\n' + '\n' + 'POINTS SCORED LIST' + '\n'  ) 
+    tempFile.write('\n' + 'POINTS SCORED LIST' + '\n'  ) 
     for d in pointsScored.getData() :
         tempFile.write( str(d) + '\n' )    #person who scored a scan
     tempFile.close()
 
 def writeFinalData () :
     outputFile = open("ServerOutput.txt","w+")   #Use outputFile.write('text' + '\n') to write a new line to it
-    outputFile.write('\n' + '\n' + '\n' + '\n' + 'KILLS LIST' + '\n'  )
+    outputFile.write('KILLS LIST' + '\n'  )
     for d in killsData.getData() :
         outputFile.write(str(d[0]) + ' , ' + str(d[1]) + '\n' )   #killername then victim        
-    outputFile.write('\n' + '\n' + '\n' + '\n' + 'DEATHS LIST' + '\n'  ) 
+    outputFile.write('\n' + 'DEATHS LIST' + '\n'  ) 
     for d in deathsData.getData() :
         outputFile.write(str(d[0]) + ' , ' + str(d[1]) + '\n')   #personWho died then their killers name
-    outputFile.write('\n' + '\n' + '\n' + '\n' + 'POINTS SCORED LIST' + '\n'  ) 
+    outputFile.write('\n' + 'POINTS SCORED LIST' + '\n'  ) 
     for d in pointsScored.getData() :
         outputFile.write( str(d) + '\n')    #person who scored a scan
     tttt = eventTimeStatus()
