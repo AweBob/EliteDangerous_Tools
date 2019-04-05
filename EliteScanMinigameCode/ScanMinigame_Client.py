@@ -14,16 +14,17 @@ import ast
 #===========================================================================================================================================================================================
 
 tts = wincl.Dispatch("SAPI.SpVoice") #Will crash here for nonwindows users - if your playing on mac, im sorry, but get a real computer :p <--- just a joke
-compare = lambda x, y: collections.Counter(x) == collections.Counter(y) #setup comparing function
+compare = lambda x, y: collections.Counter(x) == collections.Counter(y) #setup comparing function - should prolly do this elsewhere, but it looks really nice here as it's a 1 liners
 
 print('Imported libraries Sucessfully:')
 SERVER_IP_ADRESS = input ('Type the external IP of hosting server(i.e. 19.374.922.82) - ')
 SERVER_PORT = int(input('Type port of Server(i.e. 13723) - '))
 SERVER_PASSWORD = input('Type in server password(i.e. pLzWoRk123) - ')
+#READING_SETTING = input('Do you want to be read to everytime you die or get a kill? (y/n) - ')    #Maybe future feature - big MAYBE
 
 #===========================================================================================================================================================================================
 
-def pingServer( ToSend ) : #ToSend should be a list
+def pingServer( ToSend ) : #ToSend should be a list - MUST be a list
     async def tcp_echo_client(message, loop):
         reader, writer = await asyncio.open_connection(SERVER_IP_ADRESS, SERVER_PORT,
                                                     loop=loop)
@@ -66,7 +67,6 @@ def mainCode () :
                 dc_killLog = detectChange(killsList)    #list     #records everyone you've killed 
                 dc_deathLog = detectChange(deathsList) #list
 
-
             deathsList , killsList = getKillsDeaths()
             possesion , uploaded = doYaHaveScanData( objectiveName )  #Needs testing
 
@@ -99,6 +99,8 @@ def mainCode () :
                     if recievedList[1] == 'incorrectPassword' :
                         talk('Error, I P and port correct, but incorrect password.')
                         nothing = input('Press enter to close - ')
+                    elif recievedList[1]=='serverError' :
+                        print('Server error ' + str(time.time()))
             except :
                 print('ERROR: In received data from server')
                 numPointsAcheived = 0
@@ -115,7 +117,7 @@ def mainCode () :
                 talk('You have uploaded ' + str(uploaded) + ' scans. You have ' + str(numScansLeft) + ' left to win.')
             if duringEventRotations == 0 :
                 talk('Event has started!')
-            #no need to read out kills and deaths, it's pretty obvious, unless if someone steals your kill - maybe make 2 versions, one reads out kills, the other one doesn't
+            #no need to read out kills and deaths, it's pretty obvious, unless if someone steals your kill - maybe make 2 versions, one reads out kills, the other one doesn't MAYBE
 
             duringEventRotations = duringEventRotations + 1
         elif time.time() <= eventStartTime : #if event hasn't started 
@@ -137,7 +139,7 @@ def mainCode () :
         time.sleep( timeToSleep(startClock , endClock) )
         loopRotations = loopRotations + 1
 
-def talk (string) :
+def talk ( string ) :
     print('SAY: ' + str(string))
     tts.speak(str( string ))
 
@@ -298,6 +300,7 @@ def doYaHaveScanData ( objectiveVessel ) :
     possesionIndex = []
     deathIndex = []
     dockIndex = []
+    undockIndex = []
     for index , line in enumerate(linesWithinNormalSpace) :
         if line['event']=='ShipTargeted' :
             try :
@@ -312,6 +315,8 @@ def doYaHaveScanData ( objectiveVessel ) :
                 pass
         elif line['event']=='Docked' :
             dockIndex.append( index )
+        elif line['event'] == 'Undocked' :
+            undockIndex.append( index )
         elif line['event']=='Died' :
             deathIndex.append( index )
     
@@ -326,6 +331,9 @@ def doYaHaveScanData ( objectiveVessel ) :
         for itemIndex in dockIndex :
             if itemIndex==orderIndex :
                 stuffOrdered.append('dock')
+        for itemIndex in undockIndex :
+            if itemIndex==orderIndex :
+                stuffOrdered.append('undock')
     
     if len(stuffOrdered) != 0 :
         if stuffOrdered[0] == 'scannedTarget' :
@@ -336,7 +344,10 @@ def doYaHaveScanData ( objectiveVessel ) :
         for index , item in enumerate(stuffOrdered) :
             if item == 'scannedTarget' :
                 try :
-                    itemAfter = stuffOrdered[ index - 1 ]
+                    if index >= 1 :
+                        itemAfter = stuffOrdered[ index - 1 ] 
+                    else :
+                        itemAfter = 'None'
                 except :
                     itemAfter = 'None'
                 if itemAfter == 'dock' :
@@ -344,7 +355,6 @@ def doYaHaveScanData ( objectiveVessel ) :
     else :
         possesion = False
         pointsUploaded = 0
-    
     return( possesion , pointsUploaded )
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -404,7 +414,7 @@ def safeStart () :
     try :
         mainCode()
     except Exception as error :
-        nothing = input('Big error!!!')
+        nothing = input('Big error!!!   ' + str(error))
 
 #safeStart()
-mainCode()
+mainCode()  

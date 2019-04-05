@@ -4,6 +4,8 @@ import json
 
 #===========================================================================================================================================================================================
 
+#Server code for advanced scanners! Please run in a folder as some .txt files will be created durig the process of runnin this
+
 #For info on what to put in here, see testing files. or @ me on discord
 print('Imported libraries Sucessfully:')
 SERVER_IP_ADRESS = input ('Type the external IP of hosting server(i.e. 99.374.922.82) - ')      
@@ -27,9 +29,7 @@ def calculateResponse ( listRecieved ) :
             elif eventTimeStatus() == 0 : #event is on, this is everythin!
                 try : #try cuz if lists are empty, big crash might happen
                     dataJunkReceived = listRecieved[2:] #remove password, type - leaves everythin else
-                    print(str(dataJunkReceived))
                     for category in dataJunkReceived :
-                        print(str(category))
                         if category[0] == 'uploadData' :
                             for index in range( int(category[1]) ) : #this is the num of points the cmdr has added
                                 pointsScored.addData( category[2] ) #add the cmdr name for each time they've scored
@@ -37,7 +37,6 @@ def calculateResponse ( listRecieved ) :
                             del category[0]
                             for deathDataBunch in category :
                                 deathsData.addData( deathDataBunch  ) # in format; [killername , victim]
-                                print('data was added')
                         elif category[0] == 'killData' :
                             del category[0]
                             for killDataBunch in category :
@@ -78,13 +77,8 @@ def calculateResponse ( listRecieved ) :
             listToSend = ['.' , 'incorrectPassword']
         return( listToSend )
     except :
-        writeErrorData( listRecieved )
+        print('CALCULATION_ERROR: A ping was received and processed, however, it wasnt logged correctly. A basic response will be sent. Message received:   ' + str( listRecieved ))
         return(['.' , 'serverError'])
-
-def writeErrorData ( stuffs ) :
-    errorFile = open('ErrorPingsReceived.txt','w+')
-    errorFile.write('\n' + 'Wierd Ping: ' + str(stuffs) )
-    errorFile.close()
 
 def writeTempData () :
     tempFile = open('TempServerOutput.txt','w+') #this is incase the server crashs and ya don't wanna lose data
@@ -167,8 +161,9 @@ async def handle_echo(reader, writer):
         writer.write( json.dumps( listToSend ).encode() )
         await writer.drain()
         writer.close()
-        print('Received: ' + str(message) + '   Sending: ' + str( listToSend ) + '  Time: ' + str( time.time() ) + '  From: ' + str( addr ) )
+        print('Received: ' + str(message) + '    Sending: ' + str( listToSend ) + '    Time: ' + str( time.time() ) + '    From: ' + str( addr ) )
     except :
+        print('PING_ERROR: A ping which failed to be read or failed to be converted to list format was received. No response will be issued. TimeStamp: ' + str(time.time()))
         pass #if thing recieved is empty or not in list format, don't respond or do anything
 
 loop = asyncio.get_event_loop()
