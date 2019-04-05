@@ -9,15 +9,14 @@ import win32com.client as wincl
 import collections
 import ast
 
-#This is client code for advanced vessel scanner and station data uploader, when distributing change the below capslocked variables to the actual thing so users don't have to enter it
-
+#This is client code for advanced vessel scanner and station data uploader, when distributing change the below capslocked variables to the actual thing so users don't have to enter it manually
 #===========================================================================================================================================================================================
 
 tts = wincl.Dispatch("SAPI.SpVoice") #Will crash here for nonwindows users - if your playing on mac, im sorry, but get a real computer :p <--- just a joke
 compare = lambda x, y: collections.Counter(x) == collections.Counter(y) #setup comparing function - should prolly do this elsewhere, but it looks really nice here as it's a 1 liners
 
 print('Imported libraries Sucessfully:')
-SERVER_IP_ADRESS = input ('Type the external IP of hosting server(i.e. 19.374.922.82) - ')
+SERVER_IP_ADRESS = input ('Type the external IP of hosting server(i.e. 19.374.922.82) - ') #must be a string
 SERVER_PORT = int(input('Type port of Server(i.e. 13723) - '))
 SERVER_PASSWORD = input('Type in server password(i.e. pLzWoRk123) - ')
 #READING_SETTING = input('Do you want to be read to everytime you die or get a kill? (y/n) - ')    #Maybe future feature - big MAYBE
@@ -95,12 +94,23 @@ def mainCode () :
                         print('Error: Mock ping in main loop.')
                     elif recievedList[1] == 'dataLogged' :
                         numPointsAcheived = recievedList[2]
+                    elif recievedList[1] == 'eventIsOver' :
+                        if recievedList[2] == 'dueToTime' :
+                            talk('Event is over due to time.')
+                        elif recievedList[2] == 'dueToScore' :
+                            talk('Event is over due to all scans being sucessfully uploaded.')
+                        else :
+                            talk('Event is over for an unforseen issue.')
+                        nothing = input('Press enter to close client - ')
+                        raise SystemExit
+                    else :
+                        print('Error: Received unforseen event from server')
                 elif recievedList[0] == '.' :
                     if recievedList[1] == 'incorrectPassword' :
                         talk('Error, I P and port correct, but incorrect password.')
                         nothing = input('Press enter to close - ')
                     elif recievedList[1]=='serverError' :
-                        print('Server error ' + str(time.time()))
+                        print('Server error ' + str(time.time()) )
             except :
                 print('ERROR: In received data from server')
                 numPointsAcheived = 0
@@ -111,9 +121,12 @@ def mainCode () :
                 if possesion == True :
                     talk('Data aboard.')
                 else :
-                    talk('Data lost.')
+                    talk('Data no longer aboard.')
             if c_uploadedScan == True :
-                numScansLeft = int(numberScansToWin) - int(numPointsAcheived)
+                try :
+                    numScansLeft = int(numberScansToWin) - int(numPointsAcheived)
+                except :
+                    numScansLeft = 'an unkown amount'
                 talk('You have uploaded ' + str(uploaded) + ' scans. You have ' + str(numScansLeft) + ' left to win.')
             if duringEventRotations == 0 :
                 talk('Event has started!')
