@@ -1,6 +1,6 @@
 import asyncio
 import time
-from os import *
+from os import * #this might be unused
 import os
 from glob import *
 import glob
@@ -15,7 +15,7 @@ import ast
 tts = wincl.Dispatch("SAPI.SpVoice") #Will crash here for nonwindows users - if your playing on mac, im sorry, but get a real computer :p <--- just a joke
 compare = lambda x, y: collections.Counter(x) == collections.Counter(y) #setup comparing function - should prolly do this elsewhere, but it looks really nice here as it's a 1 liners
 
-print('Imported libraries Sucessfully:')
+print('Imported libraries Sucessfully')
 SERVER_IP_ADRESS = input ('Type the external IP of hosting server(i.e. 19.374.922.82) - ') #must be a string
 SERVER_PORT = int(input('Type port of Server(i.e. 13723) - '))
 SERVER_PASSWORD = input('Type in server password(i.e. pLzWoRk123) - ')
@@ -49,8 +49,10 @@ def mainCode () :
     beforeEventRotations = 0 #number of times this thing has looped before the event has started
     afterEventRotations = 0 #times looped after event has ended
     duringEventRotations = 0 #times looped during event
+    duringEventOverDueToTime = 0 #times event has been over due to score
     objectiveName , eventLength , eventStartTime , numberScansToWin = testConnection() #all time is unix time because it's easy - no timezoes, simple mathematic computable formula
     dc_currentLogFileName = detectChange( grabLog(0) ) 
+    eventOverride = False #Event is good to continue
 
     while True :
         startClock = time.time()
@@ -81,9 +83,9 @@ def mainCode () :
                 try :
                     recievedList , ping = pingServer( listToSend ) #ping in milliseconds, ms
                 except :
-                    talk('Connection to server has been lost.')
-                    nothing = input('Press enter to close client - ')
-                    raise SystemExit #closes code
+                    print('Error in the process of pinging the server ' + str( time.time() ) )
+                    recievedList = ['.' , 'serverError']
+                    ping = 0
             else:
                 print('Error in server pinging')
                 recievedList , ping = mockPing()
@@ -99,15 +101,14 @@ def mainCode () :
                             talk('Event is over due to time.')
                         elif recievedList[2] == 'dueToScore' :
                             talk('Event is over due to all scans being sucessfully uploaded.')
+                            eventOverride = True #Set it so event is over due to score
                         else :
                             talk('Event is over for an unforseen issue.')
-                        nothing = input('Press enter to close client - ')
-                        raise SystemExit
                     else :
                         print('Error: Received unforseen event from server')
                 elif recievedList[0] == '.' :
                     if recievedList[1] == 'incorrectPassword' :
-                        talk('Error, I P and port correct, but incorrect password.')
+                        talk('Error, I.P. and port correct, but incorrect password.')
                         nothing = input('Press enter to close - ')
                     elif recievedList[1]=='serverError' :
                         print('Server error ' + str(time.time()) )
@@ -138,7 +139,13 @@ def mainCode () :
             if beforeEventRotations == 0 or ( minutesTillStart < 10 and  beforeEventRotations == 1 ) or ( minutesTillStart < 1 and  beforeEventRotations == 2 ) :
                 talk('Event hasnt started yet. It will begin in ' + str(minutesTillStart) + ' minutes.')
                 beforeEventRotations = beforeEventRotations + 1
-        elif time.time() >= ( int(eventLength) + int(eventStartTime) ) : #event is over
+        elif eventOverride == True : #event is over due to score
+            if duringEventOverDueToTime == 600 : #it's been 10 minutes
+                nothing = input('Event has been over for ten minutes, press enter to close - ')
+                raise SystemExit
+            duringEventOverDueToTime = duringEventOverDueToTime + 1
+            foo = 'bar' #PLACEHOLDER FOOBAR <><><<><><><><<><><><><<><><><><<><><><><<><><><><<><><><><<><><><><<><><><><<><><><><<><><><><<><><><><<><><><><<><><><><<><><><><<><><><><<><><><><<><><><><<><>
+        elif time.time() >= ( int(eventLength) + int(eventStartTime) ) : #event is over due to time
             minutesSinceEnd = int( ( time.time() - (int(eventStartTime) + int(eventLength)) ) / 60 )
             if (minutesSinceEnd == 0 and afterEventRotations == 0) or (minutesSinceEnd == 4 and afterEventRotations == 1) :
                 talk('Event is over, feel free to close the software.')

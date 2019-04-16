@@ -17,6 +17,7 @@ SCANS_TO_WIN = int(input('How many scans till the attackers win - '))
 PLAYER_TO_SCAN = input('What is the name of the CMDR people are trying to scan - ')  #Not case sensitive, do not use CMDR in there ie Luvarien 
 
 written = False 
+eventOverDueToScoreTime = 0 
 
 #===========================================================================================================================================================================================
 
@@ -59,7 +60,9 @@ def calculateResponse ( listRecieved ) :
                     listToSend.append('dueToTime')
                 elif eventTimeStatus() == 2.1 :
                     listToSend.append('dueToScore')
-                listToSend.extend([  PLAYER_TO_SCAN , str(LENGTH_EVENT) , str(EVENT_START_TIME) ])
+                    if eventOverDueToScoreTime == 0 :
+                        eventOverDueToScoreTime = int( time.time() )
+                listToSend.extend([ PLAYER_TO_SCAN , str(LENGTH_EVENT) , str(EVENT_START_TIME) , str(len(pointsScored.getData())) ])
                 if written == False :
                     written = True #ensure this happens first so that other threads running this won't even start writing
                     try :
@@ -68,11 +71,11 @@ def calculateResponse ( listRecieved ) :
                     except :
                         written = False
                         print('\n' + 'Event is over. Error in writing to output file.')
-                if ((time.time() / 60) - 10) > ((EVENT_START_TIME + LENGTH_EVENT) / 60 ) : #if event has been over for more than 10 minutes
+                if ((time.time() / 60) - 10) > ((EVENT_START_TIME + LENGTH_EVENT) / 60 ) or ( eventOverDueToScoreTime > ( int( time.time() ) - 600 )  ) : #if event has been over for more than 10 minutes
                     print('Game has been over for more than 10 minutes. Closing Server.')
                     raise SystemExit
             else : #this is impossible - but just in case someone figures it out
-                listToSend = [SERVER_PASSWORD]
+                listToSend = [ SERVER_PASSWORD , 'thisIsImpossible']
         else :
             listToSend = ['.' , 'incorrectPassword']
         return( listToSend )
