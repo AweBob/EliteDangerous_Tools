@@ -9,20 +9,23 @@ SERVER_PORT = 13723                              #13722 13723 13780 13781 13784 
 SERVER_PASSWORD = ''                             #Random string, as long as both server and client have this same thing isn't fine #Unnecessary for test version
 
 async def handle_echo(reader, writer):
-    data = await reader.read(1000)
-    message = json.loads( data ) #no decode
-    addr = writer.get_extra_info('peername')
-    print("Received %r from %r" % ( str(message) , addr))
-    #for i in message : #proof this works
-        #print(i)
+    try :
+        data = await reader.read(1000)
+        message = json.loads( data ) #no decode
+        addr = writer.get_extra_info('peername')
+        print("Received %r from %r" % ( str(message) , addr))
+        #for i in message : #proof this works
+            #print(i)
 
-    lis = randomList()
-    
-    print('Sending: %r' % str(lis) )
-    writer.write( json.dumps( lis ).encode() ) #encode
-    await writer.drain()
+        lis = randomList()
+        
+        print('Sending: %r' % str(lis) )
+        writer.write( json.dumps( lis ).encode() ) #encode
+        await writer.drain()
 
-    writer.close()
+        writer.close()
+    except :
+        print('Recieved incorectly formatted ping or failed to send message: ' + str( time.time() ) )
 
 def randomList () :
     listThang = []

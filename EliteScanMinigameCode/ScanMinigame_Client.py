@@ -19,7 +19,7 @@ print('Imported libraries Sucessfully')
 SERVER_IP_ADRESS = input ('Type the external IP of hosting server(i.e. 19.374.922.82) - ') #must be a string
 SERVER_PORT = int(input('Type port of Server(i.e. 13723) - '))
 SERVER_PASSWORD = input('Type in server password(i.e. pLzWoRk123) - ')
-#READING_SETTING = input('Do you want to be read to everytime you die or get a kill? (y/n) - ')    #Maybe future feature - big MAYBE
+READING_SETTING = input('Do you want to be read to everytime you die or get a kill? (y/n) - ')
 
 #===========================================================================================================================================================================================
 
@@ -56,7 +56,12 @@ def mainCode () :
 
     while True :
         startClock = time.time()
-        if time.time() >= int(eventStartTime) and time.time() <= ( int(eventLength) + int(eventStartTime) ) : #if event is live
+        if eventOverride == True : #event is over due to score
+            if duringEventOverDueToTime == 600 : #it's been 10 minutes
+                nothing = input('Event has been over for ten minutes, press enter to close - ')
+                raise SystemExit
+            duringEventOverDueToTime = duringEventOverDueToTime + 1
+        elif time.time() >= int(eventStartTime) and time.time() <= ( int(eventLength) + int(eventStartTime) ) : #if event is live
 
             c_trueFalseChangeLogFile , d_changeLogFile = dc_currentLogFileName.check( grabLog(0) )
             logTransformer(grabLog(0))
@@ -114,7 +119,6 @@ def mainCode () :
                         print('Server error ' + str(time.time()) )
             except :
                 print('ERROR: In received data from server')
-                numPointsAcheived = 0
 
             if int(ping) > 3000 : #ping warning, remeber, ping is in string format
                 talk('Your ping is above three thousand.') #if ur ping is more than 5 thousand the client will stop
@@ -125,26 +129,33 @@ def mainCode () :
                     talk('Data no longer aboard.')
             if c_uploadedScan == True :
                 try :
-                    numScansLeft = int(numberScansToWin) - int(numPointsAcheived)
+                    numScansLeft = int(numberScansToWin) - int(numPointsAcheived) #if numPointsAcheived doesn't exsist because of error in recieving data
                 except :
                     numScansLeft = 'an unkown amount'
                 talk('You have uploaded ' + str(uploaded) + ' scans. You have ' + str(numScansLeft) + ' left to win.')
             if duringEventRotations == 0 :
                 talk('Event has started!')
-            #no need to read out kills and deaths, it's pretty obvious, unless if someone steals your kill - maybe make 2 versions, one reads out kills, the other one doesn't MAYBE
-
+            if READING_SETTING == 'y' or READING_SETTING == 'Y' or READING_SETTING == 'yes' or READING_SETTING == 'Yes' :
+                if c_deathLog == True :
+                    if len( deathsList ) == 1 :
+                        talk('You have died to ' + str( deathsList[0] ) )
+                    else :
+                        talk('You have died multiple or zero times in the last few seconds.') #theoretically impossible, ya never know tho
+                if C_killLog == True :
+                    if len( killsList ) >= 1 :
+                        stringOfKillsDataForReading = ''
+                        for index , item in enumerate( killsList ) :
+                            stringOfKillsDataForReading = stringOfKillsDataForReading + item 
+                            if killsList[int(index) + 1] <= len( killsList ) :
+                                stringOfKillsDataForReading = stringOfKillsDataForReading + ' and '
+                        talk('You have killed ' + stringOfKillsDataForReading )
+            
             duringEventRotations = duringEventRotations + 1
         elif time.time() <= eventStartTime : #if event hasn't started 
             minutesTillStart = int( ( int(eventStartTime) - int(time.time()) ) / 60 )
             if beforeEventRotations == 0 or ( minutesTillStart < 10 and  beforeEventRotations == 1 ) or ( minutesTillStart < 1 and  beforeEventRotations == 2 ) :
                 talk('Event hasnt started yet. It will begin in ' + str(minutesTillStart) + ' minutes.')
                 beforeEventRotations = beforeEventRotations + 1
-        elif eventOverride == True : #event is over due to score
-            if duringEventOverDueToTime == 600 : #it's been 10 minutes
-                nothing = input('Event has been over for ten minutes, press enter to close - ')
-                raise SystemExit
-            duringEventOverDueToTime = duringEventOverDueToTime + 1
-            foo = 'bar' #PLACEHOLDER FOOBAR <><><<><><><><<><><><><<><><><><<><><><><<><><><><<><><><><<><><><><<><><><><<><><><><<><><><><<><><><><<><><><><<><><><><<><><><><<><><><><<><><><><<><><><><<><>
         elif time.time() >= ( int(eventLength) + int(eventStartTime) ) : #event is over due to time
             minutesSinceEnd = int( ( time.time() - (int(eventStartTime) + int(eventLength)) ) / 60 )
             if (minutesSinceEnd == 0 and afterEventRotations == 0) or (minutesSinceEnd == 4 and afterEventRotations == 1) :
@@ -156,8 +167,8 @@ def mainCode () :
         else :
             print('Error in main loop, time: ' + str( time.time() )  )
         endClock = time.time()
-        time.sleep( timeToSleep(startClock , endClock) )
         loopRotations = loopRotations + 1
+        time.sleep( timeToSleep(startClock , endClock) )
 
 def talk ( string ) :
     print('SAY: ' + str(string))
