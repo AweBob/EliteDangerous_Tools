@@ -5,10 +5,12 @@ from glob import *
 import glob
 import xml.etree.ElementTree as ET
 import keyboard
-import pyperclip #vs code doesn't like this one, but it works.....
+import pyperclip 
 import time
 
-#If you run shaders that affect your galaxy map and/or galaxy map menu system this may not work, keep that in mind, but can be fixed by redoing screenshots
+print('If you run shaders that affect your galaxy map and/or galaxy map menu system this may not work. To fix this, retake the screenshots. This will only work on Windows as well.')
+print('Libaries sucessfully imported. Script starting. Time is  ' + str(time.time()) )
+print('This is recommended for use with ED:Pathinder and neutron and has been developed by: CMDR AweBob' + '\n')
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -118,17 +120,18 @@ def main () :
                             pyautogui.click() #click button
                             time.sleep(0.25)
                             closeGalaxyMap()
+                            print('Sucessful run  ' + str(time.time()))
                         else :
-                            print('System not found')
+                            print('System not found  ' + str(time.time()) )
                             closeGalaxyMap()
                     else :
-                        print('Search bar cannot be found.')
+                        print('Search bar cannot be found  ' +  str(time.time()) )
                         closeGalaxyMap()                        
                 else :
-                    print('Next system not in clipboard.')
+                    print('Next system not in clipboard  ' + str(time.time()) )
         except :
             pass
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-#main()
+main()

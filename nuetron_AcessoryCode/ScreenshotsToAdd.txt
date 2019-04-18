@@ -1,4 +1,0 @@
-ALL AS .PNG
-menuBar - a screenshot of what the unselected button to go to the routing section of the galaxy map menu as png
-searchBar - a screenshot fo what the searchbar for systems looks like
-selectSystem - a screenshot fot he button to select system

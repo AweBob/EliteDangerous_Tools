@@ -1,0 +1,6 @@
+ALL MUST BE AS .PNG
+
+menuBar - a screenshot of what the unselected button to go to the routing section of the galaxy map menu as png
+searchBar - a screenshot of what the searchbar for systems looks like
+selectSystem - a screenshot for he button to select or plot route to system (recommend plot route, but it will work if you swap them out)
+exitButton - a screenshot of the button to exit the galaxy map
