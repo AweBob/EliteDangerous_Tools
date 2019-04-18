@@ -146,7 +146,7 @@ def mainCode () :
                         stringOfKillsDataForReading = ''
                         for index , item in enumerate( killsList ) :
                             stringOfKillsDataForReading = stringOfKillsDataForReading + item 
-                            if killsList[int(index) + 1] <= len( killsList ) :
+                            if (int(index) + 1) <= len( killsList ) :
                                 stringOfKillsDataForReading = stringOfKillsDataForReading + ' and '
                         talk('You have killed ' + stringOfKillsDataForReading )
             
