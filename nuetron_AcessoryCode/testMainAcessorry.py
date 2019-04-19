@@ -1,3 +1,7 @@
+
+#THIS DOESN'T WORK SADLY
+print( '\n' + 'IN ITS CURRENT STATE THIS DOESNT WORK, PROCEED WITH CAUTION' + '\n')
+
 import pyautogui
 from os import *
 import os
@@ -7,6 +11,8 @@ import xml.etree.ElementTree as ET
 import keyboard
 import pyperclip 
 import time
+
+pyautogui.FAILSAFE = False # disables the fail-safe
 
 print('If you run shaders that affect your galaxy map and/or galaxy map menu system this may not work. To fix this, retake the screenshots. This will only work on Windows as well.')
 print('Libaries sucessfully imported. Script starting. Time is  ' + str(time.time()) )
@@ -19,7 +25,8 @@ def grabBind () :
     location = os.path.expanduser('~\AppData\Local\\frontier developments\elite dangerous\options\\bindings\*.binds')         #File path different for linux
     bindFilePath = glob.glob(location)
     if len(bindFilePath) == 0 :
-        nothing = input('No binds found!')
+        nothing = input('Bind file not found. Press enter to close - ')
+        raise SystemExit
 
     bindFileName = str(bindFilePath[0])
     bindText = openBind( bindFileName )   #tree = 
@@ -72,7 +79,7 @@ def checkBinds () :
 def closeGalaxyMap () :
     for index in range(500) :
         time.sleep(0.01)
-        exitButtonLocation = pyautogui.locateCenterOnScreen('exitButton.png') #AWAITTING SCREENSHOT
+        exitButtonLocation = pyautogui.locateCenterOnScreen('exitButton.png') 
         if exitButtonLocation != None :
             break
     if exitButtonLocation != None :
@@ -82,26 +89,32 @@ def closeGalaxyMap () :
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def main () :
+    bindOfGalaxyMap = checkBinds()
     ACTIVATION_HOTKEY = str(input('Enter hotkey to plot route -  '))
     while True :
         try :
             selectButtonFound = False
-            bindOfGalaxyMap = checkBinds()
             if keyboard.is_pressed( ACTIVATION_HOTKEY ) == True :
+                buttonLocation = None
+                bindOfGalaxyMap = checkBinds()
                 clipboard = pyperclip.paste()
                 if len( clipboard ) != 0 :
                     pyautogui.press( bindOfGalaxyMap )
                     for index in range(500) :
                         time.sleep(0.01)
-                        buttonLocation = pyautogui.locateCenterOnScreen('menuBar.png') #AWAITTING SCREENSHOT
-                        if buttonLocation != None :
+                        try :
+                            print('w')
+                            buttonLocation = pyautogui.locateCenterOnScreen('menuBar.png') 
                             break
+                        except :
+                            print('l')
+                            pass
                     if buttonLocation != None :
                         pyautogui.moveTo( buttonLocation ) #move to the correct tab
                         pyautogui.click()
                     for index in range(500) :
                         time.sleep(0.01)
-                        searchBarLocation = pyautogui.locateCenterOnScreen('searchBar.png') #AWAITTING SCREENSHOT
+                        searchBarLocation = pyautogui.locateCenterOnScreen('searchBar.png') 
                         if searchBarLocation != None :
                             break
                     if searchBarLocation != None :
@@ -111,7 +124,7 @@ def main () :
                         pyautogui.press('enter') #Do the search
                         for index in range(500) : #Will try and find it for slightly more than 5 seconds
                             time.sleep(0.01) #this allows the above to work
-                            selectButton = pyautogui.locateCenterOnScreen('selectSystem.png') #AWAITTING SCREENSHOT
+                            selectButton = pyautogui.locateCenterOnScreen('selectSystem.png') 
                             if selectButton != None :
                                 selectButtonFound = True
                                 break
@@ -129,6 +142,7 @@ def main () :
                         closeGalaxyMap()                        
                 else :
                     print('Next system not in clipboard  ' + str(time.time()) )
+                time.sleep(0.75)
         except :
             pass
 
