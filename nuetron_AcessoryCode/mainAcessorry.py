@@ -1,7 +1,3 @@
-
-#THIS DOESN'T WORK SADLY
-print( '\n' + 'IN ITS CURRENT STATE THIS DOESNT WORK, PROCEED WITH CAUTION' + '\n')
-
 import pyautogui
 from os import *
 import os
@@ -14,9 +10,9 @@ import time
 
 pyautogui.FAILSAFE = False # disables the fail-safe
 
-print('If you run shaders that affect your galaxy map and/or galaxy map menu system this may not work. To fix this, retake the screenshots. This will only work on Windows as well.')
+print('If you run shaders or a non 1920x1080 monitor for elite your gonna have to retake the screenshots. Future Update will fix this.')
 print('Libaries sucessfully imported. Script starting. Time is  ' + str(time.time()) )
-print('This is recommended for use with ED:Pathinder and neutron and has been developed by: CMDR AweBob' + '\n')
+print('This is recommended for use with ED:Pathinder and neutron on Windows and maybe Mac and has been developed by: CMDR AweBob' + '\n')
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -76,16 +72,35 @@ def checkBinds () :
         nothing = input('Cannot find binds file. Press enter to close - ')
         raise SystemExit
 
-def closeGalaxyMap () :
-    for index in range(500) :
-        time.sleep(0.01)
-        exitButtonLocation = pyautogui.locateCenterOnScreen('exitButton.png') 
-        if exitButtonLocation != None :
-            break
-    if exitButtonLocation != None :
-        pyautogui.moveTo( exitButtonLocation )
-        pyautogui.click() 
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+def findImageAndClick ( imageToClick ) :
+    if type(imageToClick) is str : #Confirm file name isn't some other format
+        for i in range(5) :
+            startTime = time.time()
+            amount = 0
+            for tupleThing in pyautogui.locateAllOnScreen( imageToClick )  : #OSError if image isn't in the directory --- if no matches are found it will skip the for loop, no errors
+                amount = amount + 1
+            if amount == 1 :
+                pyautogui.moveTo( pyautogui.center( tupleThing ) ) #move to the correct tab
+                pyautogui.click()
+                return(True , 'Sucess')
+            elif amount > 1 :
+                return(False , 'Multiple found')
+            #if it's less than one image wasn't found and it'll loop again, no need to do anything
+            endTime = time.time()
+            time.sleep( calcTimeToSleep(1 , startTime , endTime) )
+    return(False , 'None found or Incorrect image file')
+
+def calcTimeToSleep ( timeInSec , start , end ) :
+    timeToSleep = int(timeInSec) - ( int(start) + int(end) )
+    if timeToSleep > 0 :
+        return(timeToSleep)
+    elif timeToSleep <= 0 :
+        return(0)
+    else : #this is theoretically impossible, but ya never know
+        return(0)
+        
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def main () :
@@ -93,53 +108,34 @@ def main () :
     ACTIVATION_HOTKEY = str(input('Enter hotkey to plot route -  '))
     while True :
         try :
-            selectButtonFound = False
             if keyboard.is_pressed( ACTIVATION_HOTKEY ) == True :
-                buttonLocation = None
                 bindOfGalaxyMap = checkBinds()
-                clipboard = pyperclip.paste()
+                clipboard = pyperclip.paste() #Must run as admin for this to work, MUST, for some reason your clipboard is an admin only thing
                 if len( clipboard ) != 0 :
-                    pyautogui.press( bindOfGalaxyMap )
-                    for index in range(500) :
-                        time.sleep(0.01)
-                        try :
-                            print('w')
-                            buttonLocation = pyautogui.locateCenterOnScreen('menuBar.png') 
-                            break
-                        except :
-                            print('l')
-                            pass
-                    if buttonLocation != None :
-                        pyautogui.moveTo( buttonLocation ) #move to the correct tab
-                        pyautogui.click()
-                    for index in range(500) :
-                        time.sleep(0.01)
-                        searchBarLocation = pyautogui.locateCenterOnScreen('searchBar.png') 
-                        if searchBarLocation != None :
-                            break
-                    if searchBarLocation != None :
-                        pyautogui.moveTo( searchBarLocation ) #select search bar
-                        pyautogui.click()
-                        pyautogui.typewrite( clipboard , interval=0.03 ) #type clipboard with a tiny wait between each charector
-                        pyautogui.press('enter') #Do the search
-                        for index in range(500) : #Will try and find it for slightly more than 5 seconds
-                            time.sleep(0.01) #this allows the above to work
-                            selectButton = pyautogui.locateCenterOnScreen('selectSystem.png') 
-                            if selectButton != None :
-                                selectButtonFound = True
-                                break
-                        if selectButtonFound == True :
-                            pyautogui.moveTo( selectButton ) #select button
-                            pyautogui.click() #click button
+                    pyautogui.press( bindOfGalaxyMap ) #opens the galaxy map
+                    time.sleep(0.25) #cuz game takes a quick sec to load here
+                    status , additional = findImageAndClick('menuBar.png') 
+                    if status != False :
+                        time.sleep(0.1)
+                        status , additional = findImageAndClick('searchBar.png') 
+                        if status != False :
                             time.sleep(0.25)
-                            closeGalaxyMap()
-                            print('Sucessful run  ' + str(time.time()))
+                            pyautogui.typewrite( clipboard , interval=0.03 ) #type clipboard with a tiny wait between each charector
+                            pyautogui.press('enter') #Do the search
+                            time.sleep(1) #Pre wait, even tho find image has a build in wait function
+                            status , additional = findImageAndClick('selectSystem.png') 
+                            if status != False :
+                                status , additional = findImageAndClick('exitButton.png')
+                                print('Sucessful run  ' + str(time.time()) + '  ' + clipboard )
+                            else :
+                                print('System not found or Route button not found  ' + str(time.time()) + '  ' + clipboard )
+                                status , additional = findImageAndClick('exitButton.png')
                         else :
-                            print('System not found  ' + str(time.time()) )
-                            closeGalaxyMap()
+                            print('Search bar cannot be found  ' +  str(time.time()) + '  ' + clipboard )
+                            status , additional = findImageAndClick('exitButton.png')
                     else :
-                        print('Search bar cannot be found  ' +  str(time.time()) )
-                        closeGalaxyMap()                        
+                        print('Menu bar cannot be found  ' +  str(time.time()) + '  ' + clipboard )
+                        status , additional = findImageAndClick('exitButton.png')    
                 else :
                     print('Next system not in clipboard  ' + str(time.time()) )
                 time.sleep(0.75)

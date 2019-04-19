@@ -1,4 +1,6 @@
-ALL MUST BE AS .PNG
+This is where to find these screenshots if you are retaking them
+These are the names of them and where to find them are in the photoes in this folder
+They MUST all be .png format
 
 menuBar - a screenshot of what the unselected button to go to the routing section of the galaxy map menu as png
 searchBar - a screenshot of what the searchbar for systems looks like
