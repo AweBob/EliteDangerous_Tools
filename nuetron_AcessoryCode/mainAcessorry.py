@@ -7,6 +7,7 @@ import xml.etree.ElementTree as ET
 import keyboard
 import pyperclip 
 import time
+import mouse
 
 pyautogui.FAILSAFE = False # disables the fail-safe
 
@@ -101,6 +102,11 @@ def calcTimeToSleep ( timeInSec , start , end ) :
     else : #this is theoretically impossible, but ya never know
         return(0)
         
+def pressKey ( key ) :
+    for i in range(50) : #1/2 a second = .01 x 50
+        keyboard.press(key)
+        time.sleep(0.01)
+
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def main () :
@@ -112,14 +118,16 @@ def main () :
                 bindOfGalaxyMap = checkBinds()
                 clipboard = pyperclip.paste() #Must run as admin for this to work, MUST, for some reason your clipboard is an admin only thing
                 if len( clipboard ) != 0 :
-                    pyautogui.press( bindOfGalaxyMap ) #opens the galaxy map
+                    pressKey( bindOfGalaxyMap ) #opens the galaxy map
                     time.sleep(0.25) #cuz game takes a quick sec to load here
                     status , additional = findImageAndClick('menuBar.png') 
                     if status != False :
                         time.sleep(0.1)
-                        status , additional = findImageAndClick('searchBar.png') 
+                        status , additional = findImageAndClick('searchBar.png')
+                        if status == False : #if the first one can't be found, try to find this one
+                             status , additional = findImageAndClick('searchBar2.png')
                         if status != False :
-                            time.sleep(0.25)
+                            time.sleep(0.1)
                             pyautogui.typewrite( clipboard , interval=0.03 ) #type clipboard with a tiny wait between each charector
                             pyautogui.press('enter') #Do the search
                             time.sleep(1) #Pre wait, even tho find image has a build in wait function
@@ -134,7 +142,7 @@ def main () :
                             print('Search bar cannot be found  ' +  str(time.time()) + '  ' + clipboard )
                             status , additional = findImageAndClick('exitButton.png')
                     else :
-                        print('Menu bar cannot be found  ' +  str(time.time()) + '  ' + clipboard )
+                        print('Menu bar cannot be found  ' +  str(time.time()) + '  ' + clipboard + '  ' + str(bindOfGalaxyMap) )
                         status , additional = findImageAndClick('exitButton.png')    
                 else :
                     print('Next system not in clipboard  ' + str(time.time()) )
