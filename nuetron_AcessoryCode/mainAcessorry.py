@@ -56,26 +56,96 @@ def openBind ( bindFileName ) :
 def checkBinds () :
     try :
         binds = grabBind ()
+        
         try :
-            test = binds['GalaxyMapOpen'] #Errors here if no binds file found
-            dirtySimplfied = binds['GalaxyMapOpen'][0][0]
-            cutBind = dirtySimplfied.split('_')
-            if cutBind[0] != 'Key' :
+            GALAXYMAP = None
+            for i in binds['GalaxyMapOpen'] : 
+                dirtySimplfied = i[0] 
+                cutBind = dirtySimplfied.split('_')
+                if cutBind[0] == 'Key' :
+                    actualBind = cutBind[1].lower()
+                    GALAXYMAP = str(actualBind)
+                    break
+            if GALAXYMAP == None :
                 nothing = input('It apears that the bind for open galaxy map isnt bound to a keyboard key. Press enter to close - ')
                 raise SystemExit
-            else :
-                actualBind = cutBind[1].lower()
-                return(str(actualBind))
         except :
             nothing = input('Binds file found, but it apears open Galaxy Map isnt bound to anything. Press enter to close - ')
             raise SystemExit
+
+        try :
+            UISELECT = None
+            for i in binds['UI_Select'] : 
+                dirtySimplfied = i[0] 
+                cutBind = dirtySimplfied.split('_')
+                if cutBind[0] == 'Key' :
+                    actualBind = cutBind[1].lower()
+                    UISELECT = str(actualBind)
+                    break
+            if UISELECT == None :
+                nothing = input('It apears that the bind for ui select isnt bound to a keyboard key. Press enter to close - ')
+                raise SystemExit
+        except :
+            nothing = input('Binds file found, but it apears ui select isnt bound to anything. Press enter to close - ')
+            raise SystemExit 
+
+        try :
+            NEXTPANELTAB = None
+            for i in binds['CycleNextPanel'] :
+                dirtySimplfied = i[0] 
+                cutBind = dirtySimplfied.split('_')
+                if cutBind[0] == 'Key' :
+                    actualBind = cutBind[1].lower()
+                    NEXTPANELTAB = str(actualBind)
+                    break
+            if NEXTPANELTAB == None :
+                nothing = input('It apears that the bind for next panel tab isnt bound to a keyboard key. Press enter to close - ')
+                raise SystemExit
+        except :
+            nothing = input('Binds file found, but it apears next panel tab isnt bound to anything. Press enter to close - ')
+            raise SystemExit 
+
+        try :
+            UIRIGHT = None
+            for i in binds['UI_Right'] :
+                dirtySimplfied = i[0] 
+                cutBind = dirtySimplfied.split('_')
+                if cutBind[0] == 'Key' :
+                    actualBind = cutBind[1].lower()
+                    UIRIGHT = str(actualBind)
+                    break
+            if UIRIGHT == None :
+                nothing = input('It apears that the bind for ui right isnt bound to a keyboard key. Press enter to close - ')
+                raise SystemExit
+        except :
+            nothing = input('Binds file found, but it apears ui right isnt bound to anything. Press enter to close - ')
+            raise SystemExit 
+
+        try :
+            UIBACK = None
+            for i in binds['UI_Back'] :
+                dirtySimplfied = i[0] 
+                cutBind = dirtySimplfied.split('_')
+                if cutBind[0] == 'Key' :
+                    actualBind = cutBind[1].lower()
+                    UIBACK = str(actualBind)
+                    break
+            if UIBACK == None :
+                nothing = input('It apears that the bind for ui back isnt bound to a keyboard key. Press enter to close - ')
+                raise SystemExit
+        except :
+            nothing = input('Binds file found, but it apears ui back isnt bound to anything. Press enter to close - ')
+            raise SystemExit 
+
+        return(GALAXYMAP , UISELECT , NEXTPANELTAB , UIRIGHT , UIBACK)
+
     except :
         nothing = input('Cannot find binds file. Press enter to close - ')
         raise SystemExit
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def findImageAndClick ( imageToClick , loopAmount ) :
+def findImageAndClick ( imageToClick , loopAmount , ifClick ) :
     if type(imageToClick) is str : #Confirm file name isn't some other format
         for i in range( int(loopAmount) ) :
             startTime = time.time()
@@ -83,8 +153,9 @@ def findImageAndClick ( imageToClick , loopAmount ) :
             for tupleThing in pyautogui.locateAllOnScreen( imageToClick )  : #OSError if image isn't in the directory --- if no matches are found it will skip the for loop, no errors
                 amount = amount + 1
             if amount == 1 :
-                pyautogui.moveTo( pyautogui.center( tupleThing ) ) #move to the correct tab
-                pyautogui.click()
+                if ifClick == True :
+                    pyautogui.moveTo( pyautogui.center( tupleThing ) ) #move to the correct tab
+                    pyautogui.click()
                 return(True , 'Sucess')
             elif amount > 1 :
                 return(False , 'Multiple found')
@@ -102,56 +173,72 @@ def calcTimeToSleep ( timeInSec , start , end ) :
     else : #this is theoretically impossible, but ya never know
         return(0)
         
-def pressKey ( key ) :
+def pressKey ( key ) : 
     for i in range(50) : #1/2 a second = .01 x 50
-        keyboard.press(key)
+        try :
+            keyboard.press(key)
+        except :
+            nothing = input('Your thing bound to ' + str(key) + ' isnt accepted by this, please change it and try again - ')
+            raise SystemExit
         time.sleep(0.01)
+    keyboard.release(key)
+
+def waitTillFound ( imageName , secsTillQuit ) :
+    done = False
+    start = time.time()
+    timeToQuit = start + secsTillQuit
+    while done == False :
+        status , details = findImageAndClick(imageName , 1 , False)
+        if status == True :
+            done = True
+        if time.time() > timeToQuit :
+            done = True
+    #when this finishes it'll go back to main
+
+def pasteClipboard() :
+    pyautogui.keyDown('ctrl')
+    keyboard.press('v')
+    pyautogui.keyUp('ctrl')
+
+def convertedTime () :
+    try :
+        current = time.strftime("%H:%M%S",time.localtime(int(time.time())))
+    except :
+        current = str(time.time())
+    return(current)
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def main () :
-    bindOfGalaxyMap = checkBinds()
+    GALAXYMAP , UISELECT , NEXTPANELTAB , UIRIGHT , UIBACK = checkBinds()
     ACTIVATION_HOTKEY = str(input('Enter hotkey to plot route -  '))
     while True :
         try :
             if keyboard.is_pressed( ACTIVATION_HOTKEY ) == True :
-                bindOfGalaxyMap = checkBinds()
-                clipboard = pyperclip.paste() #Must run as admin for this to work, MUST, for some reason your clipboard is an admin only thing
+                GALAXYMAP , UISELECT , NEXTPANELTAB , UIRIGHT , UIBACK = checkBinds()
+                clipboard = pyperclip.paste() #MUST run as admin or this won't work
                 if len( clipboard ) != 0 :
-                    pressKey( bindOfGalaxyMap ) #opens the galaxy map
-                    time.sleep(0.25) #cuz game takes a quick sec to load here
-                    status , additional = findImageAndClick('menuBar.png' , 5) 
-                    if status != False :
-                        time.sleep(0.1)
-                        status , additional = findImageAndClick('searchBar.png' , 3)
-                        if status == False : #if the first one can't be found, try to find this one
-                            status , additional = findImageAndClick('searchBar2.png' , 3)
-                        if status != False :
-                            time.sleep(0.5)
-                            keyboard.press('space') #focus in on the searchbar
-                            time.sleep(0.5)
-                            pyautogui.typewrite( clipboard , interval=0.03 ) #type clipboard with a tiny wait between each charector
-                            #WORKS UNTIL HERE <><><><><><<><><><><><<><><><><><<><><><><><<><><><><><<><><><><><<><><><><><<><><><><><<><><><><><<><><><><><<><><><><><<><><><><><<><><><><><
-                            pressKey('enter') #Do the search
-                            #pyautogui.press('enter')
-                            #keyboard.press('enter')
-                            time.sleep(1) #Pre wait, even tho find image has a build in wait function
-                            status , additional = findImageAndClick('selectSystem.png' , 45) 
-                            if status != False :
-                                status , additional = findImageAndClick('exitButton.png' , 5)
-                                print('Sucessful run  ' + str(time.time()) + '  ' + clipboard )
-                            else :
-                                print('System not found or Route button not found  ' + str(time.time()) + '  ' + clipboard )
-                                status , additional = findImageAndClick('exitButton.png' , 5)
-                        else :
-                            print('Search bar cannot be found  ' +  str(time.time()) + '  ' + clipboard )
-                            status , additional = findImageAndClick('exitButton.png' , 5)
-                    else :
-                        print('Menu bar cannot be found  ' +  str(time.time()) + '  ' + clipboard + '  ' + str(bindOfGalaxyMap) )
-                        status , additional = findImageAndClick('exitButton.png' , 5)    
+                    pressKey( GALAXYMAP ) #opens the galaxy map
+                    waitTillFound('menuBar.png' , 20 )
+                    pressKey( NEXTPANELTAB )
+                    time.sleep(0.1)
+                    pressKey(UISELECT)
+                    time.sleep(0.1)
+                    pasteClipboard()
+                    time.sleep(0.03)
+                    keyboard.press('enter')
+                    waitTillFound('routePloterAboveSystemUI.png' , 20) #SCREENSHOT DOESN'T EXSIST YET
+                    keyboard.press(UIRIGHT)
+                    time.sleep(0.1)
+                    keyboard.press(UIRIGHT)
+                    time.sleep(0.1)
+                    keyboard.press(UISELECT)
+                    waitTillFound('routeplotsucessful.png' , 60) #SCREENSHOT DOESN'T EXSIST YET, this is the orange thing that apears above a system your routed to
+                    keyboard.press(UIBACK) #test if this closes galmap
+                    print('Sucessful run at ' + convertedTime() + ' with system ' + str(pyperclip.paste()) )
                 else :
-                    print('Next system not in clipboard  ' + str(time.time()) )
-                time.sleep(0.75)
+                    print('Next system not in clipboard or you didnt run as admin at time ' + convertedTime() )
+                time.sleep(0.75) #prevent hotkey spamming accidentally
         except :
             pass
 
