@@ -7,7 +7,6 @@ import xml.etree.ElementTree as ET
 import keyboard
 import pyperclip 
 import time
-import mouse
 
 pyautogui.FAILSAFE = False # disables the fail-safe
 
@@ -173,8 +172,8 @@ def calcTimeToSleep ( timeInSec , start , end ) :
     else : #this is theoretically impossible, but ya never know
         return(0)
         
-def pressKey ( key ) : 
-    for i in range(50) : #1/2 a second = .01 x 50
+def pressKey ( key , length ) : 
+    for i in range(length) : #1/2 a second = .01 x 50
         try :
             keyboard.press(key)
         except :
@@ -195,20 +194,20 @@ def waitTillFound ( imageName , secsTillQuit ) :
             done = True
     #when this finishes it'll go back to main
 
-def pasteClipboard() :
+def pasteClipboard() : #USELESS - for some reason elite dangerous blocks this, why, idk
     pyautogui.keyDown('ctrl')
-    keyboard.press('v')
+    pyautogui.press('v')
     pyautogui.keyUp('ctrl')
 
 def convertedTime () :
     try :
-        current = time.strftime("%H:%M%S",time.localtime(int(time.time())))
+        current = time.strftime("%H:%M:%S",time.localtime(int(time.time())))
     except :
         current = str(time.time())
     return(current)
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
+#ensure that  nothing else is overlapping "NEXTPANELTAB" in the galaxy map
 def main () :
     GALAXYMAP , UISELECT , NEXTPANELTAB , UIRIGHT , UIBACK = checkBinds()
     ACTIVATION_HOTKEY = str(input('Enter hotkey to plot route -  '))
@@ -218,23 +217,24 @@ def main () :
                 GALAXYMAP , UISELECT , NEXTPANELTAB , UIRIGHT , UIBACK = checkBinds()
                 clipboard = pyperclip.paste() #MUST run as admin or this won't work
                 if len( clipboard ) != 0 :
-                    pressKey( GALAXYMAP ) #opens the galaxy map
+                    pressKey( GALAXYMAP , 50 ) #opens the galaxy map
                     waitTillFound('menuBar.png' , 20 )
-                    pressKey( NEXTPANELTAB )
-                    time.sleep(0.1)
-                    pressKey(UISELECT)
-                    time.sleep(0.1)
-                    pasteClipboard()
-                    time.sleep(0.03)
-                    keyboard.press('enter')
-                    waitTillFound('routePloterAboveSystemUI.png' , 20) #SCREENSHOT DOESN'T EXSIST YET
-                    keyboard.press(UIRIGHT)
-                    time.sleep(0.1)
-                    keyboard.press(UIRIGHT)
+                    pressKey( NEXTPANELTAB , 50 )
                     time.sleep(0.1)
                     keyboard.press(UISELECT)
-                    waitTillFound('routeplotsucessful.png' , 60) #SCREENSHOT DOESN'T EXSIST YET, this is the orange thing that apears above a system your routed to
-                    keyboard.press(UIBACK) #test if this closes galmap
+                    time.sleep(0.1)
+                    keyboard.release(UISELECT)
+                    pyautogui.typewrite(pyperclip.paste())
+                    time.sleep(0.03)
+                    keyboard.press('enter')
+                    time.sleep(0.25)
+                    keyboard.release('enter')
+                    waitTillFound('routePloterAboveSystemUI.png' , 20) 
+                    pressKey(UIRIGHT , 25)
+                    time.sleep(0.1)
+                    pressKey(UISELECT , 100)
+                    time.sleep(0.1)
+                    pressKey(UIBACK , 25) #test if this closes galmap
                     print('Sucessful run at ' + convertedTime() + ' with system ' + str(pyperclip.paste()) )
                 else :
                     print('Next system not in clipboard or you didnt run as admin at time ' + convertedTime() )
