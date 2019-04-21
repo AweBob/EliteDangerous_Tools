@@ -7,6 +7,7 @@ import xml.etree.ElementTree as ET
 import keyboard
 import pyperclip 
 import time
+import win32gui
 
 pyautogui.FAILSAFE = False # disables the fail-safe
 
@@ -214,30 +215,34 @@ def main () :
     while True :
         try :
             if keyboard.is_pressed( ACTIVATION_HOTKEY ) == True :
-                GALAXYMAP , UISELECT , NEXTPANELTAB , UIRIGHT , UIBACK = checkBinds()
-                clipboard = pyperclip.paste() #MUST run as admin or this won't work
-                if len( clipboard ) != 0 :
-                    pressKey( GALAXYMAP , 50 ) #opens the galaxy map
-                    waitTillFound('menuBar.png' , 20 )
-                    pressKey( NEXTPANELTAB , 50 )
-                    time.sleep(0.1)
-                    keyboard.press(UISELECT)
-                    time.sleep(0.1)
-                    keyboard.release(UISELECT)
-                    pyautogui.typewrite(pyperclip.paste())
-                    time.sleep(0.03)
-                    keyboard.press('enter')
-                    time.sleep(0.25)
-                    keyboard.release('enter')
-                    waitTillFound('routePloterAboveSystemUI.png' , 20) 
-                    pressKey(UIRIGHT , 25)
-                    time.sleep(0.1)
-                    pressKey(UISELECT , 100)
-                    time.sleep(0.1)
-                    pressKey(UIBACK , 25) #test if this closes galmap
-                    print('Sucessful run at ' + convertedTime() + ' with system ' + str(pyperclip.paste()) )
+                #print(str(win32gui.GetWindowText (win32gui.GetForegroundWindow())))
+                if win32gui.GetWindowText (win32gui.GetForegroundWindow()) == 'Elite - Dangerous (CLIENT)' :
+                    GALAXYMAP , UISELECT , NEXTPANELTAB , UIRIGHT , UIBACK = checkBinds()
+                    clipboard = pyperclip.paste() #MUST run as admin or this won't work
+                    if len( clipboard ) != 0 :
+                        pressKey( GALAXYMAP , 50 ) #opens the galaxy map
+                        waitTillFound('menuBar.png' , 20 )
+                        pressKey( NEXTPANELTAB , 50 )
+                        time.sleep(0.1)
+                        keyboard.press(UISELECT)
+                        time.sleep(0.1)
+                        keyboard.release(UISELECT)
+                        pyautogui.typewrite(pyperclip.paste().lower())
+                        time.sleep(0.03)
+                        keyboard.press('enter')
+                        time.sleep(0.25)
+                        keyboard.release('enter')
+                        waitTillFound('routePloterAboveSystemUI.png' , 20) 
+                        pressKey(UIRIGHT , 25)
+                        time.sleep(0.1)
+                        pressKey(UISELECT , 100)
+                        time.sleep(0.1)
+                        pressKey(UIBACK , 25) #test if this closes galmap
+                        print('Sucessful run at ' + convertedTime() + ' with system ' + str(pyperclip.paste()) )
+                    else :
+                        print('Next system not in clipboard or you didnt run as admin at time ' + convertedTime() )
                 else :
-                    print('Next system not in clipboard or you didnt run as admin at time ' + convertedTime() )
+                    print('Hotkey was pressed, but elite isnt the active window at ' + convertedTime() )
                 time.sleep(0.75) #prevent hotkey spamming accidentally
         except :
             pass
