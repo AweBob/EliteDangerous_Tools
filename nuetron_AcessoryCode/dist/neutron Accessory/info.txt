@@ -1,0 +1,7 @@
+By: AweBob
+Version: 1.0
+https://github.com/AweBob/EliteDangerous_Tools
+
+Thanks for the help:
+	EDCD: https://discord.gg/zQjjutY
+	keegs: for sharing a bit of code with me
