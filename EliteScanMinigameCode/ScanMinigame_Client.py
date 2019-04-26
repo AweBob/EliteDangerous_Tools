@@ -20,6 +20,7 @@ SERVER_IP_ADRESS = input ('Type the external IP of hosting server(i.e. 19.374.92
 SERVER_PORT = int(input('Type port of Server(i.e. 13723) - '))
 SERVER_PASSWORD = input('Type in server password(i.e. pLzWoRk123) - ')
 READING_SETTING = input('Do you want to be read to everytime you die or get a kill? (y/n) - ')
+RUNNING_MODE = input('Safe startup or normal startup? (s/n) - ') #Safe is really only for testing for errors, but I'll leave the option in there for now!
 
 #===========================================================================================================================================================================================
 
@@ -41,8 +42,6 @@ def pingServer( ToSend ) : #ToSend should be a list - MUST be a list
     return( recievedStuff , ping )
 
 #===========================================================================================================================================================================================
-#recievedList , ping = pingServer( listToSend )
-#tts.speak('test')
 
 def mainCode () :
     loopRotations = 0 #loop rotations for main while loop.
@@ -56,8 +55,9 @@ def mainCode () :
 
     while True :
         startClock = time.time()
+        readingInfoClass = readInformation()
         if eventOverride == True : #event is over due to score
-            if duringEventOverDueToTime == 600 : #it's been 10 minutes
+            if duringEventOverDueToTime >= 600 : #it's been 10 minutes
                 nothing = input('Event has been over for ten minutes, press enter to close - ')
                 raise SystemExit
             duringEventOverDueToTime = duringEventOverDueToTime + 1
@@ -88,7 +88,7 @@ def mainCode () :
                 try :
                     recievedList , ping = pingServer( listToSend ) #ping in milliseconds, ms
                 except :
-                    print('Error in the process of pinging the server ' + str( time.time() ) )
+                    print('Error in the process of pinging the server ' + str( time.time() ) + ' in your local time that is ' + str( convertedTime() ) )
                     recievedList = ['.' , 'serverError']
                     ping = 0
             else:
@@ -103,17 +103,17 @@ def mainCode () :
                         numPointsAcheived = recievedList[2]
                     elif recievedList[1] == 'eventIsOver' :
                         if recievedList[2] == 'dueToTime' :
-                            talk('Event is over due to time.')
+                            readingInfoClass.add('Event is over due to time.')
                         elif recievedList[2] == 'dueToScore' :
-                            talk('Event is over due to all scans being sucessfully uploaded.')
+                            readingInfoClass.add('Event is over due to all scans being sucessfully uploaded.')
                             eventOverride = True #Set it so event is over due to score
                         else :
-                            talk('Event is over for an unforseen issue.')
+                            readingInfoClass.add('Event is over for an unforseen issue.')
                     else :
                         print('Error: Received unforseen event from server')
                 elif recievedList[0] == '.' :
                     if recievedList[1] == 'incorrectPassword' :
-                        talk('Error, I.P. and port correct, but incorrect password.')
+                        readingInfoClass.add('Error, I.P. and port correct, but incorrect password.')
                         nothing = input('Press enter to close - ')
                     elif recievedList[1]=='serverError' :
                         print('Server error ' + str(time.time()) )
@@ -121,26 +121,26 @@ def mainCode () :
                 print('ERROR: In received data from server')
 
             if int(ping) > 3000 : #ping warning, remeber, ping is in string format
-                talk('Your ping is above three thousand.') #if ur ping is more than 5 thousand the client will stop
+                readingInfoClass.add('Your ping is above three thousand.') #if ur ping is more than 5 thousand the client will stop
             if c_possesingScan == True : 
                 if possesion == True :
-                    talk('Data aboard.')
+                    readingInfoClass.add('Data aboard.')
                 else :
-                    talk('Data no longer aboard.')
+                    readingInfoClass.add('Data no longer aboard.')
             if c_uploadedScan == True :
                 try :
                     numScansLeft = int(numberScansToWin) - int(numPointsAcheived) #if numPointsAcheived doesn't exsist because of error in recieving data
                 except :
                     numScansLeft = 'an unkown amount'
-                talk('You have uploaded ' + str(uploaded) + ' scans. You have ' + str(numScansLeft) + ' left to win.')
+                readingInfoClass.add('You have uploaded ' + str(uploaded) + ' scans. You have ' + str(numScansLeft) + ' left to win.')
             if duringEventRotations == 0 :
-                talk('Event has started!')
+                readingInfoClass.add('Event has started!')
             if READING_SETTING == 'y' or READING_SETTING == 'Y' or READING_SETTING == 'yes' or READING_SETTING == 'Yes' :
                 if c_deathLog == True :
                     if len( deathsList ) == 1 :
-                        talk('You have died to ' + str( deathsList[0] ) )
+                        readingInfoClass.add('You have died to ' + str( deathsList[0] ) )
                     else :
-                        talk('You have died multiple or zero times in the last few seconds.') #theoretically impossible, ya never know tho
+                        readingInfoClass.add('You have died multiple or zero times in the last few seconds.') #theoretically impossible, ya never know tho
                 if C_killLog == True :
                     if len( killsList ) >= 1 :
                         stringOfKillsDataForReading = ''
@@ -148,31 +148,40 @@ def mainCode () :
                             stringOfKillsDataForReading = stringOfKillsDataForReading + item 
                             if (int(index) + 1) <= len( killsList ) :
                                 stringOfKillsDataForReading = stringOfKillsDataForReading + ' and '
-                        talk('You have killed ' + stringOfKillsDataForReading )
+                        readingInfoClass.add('You have killed ' + stringOfKillsDataForReading )
             
             duringEventRotations = duringEventRotations + 1
         elif time.time() <= eventStartTime : #if event hasn't started 
             minutesTillStart = int( ( int(eventStartTime) - int(time.time()) ) / 60 )
             if beforeEventRotations == 0 or ( minutesTillStart < 10 and  beforeEventRotations == 1 ) or ( minutesTillStart < 1 and  beforeEventRotations == 2 ) :
-                talk('Event hasnt started yet. It will begin in ' + str(minutesTillStart) + ' minutes.')
+                readingInfoClass.add('Event hasnt started yet. It will begin in ' + str(minutesTillStart) + ' minutes.')
                 beforeEventRotations = beforeEventRotations + 1
         elif time.time() >= ( int(eventLength) + int(eventStartTime) ) : #event is over due to time
             minutesSinceEnd = int( ( time.time() - (int(eventStartTime) + int(eventLength)) ) / 60 )
             if (minutesSinceEnd == 0 and afterEventRotations == 0) or (minutesSinceEnd == 4 and afterEventRotations == 1) :
-                talk('Event is over, feel free to close the software.')
+                readingInfoClass.add('Event is over, feel free to close the software.')
                 afterEventRotations = afterEventRotations + 1
             elif minutesSinceEnd == 5 :
-                talk('Software closing. Event has been over for more than five minutes.')
+                readingInfoClass.add('Software closing. Event has been over for more than five minutes.')
                 raise SystemExit
         else :
-            print('Error in main loop, time: ' + str( time.time() )  )
+            print('Error in main loop, time: ' + str( time.time() ) + ' in your local time that is ' + str( convertedTime() )  )
+        readingInfoClass.read()
         endClock = time.time()
         loopRotations = loopRotations + 1
         time.sleep( timeToSleep(startClock , endClock) )
 
-def talk ( string ) :
-    print('SAY: ' + str(string))
-    tts.speak(str( string ))
+class readInformation :
+    def __init__ (self) :
+        self.fullList = []
+    def add ( self , message ) :
+        self.fullList.append( message )
+    def read ( self ) :
+        for index , item in enumerate(self.fullList) :
+            tts.speak( str(item) )
+            print('SAY: ' + str(item) + ' at ' + str(convertedTime()) )
+            if (index + 1) != len(self.fullList) :
+                time.sleep(0.65)
 
 def addToSendingList ( listToSend , c_upload , c_death , c_kill , upload , death , kill) :
     clientCmdrName = getCMDRName()
@@ -441,11 +450,23 @@ def logCleaner ( dirtyLogFile , errorPos ) :
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def safeStart () :
+def convertedTime () :
     try :
-        mainCode()
-    except Exception as error :
-        nothing = input('Big error!!!   ' + str(error))
+        current = time.strftime("%H:%M:%S",time.localtime(int(time.time())))
+    except :
+        current = str(time.time())
+    return(current)
 
-#safeStart()
-mainCode()  
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+def start () :
+    if RUNNING_MODE == 's' :
+        try :
+            mainCode()
+        except Exception as error :
+            nothing = input('Big error!!!   ' + str(error))
+            raise SystemExit  
+    else :
+        mainCode()
+
+start()

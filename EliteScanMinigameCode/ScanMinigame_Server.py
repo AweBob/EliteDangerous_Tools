@@ -18,6 +18,7 @@ PLAYER_TO_SCAN = input('What is the name of the CMDR people are trying to scan -
 
 written = False 
 eventOverDueToScoreTime = 0 
+startTime = time.time()
 
 #===========================================================================================================================================================================================
 
@@ -84,7 +85,8 @@ def calculateResponse ( listRecieved ) :
         return(['.' , 'serverError'])
 
 def writeTempData () :
-    tempFile = open('TempServerOutput.txt','w+') #this is incase the server crashs and ya don't wanna lose data
+    fileName = 'TempServerOutput' + str( startTime ) + '.txt'
+    tempFile = open( fileName ,'w+') #this is incase the server crashs and ya don't wanna lose data
     tempFile.write('TEMP OUTPUT FROM SERVER' + '\n' )
     tempFile.write('Current time: ' + '\n' + str( time.time() ) + '\n' + str( eventTimeStatus() ) + '\n' + '\n' ) #unix time - int based on time status so I don't have to do math manually
     tempFile.write('Standards: ' + '\n' + str(PLAYER_TO_SCAN) + '\n' + str(LENGTH_EVENT) + '\n' + str(EVENT_START_TIME) + '\n' + str(SCANS_TO_WIN) + '\n' + str(SERVER_PASSWORD) + '\n' + str(SERVER_PORT) + '\n' + str(SERVER_IP_ADRESS) + '\n' + '\n'  ) #refer to here for what where
@@ -100,7 +102,8 @@ def writeTempData () :
     tempFile.close()
 
 def writeFinalData () :
-    outputFile = open("ServerOutput.txt","w+")   #Use outputFile.write('text' + '\n') to write a new line to it
+    fileName = 'ServerOutput' + str(startTime) + '.txt'
+    outputFile = open( fileName ,"w+")   #Use outputFile.write('text' + '\n') to write a new line to it
     outputFile.write('KILLS LIST' + '\n'  )
     for d in killsData.getData() :
         outputFile.write(str(d[0]) + ' , ' + str(d[1]) + '\n' )   #killername then victim        
@@ -119,7 +122,6 @@ def writeFinalData () :
     print('Sucessfully wrote data to .txt file in this current directoy. Reference it for developing a post match report.')
 
 def eventTimeStatus () :
-    #timeLeft = ( EVENT_START_TIME + LENGTH_EVENT ) - time.time()
     if len(pointsScored.getData()) >= SCANS_TO_WIN : #if event is over by score
         stat = 2.1 #event is over due to scored
     else : #if event isn't over by score
