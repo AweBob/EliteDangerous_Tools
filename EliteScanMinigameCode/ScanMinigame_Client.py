@@ -153,38 +153,38 @@ def mainCode () :
             
             duringEventRotations = duringEventRotations + 1 #add a round to the number of rotations while the event is online
         elif time.time() <= eventStartTime : #if event hasn't started 
-            minutesTillStart = int( ( int(eventStartTime) - int(time.time()) ) / 60 )
-            if beforeEventRotations == 0 or ( minutesTillStart < 10 and  beforeEventRotations == 1 ) or ( minutesTillStart < 1 and  beforeEventRotations == 2 ) :
-                readingInfoClass.add('Event hasnt started yet. It will begin in ' + str(minutesTillStart) + ' minutes.')
-                beforeEventRotations = beforeEventRotations + 1
-        elif time.time() >= ( int(eventLength) + int(eventStartTime) ) : #event is over due to time
-            minutesSinceEnd = int( ( time.time() - (int(eventStartTime) + int(eventLength)) ) / 60 )
+            minutesTillStart = int( ( int(eventStartTime) - int(time.time()) ) / 60 ) #minutes until the game starts
+            if beforeEventRotations == 0 or ( minutesTillStart < 10 and  beforeEventRotations == 1 ) or ( minutesTillStart < 1 and  beforeEventRotations == 2 ) : #ensure it hasn't been read for too much
+                readingInfoClass.add('Event hasnt started yet. It will begin in ' + str(minutesTillStart) + ' minutes.') #readout
+                beforeEventRotations = beforeEventRotations + 1 #increase number of times it's been read
+        elif time.time() >= ( int(eventLength) + int(eventStartTime) ) : #if event is over due to time
+            minutesSinceEnd = int( ( time.time() - (int(eventStartTime) + int(eventLength)) ) / 60 ) #minutes since the game has ended
             if (minutesSinceEnd == 0 and afterEventRotations == 0) or (minutesSinceEnd == 4 and afterEventRotations == 1) :
                 readingInfoClass.add('Event is over, feel free to close the software.')
                 afterEventRotations = afterEventRotations + 1
             elif minutesSinceEnd == 5 :
                 readingInfoClass.add('Software closing. Event has been over for more than five minutes.')
                 raise SystemExit
-        else :
-            print('Error in main loop, time: ' + str( time.time() ) + ' in your local time that is ' + str( convertedTime() )  )
-        readingInfoClass.read()
-        endClock = time.time()
-        loopRotations = loopRotations + 1
-        time.sleep( timeToSleep(startClock , endClock) )
+        else : #if event time status isn't valid, theoretically impossible
+            print('Error in main loop, time: ' + str( time.time() ) + ' in your local time that is ' + str( convertedTime() )  ) #print error, no readout
+        readingInfoClass.read() #read out all information added to readout information
+        endClock = time.time() #end the time
+        loopRotations = loopRotations + 1 #increase the number of times this while loop has rotated by one
+        time.sleep( timeToSleep(startClock , endClock) ) #sleep however much time to ensure this entire loop took 10 seconds. This function takes 0.05 secs and therefore causes a slight bit of error, its fine tho
 
-class readInformation :
-    def __init__ (self) :
+class readInformation : #readout class
+    def __init__ (self) : #init creates a clean list
         self.fullList = []
-    def add ( self , message ) :
+    def add ( self , message ) : #adds message to list
         self.fullList.append( message )
-    def read ( self ) :
+    def read ( self ) : #reads out each item in list, with delay.
         for index , item in enumerate(self.fullList) :
             tts.speak( str(item) )
             print('SAY: ' + str(item) + ' at ' + str(convertedTime()) )
             if (index + 1) != len(self.fullList) :
                 time.sleep(0.65)
 
-def addToSendingList ( listToSend , c_upload , c_death , c_kill , upload , death , kill) :
+def addToSendingList ( listToSend , c_upload , c_death , c_kill , upload , death , kill) : #if there is a change in c_ variables, add the other variable into list to send, then send it back
     clientCmdrName = getCMDRName()
     listToSend.append('normalPing')
     if c_upload == True :
@@ -202,11 +202,11 @@ def addToSendingList ( listToSend , c_upload , c_death , c_kill , upload , death
         listToSend.append( killList )
     return(listToSend)
 
-def mockPing () :
+def mockPing () : #returns info of an error ping
     list1 = [SERVER_PASSWORD , 'None']
     return( list1 , 1 )
 
-def getKillsDeaths ( ) :
+def getKillsDeaths ( ) : #calculates if you've died or killed anyone, returns the info. ensure convlog is updated first
     deathsList = []
     killsList = []
     for line in reversed(convLog) :
@@ -219,7 +219,7 @@ def getKillsDeaths ( ) :
             killsList.append( line['Victim'] )     #no CMDR or anything in front of it
     return( deathsList , killsList )
 
-def timeToSleep ( startTime , endTime ) :
+def timeToSleep ( startTime , endTime ) : #takes in start and end time and does math in roder to make loop last 10 secs exactly
     timeElapsed = endTime - startTime
     time = 10 - timeElapsed
     if time >= 0 :
@@ -227,11 +227,11 @@ def timeToSleep ( startTime , endTime ) :
     else :
         return( 0 )
 
-class detectChange :
-    def __init__ (self , default) :
+class detectChange : #detects change in variables
+    def __init__ (self , default) : #defines an initial values and logs the type of that variable
         self.oldVar = default
         self.dataType = type(default).__name__
-    def check ( self , newVar ) :
+    def check ( self , newVar ) : #takes in a variable sees if its changed form the last value. if it has send back the change in it and wether or not it has changed. Then sets variable to newly sent one.
         if self.dataType == 'int' or self.dataType == 'float'  :
             if newVar == self.oldVar :
                 return( False , newVar )
@@ -280,7 +280,7 @@ class detectChange :
             print('Error in detect change class')
             return( False , newVar )
 
-def testConnection () : #Example Call Output: objectiveName , eventLength , eventStartTime , numberScansToWin 
+def testConnection () : #Example Call Output: objectiveName , eventLength , eventStartTime , numberScansToWin   #Initial ping to server, grabs basic info about the active event and ensures server is online
     listToSend = [ SERVER_PASSWORD , 'testConnection']
     try :
         recievedList , ping = pingServer( listToSend )
@@ -296,14 +296,14 @@ def testConnection () : #Example Call Output: objectiveName , eventLength , even
         nothing = input('Ping to server was unsucessful. Incorrect IP or port. Press enter to close code. Please try again!')
         raise SystemExit #closes code
 
-def getCMDRName () :
+def getCMDRName () : #get the CMDR name of the latest .log file
     for line in convLog :
         if line['event']=='Commander' :
             cmdrName = line['Name']
             return(cmdrName)
     return('None') #Will only happen if game is just starting up
 
-def stateOfSpace ( line ) :
+def stateOfSpace ( line ) : #returns what state of space you are in based on the event in a line from convLog
     if line['event']=='Docked' or line['event']=='Died' :
         state = 'atStation'
         return(state)
@@ -316,7 +316,7 @@ def stateOfSpace ( line ) :
     else :
         return('None')
 
-def doYaHaveScanData ( objectiveVessel ) :
+def doYaHaveScanData ( objectiveVessel ) : #see if u are possesiong the scn data and how many scans you have dropped off
     opisoteConvLog = convLog[::-1]
     spaceForm = []
     for index, line in enumerate(opisoteConvLog) :
