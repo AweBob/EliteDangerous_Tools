@@ -110,44 +110,27 @@ def main() :
     #=================================================================================================================================
     #=================================================================================================================================
 
-    firstVal = max(estimatedPriceTotalList)
-    firstIndex = estimatedPriceTotalList.index( firstVal ) 
-    estimatedPriceTotalList[firstIndex] = -1 #so it won't get chosen for the next bigest val
+    numValues = 5 #I want 5 results to show (including the header)
 
-    secondVal = max(estimatedPriceTotalList)
-    secondIndex = estimatedPriceTotalList.index(secondVal)
-    estimatedPriceTotalList[secondIndex] = -1
+    bigestIndexes = [0]
+    bigestValues = [0]
+    for i in range(1,numValues + 1) :
+        bigestVal = max(estimatedPriceTotalList)
+        index = estimatedPriceTotalList.index( bigestVal ) 
+        estimatedPriceTotalList[index] = -1 #so it won't get chosen for the next bigest val
+        bigestIndexes.append(index)
+        bigestValues.append(bigestVal)
 
-    thirdVal = max(estimatedPriceTotalList)
-    thirdIndex = estimatedPriceTotalList.index(thirdVal)
-    estimatedPriceTotalList[thirdIndex] = -1
+    printoutInfo = [ ["Rank", "≈Price Per Ton", "≈Total Price", "System", "Station", "Pad", "Last Updated"] ] #initialize it with the header
+    for i in range(1,numValues + 1) :
+        printoutInfo.append( [ str(i) + ".", "{:,.0f}".format(estimatedPricePerTonList[bigestIndexes[i]]), "{:,.0f}".format(bigestValues[i]), systemList[bigestIndexes[i]], stationList[bigestIndexes[i]],  largePadList[bigestIndexes[i]], timeList[bigestIndexes[i]] ]  )
 
-    fourthVal = max(estimatedPriceTotalList)
-    fourthIndex = estimatedPriceTotalList.index(fourthVal)
-    estimatedPriceTotalList[fourthIndex] = -1
-
-    fifthVal = max(estimatedPriceTotalList)
-    fifthIndex = estimatedPriceTotalList.index(fifthVal)
-    estimatedPriceTotalList[fifthIndex] = -1
-
-    printoutInfo =  [  
-        ["Rank", "≈Price Per Ton", "≈Total Price", "System", "Station", "Pad", "Last Updated"],
-        ["1.", "{:,.0f}".format(estimatedPricePerTonList[firstIndex]), "{:,.0f}".format(firstVal), systemList[firstIndex], stationList[firstIndex],  largePadList[firstIndex], timeList[firstIndex] ],
-        ["2.", "{:,.0f}".format(estimatedPricePerTonList[secondIndex]), "{:,.0f}".format(secondVal), systemList[secondIndex], stationList[secondIndex], largePadList[secondIndex], timeList[secondIndex] ],
-        ["3.", "{:,.0f}".format(estimatedPricePerTonList[thirdIndex]), "{:,.0f}".format(thirdVal), systemList[thirdIndex], stationList[thirdIndex], largePadList[thirdIndex], timeList[thirdIndex] ],
-        ["4.", "{:,.0f}".format(estimatedPricePerTonList[fourthIndex]), "{:,.0f}".format(fourthVal), systemList[fourthIndex], stationList[fourthIndex], largePadList[fourthIndex], timeList[fourthIndex] ],
-        ["5.", "{:,.0f}".format(estimatedPricePerTonList[fifthIndex]), "{:,.0f}".format(fifthVal), systemList[fifthIndex], stationList[fifthIndex], largePadList[fifthIndex], timeList[fifthIndex] ]
-    ]
-
-    maxColumnList = [
-        len(max([printoutInfo[0][0],printoutInfo[1][0], printoutInfo[2][0], printoutInfo[3][0], printoutInfo[4][0], printoutInfo[5][0] ], key=len)) + 2,
-        len(max([printoutInfo[0][1],printoutInfo[1][1], printoutInfo[2][1], printoutInfo[3][1], printoutInfo[4][1], printoutInfo[5][1] ], key=len)) + 2,
-        len(max([printoutInfo[0][2],printoutInfo[1][2], printoutInfo[2][2], printoutInfo[3][2], printoutInfo[4][2], printoutInfo[5][2] ], key=len)) + 2,
-        len(max([printoutInfo[0][3],printoutInfo[1][3], printoutInfo[2][3], printoutInfo[3][3], printoutInfo[4][3], printoutInfo[5][3] ], key=len)) + 2,
-        len(max([printoutInfo[0][4],printoutInfo[1][4], printoutInfo[2][4], printoutInfo[3][4], printoutInfo[4][4], printoutInfo[5][4] ], key=len)) + 2,
-        len(max([printoutInfo[0][5],printoutInfo[1][5], printoutInfo[2][5], printoutInfo[3][5], printoutInfo[4][5], printoutInfo[5][5] ], key=len)) + 2,
-        len(max([printoutInfo[0][6],printoutInfo[1][6], printoutInfo[2][6], printoutInfo[3][6], printoutInfo[4][6], printoutInfo[5][6] ], key=len)) + 2
-    ]
+    maxColumnList = []
+    for i in range(0,len(printoutInfo[0])) :
+        columnList = []
+        for j in range(0,numValues + 1) :
+            columnList.append( printoutInfo[j][i] )
+        maxColumnList.append( len(max( columnList , key=len)) + 2 )
 
     for rowIndex in range(0,len(printoutInfo)) :
         for columnIndex in range(0,len(printoutInfo[0])) : 
@@ -164,5 +147,4 @@ if __name__ == "__main__":
     main()
 
 #To Do: 
-#Use for loops for printing so amount of things printed can be easily changed
 #printout amount everyone in a list will receive plus the trade dividens for each individual
