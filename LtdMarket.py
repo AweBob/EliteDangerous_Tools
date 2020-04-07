@@ -126,7 +126,7 @@ def main(  ) :
             print(printoutInfo[rowIndex][columnIndex] + spaces , end='')
         print() #new line
 
-    nothing = input("Press enter to run again.")
+    nothing = input("") #Blank input (it's implied hitting enter reloads it)
     main()
 
 if __name__ == "__main__":
