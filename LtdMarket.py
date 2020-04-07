@@ -49,13 +49,14 @@ def main(  ) :
         quantity = list(tr.children)[4].get_text()
         price = list(tr.children)[5].get_text()
         time = list(tr.children)[6].get_text()
-        stationList.append(station)
-        systemList.append(system)
-        largePadList.append(pad) #str
-        distanceList.append(dist) #string for printing later
-        quantityList.append( int(quantity.replace(",","")) ) #Remove the commas then convert to integer
-        priceList.append(int( price.replace(",","")[:-3] )) #remove commas, remove last three characters " Cr" and convert to int
-        timeList.append(time)  
+        if (float(dist[:-3]) <  10000) : #exclude colonia ones or ones more than 10,000 lys out 
+            stationList.append(station)
+            systemList.append(system)
+            largePadList.append(pad) #str
+            distanceList.append(dist) #string for printing later
+            quantityList.append( int(quantity.replace(",","")) ) #Remove the commas then convert to integer
+            priceList.append(int( price.replace(",","")[:-3] )) #remove commas, remove last three characters " Cr" and convert to int
+            timeList.append(time)  
         
     #=================================================================================================================================
     #==================CREDIT TO: https://github.com/neotron aka CMDR Neotron for the aproximation algorithm below====================
@@ -65,7 +66,7 @@ def main(  ) :
     perton = 0.00215 #0.215% per ton
     maxratio = 27.77777777777777
     #tonsAboard set above
-    for i in range(0, trsOnPage) :
+    for i in range(0, len(systemList)) :
         demand = quantityList[i] 
         cost = priceList[i] 
         perton = perton / ( demand / 504 )
