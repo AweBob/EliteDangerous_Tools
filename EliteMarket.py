@@ -17,7 +17,6 @@ table = list(body.children)[1] #In the table tag
 tbody = list(table.children)[1] #In the tbody tag
 
 trsOnPage = 40 #This is the number of items that r in the table (rows), or in the thml the number of tr headers
-bestIndex = 0 #Starts at zero, is changed in the for loop.
 
 stationList = [] #str
 systemList = [] #Str
@@ -54,18 +53,11 @@ for i in range(0,trsOnPage) :
         payoutOfHundredPercentTemp = 100
     else :
         payoutOfHundredPercentTemp = (2.8527 * (int(quantity.replace(",","")) / int(amountInHold) ) ) + 46.8285
+        if ( payoutOfHundredPercentTemp > 100 ) :
+            payoutOfHundredPercentTemp = 100
 
     payoutOfHundredPercentList.append( payoutOfHundredPercentTemp ) #payout of 100% = 2.8527 * (Demand/Units) + 46.8285
     actualPriceList.append( payoutOfHundredPercentTemp * int( price.replace(",","")[:-3] ) )
-
-    #print(str(i) + ". " + station + " | " + system + " " + pad + " " + scDist + " " + dist + " " + quantity + " " + price + " " + time)
-
-#print(str(stationList))
-#print(str(systemList))
-#print(str(largePadList))
-#print(str(quantityList))
-#print(str(priceList))
-#print(str(timeList))
 
 bigestVal = 0
 bigestValIndex = 0
@@ -76,7 +68,3 @@ for i in range(0,trsOnPage) :
 
 print("The best system to sell at's estimated price is " + str(actualPriceList[bigestValIndex]) + " with a payout of 100 percent of " + str(payoutOfHundredPercentList[bigestValIndex]))
 print(str(i) + ". " + station + " | " + system + " | " + pad + " | " + scDist + " " + dist + " | " + quantity + " | " + price + " | " + time)
-
-
-
-
