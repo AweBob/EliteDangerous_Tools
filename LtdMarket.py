@@ -1,7 +1,23 @@
 
 from EliteExtraJsonParser import CargoJsonParser #for reading Cargo.json
+from EliteLogParser import getParsedLog
 import requests #For pinging inara
 from bs4 import BeautifulSoup #for sorting inara
+
+#=================================================================================================================================
+
+def whatSystem () :
+    current_System = ''
+    for eventLine in reversed(getParsedLog(0)) :
+        if eventLine["event"]=="FSDJump" :
+            current_System = eventLine["StarSystem"]
+            return (current_System, True)
+        elif eventLine["event"]=="Location" :
+            current_System = eventLine["StarSystem"]
+            return(current_System, True)
+    return('', False)
+
+#=================================================================================================================================
 
 def main() :
     print()
@@ -136,6 +152,8 @@ def main() :
         print() #new line
 
     main()
+
+#=================================================================================================================================
 
 if __name__ == "__main__":
     print("Imports sucessful. Running LtdMarket...")

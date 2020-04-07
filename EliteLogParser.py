@@ -65,7 +65,7 @@ def getParsedLog (whichNum) :
 #EXAMPLES
 #logTransformer(grabLog(0))       #updates convLog variable with latest log file
 #print(convLog)                   #prints out the entire latest log file
-#print(getParsedLog(0))            #prints convLog additionally (is the 2 things above this in 1 step)
+#print(getParsedLog(0))           #prints convLog additionally (is the 2 things above this in 1 step)
 #print(convLog[-1])               #Prints latest line
 #print(convLog[0]['event'])       #prints first line event
 #print(convLog[0]['timestamp'])   #prints first line timestamp
