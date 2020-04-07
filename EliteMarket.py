@@ -95,9 +95,9 @@ thirdVal = max(estimatedPriceTotalList)
 thirdIndex = estimatedPriceTotalList.index(thirdVal)
 estimatedPriceTotalList[thirdIndex] = -1
 
-print("Algorithm sucessful: rank. system | station distance Large Pad: size estimated price per ton")
-print("1. " + systemList[firstIndex] + " | " + stationList[firstIndex] + " " + distanceList[firstIndex] + " Large Pad: " + str(largePadList[firstIndex]) + " " + str(estimatedPricePerTonList[firstIndex])[:-3] + "k" )
-print("2. " + systemList[secondIndex] + " | " + stationList[secondIndex] + " " + distanceList[secondIndex] + " Large Pad: " + str(largePadList[secondIndex]) + " " + str(estimatedPricePerTonList[secondIndex])[:-3] + "k" )
-print("3. " + systemList[thirdIndex] + " | " + stationList[thirdIndex] + " " + distanceList[thirdIndex] + " Large Pad:" + str(largePadList[thirdIndex]) + " " + str(estimatedPricePerTonList[thirdIndex])[:-3] + "k" )
+print("Algorithm sucessful: rank. system | station distance Large Pad: size estimated price per ton time since update")
+print("1. " + systemList[firstIndex] + " | " + stationList[firstIndex] + " " + distanceList[firstIndex] + " Large Pad: " + str(largePadList[firstIndex]) + " " + str(estimatedPricePerTonList[firstIndex])[:-3] + "k " + timeList[firstIndex] )
+print("2. " + systemList[secondIndex] + " | " + stationList[secondIndex] + " " + distanceList[secondIndex] + " Large Pad: " + str(largePadList[secondIndex]) + " " + str(estimatedPricePerTonList[secondIndex])[:-3] + "k " + timeList[secondIndex] )
+print("3. " + systemList[thirdIndex] + " | " + stationList[thirdIndex] + " " + distanceList[thirdIndex] + " Large Pad:" + str(largePadList[thirdIndex]) + " " + str(estimatedPricePerTonList[thirdIndex])[:-3] + "k " + timeList[thirdIndex] )
 
 nothing = input("Press enter to close.")
