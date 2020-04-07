@@ -106,8 +106,8 @@ def main(  ) :
         ["1.", "{:,.0f}".format(estimatedPricePerTonList[firstIndex]), systemList[firstIndex], stationList[firstIndex], distanceList[firstIndex], largePadList[firstIndex], timeList[firstIndex] ],
         ["2.", "{:,.0f}".format(estimatedPricePerTonList[secondIndex]), systemList[secondIndex], stationList[secondIndex], distanceList[secondIndex], largePadList[secondIndex], timeList[secondIndex] ],
         ["3.", "{:,.0f}".format(estimatedPricePerTonList[thirdIndex]), systemList[thirdIndex], stationList[thirdIndex], distanceList[thirdIndex], largePadList[thirdIndex], timeList[thirdIndex] ],
-        ["4.", "{:,.0f}".format(estimatedPricePerTonList[thirdIndex]), systemList[thirdIndex], stationList[thirdIndex], distanceList[thirdIndex], largePadList[thirdIndex], timeList[thirdIndex] ],
-        ["5.", "{:,.0f}".format(estimatedPricePerTonList[thirdIndex]), systemList[thirdIndex], stationList[thirdIndex], distanceList[thirdIndex], largePadList[thirdIndex], timeList[thirdIndex] ]
+        ["4.", "{:,.0f}".format(estimatedPricePerTonList[fourthIndex]), systemList[fourthIndex], stationList[fourthIndex], distanceList[fourthIndex], largePadList[fourthIndex], timeList[fourthIndex] ],
+        ["5.", "{:,.0f}".format(estimatedPricePerTonList[fifthIndex]), systemList[fifthIndex], stationList[fifthIndex], distanceList[fifthIndex], largePadList[fifthIndex], timeList[fifthIndex] ]
     ]
 
     maxColumnList = [
