@@ -23,19 +23,23 @@ def main() :
     print()
     inputVal = input("") #Blank input (it's implied hitting enter reloads it)
 
-    if (len(inputVal) == 0) :
-        json_Cargo = CargoJsonParser() 
-        tonsAboard = 0
-        for item in json_Cargo["Inventory"] :
-            if ( item["Name_Localised"] == "Low Temperature Diamonds" ) :
-                tonsAboard = item["Count"]
-    else :
-        inputVals = inputVal.split(" ") #split it into a list of values at the space
-        valAmounts = len(inputVals)
-        totalAmount = 0
-        for amount in inputVals :
-            totalAmount = totalAmount + int(amount)
-        tonsAboard = int(totalAmount / valAmounts)
+    try :
+        if (len(inputVal) == 0) :
+            json_Cargo = CargoJsonParser() 
+            tonsAboard = 0
+            for item in json_Cargo["Inventory"] :
+                if ( item["Name_Localised"] == "Low Temperature Diamonds" ) :
+                    tonsAboard = item["Count"]
+        else :
+            inputVals = inputVal.split(" ") #split it into a list of values at the space
+            valAmounts = len(inputVals)
+            totalAmount = 0
+            for amount in inputVals :
+                totalAmount = totalAmount + int(amount)
+            tonsAboard = int(totalAmount / valAmounts)
+    except :
+        print("Error in handling input...")
+        main()
 
     print("Computing for " + str(tonsAboard) + " tons of LTDs.")
 
@@ -51,7 +55,7 @@ def main() :
     table = list(body.children)[1] #In the table tag
     tbody = list(table.children)[1] #In the tbody tag
 
-    trsOnPage = 40 #This is the number of items that are in the table (rows), or in the thml the number of tr headers
+    trsOnPage = 40 #This is the number of items that are in the table (rows), or in the html the number of tr headers
 
     stationList = [] #str
     systemList = [] #Str
@@ -127,12 +131,12 @@ def main() :
     estimatedPriceTotalList[fifthIndex] = -1
 
     printoutInfo =  [  
-        ["Rank", "Estimated Price Per Ton", "System", "Station", "Distance", "Pad Size", "Last Updated"],
-        ["1.", "{:,.0f}".format(estimatedPricePerTonList[firstIndex]), systemList[firstIndex], stationList[firstIndex], distanceList[firstIndex], largePadList[firstIndex], timeList[firstIndex] ],
-        ["2.", "{:,.0f}".format(estimatedPricePerTonList[secondIndex]), systemList[secondIndex], stationList[secondIndex], distanceList[secondIndex], largePadList[secondIndex], timeList[secondIndex] ],
-        ["3.", "{:,.0f}".format(estimatedPricePerTonList[thirdIndex]), systemList[thirdIndex], stationList[thirdIndex], distanceList[thirdIndex], largePadList[thirdIndex], timeList[thirdIndex] ],
-        ["4.", "{:,.0f}".format(estimatedPricePerTonList[fourthIndex]), systemList[fourthIndex], stationList[fourthIndex], distanceList[fourthIndex], largePadList[fourthIndex], timeList[fourthIndex] ],
-        ["5.", "{:,.0f}".format(estimatedPricePerTonList[fifthIndex]), systemList[fifthIndex], stationList[fifthIndex], distanceList[fifthIndex], largePadList[fifthIndex], timeList[fifthIndex] ]
+        ["Rank", "≈Price Per Ton", "System", "Station", "≈Total Price", "Pad", "Last Updated"],
+        ["1.", "{:,.0f}".format(estimatedPricePerTonList[firstIndex]), systemList[firstIndex], stationList[firstIndex], "{:,.0f}".format(firstVal), largePadList[firstIndex], timeList[firstIndex] ],
+        ["2.", "{:,.0f}".format(estimatedPricePerTonList[secondIndex]), systemList[secondIndex], stationList[secondIndex], "{:,.0f}".format(secondVal), largePadList[secondIndex], timeList[secondIndex] ],
+        ["3.", "{:,.0f}".format(estimatedPricePerTonList[thirdIndex]), systemList[thirdIndex], stationList[thirdIndex], "{:,.0f}".format(thirdVal), largePadList[thirdIndex], timeList[thirdIndex] ],
+        ["4.", "{:,.0f}".format(estimatedPricePerTonList[fourthIndex]), systemList[fourthIndex], stationList[fourthIndex], "{:,.0f}".format(fourthVal), largePadList[fourthIndex], timeList[fourthIndex] ],
+        ["5.", "{:,.0f}".format(estimatedPricePerTonList[fifthIndex]), systemList[fifthIndex], stationList[fifthIndex], "{:,.0f}".format(fifthVal), largePadList[fifthIndex], timeList[fifthIndex] ]
     ]
 
     maxColumnList = [
@@ -157,13 +161,11 @@ def main() :
 
 if __name__ == "__main__":
     print("Imports sucessful. Running LtdMarket...")
-    main( )
+    main()
 
-#To Do:
-#Get system distance more acurately
-#Display the total sell price
 
-#Furute Ideas:
-#Manage a space after input numbers
+#Display the total sell price instead of distance
+
+#To Do: 
 #Use for loops for printing so amount of things printed can be easily changed
 #printout amount everyone in a list will receive plus the trade dividens for each individual
