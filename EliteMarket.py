@@ -1,7 +1,11 @@
 
+nothing = input("Welcome to EliteMarket, press enter to commence")
+
 from EliteExtraJsonParser import ExtraJsonParserMain #for reading Cargo.json
 import requests #For pinging inara
 from bs4 import BeautifulSoup #for sorting inara
+
+print("Imports sucessful")
 
 json_Cargo , json_Market , json_ModulesInfo , json_Outfitting , json_Shipyard , json_Status = ExtraJsonParserMain() #Get all the 
 
@@ -16,6 +20,8 @@ url='https://inara.cz/ajaxaction.php?act=goodsdata&refname=sellmax&refid=144&ref
 params ={}
 response=requests.post(url, data=params)
 #print(response.status_code) #200 is good
+
+print("Communication with inara sucessful")
 
 soup = BeautifulSoup(response.text, 'html5lib')
 
@@ -76,15 +82,12 @@ for i in range(0, trsOnPage) :
             reduction = reduction + perton
     reduction = min(0.7674, reduction)
     estimatedPricePerTonList.append( cost*(1-reduction) )
-    estimatedPriceTotalList.append( estimatedPricePerTonList[i] * tonsAboard )
+    estimatedPriceTotalList.append( ( cost*(1-reduction) ) * tonsAboard )
 #=================================================================================================================================
-
-print(str(estimatedPriceTotalList)) # [0,0,0,0,0,0,0] Something is wrong here
 
 firstVal = max(estimatedPriceTotalList)
 firstIndex = estimatedPriceTotalList.index( firstVal ) 
 estimatedPriceTotalList[firstIndex] = -1 #so it won't get chosen for the next bigest val
-print( estimatedPriceTotalList[firstIndex] )
 secondVal = max(estimatedPriceTotalList)
 secondIndex = estimatedPriceTotalList.index(secondVal)
 estimatedPriceTotalList[secondIndex] = -1
@@ -92,6 +95,9 @@ thirdVal = max(estimatedPriceTotalList)
 thirdIndex = estimatedPriceTotalList.index(thirdVal)
 estimatedPriceTotalList[thirdIndex] = -1
 
-print("1. " + systemList[firstIndex] + " | " + stationList[firstIndex] + " " + distanceList[firstIndex] + " " + str(largePadList[firstIndex]) + " " + str(estimatedPricePerTonList[firstIndex])[:-3] + "k" )
-print("2. " + systemList[secondIndex] + " | " + stationList[secondIndex] + " " + distanceList[secondIndex] + " " + str(largePadList[secondIndex]) + " " + str(estimatedPricePerTonList[secondIndex])[:-3] + "k" )
-print("3. " + systemList[thirdIndex] + " | " + stationList[thirdIndex] + " " + distanceList[thirdIndex] + " " + str(largePadList[thirdIndex]) + " " + str(estimatedPricePerTonList[thirdIndex])[:-3] + "k" )
+print("Algorithm sucessful: rank. system | station distance Large Pad: size estimated price per ton")
+print("1. " + systemList[firstIndex] + " | " + stationList[firstIndex] + " " + distanceList[firstIndex] + " Large Pad: " + str(largePadList[firstIndex]) + " " + str(estimatedPricePerTonList[firstIndex])[:-3] + "k" )
+print("2. " + systemList[secondIndex] + " | " + stationList[secondIndex] + " " + distanceList[secondIndex] + " Large Pad: " + str(largePadList[secondIndex]) + " " + str(estimatedPricePerTonList[secondIndex])[:-3] + "k" )
+print("3. " + systemList[thirdIndex] + " | " + stationList[thirdIndex] + " " + distanceList[thirdIndex] + " Large Pad:" + str(largePadList[thirdIndex]) + " " + str(estimatedPricePerTonList[thirdIndex])[:-3] + "k" )
+
+nothing = input("Press enter to close.")
