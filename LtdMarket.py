@@ -1,6 +1,6 @@
 
 from EliteExtraJsonParser import CargoJsonParser #for reading Cargo.json
-from EliteLogParser import getParsedLog
+from EliteLogParser import getParsedLog #for reading .log file
 import requests #For pinging inara
 from bs4 import BeautifulSoup #for sorting inara
 
@@ -158,3 +158,12 @@ def main() :
 if __name__ == "__main__":
     print("Imports sucessful. Running LtdMarket...")
     main( )
+
+#To Do:
+#Get system distance more acurately
+#Display the total sell price
+
+#Furute Ideas:
+#Manage a space after input numbers
+#Use for loops for printing so amount of things printed can be easily changed
+#printout amount everyone in a list will receive plus the trade dividens for each individual
