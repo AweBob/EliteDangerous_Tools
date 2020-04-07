@@ -4,6 +4,7 @@ import requests #For pinging inara
 from bs4 import BeautifulSoup #for sorting inara
 
 def main( itemID ) :
+    print()
     json_Cargo = CargoJsonParser() 
 
     tonsAboard = json_Cargo["Count"]
@@ -118,5 +119,5 @@ def main( itemID ) :
 
 if __name__ == "__main__":
     print("Imports sucessful. Running EliteMarket")
-    commodityId = input("Enter the commodity refrence ID found on inara (LTDs are 144 & VOs are 10250 & Taaffeite are 120) - ") 
+    commodityId = input("Enter the commodity refrence ID found on inara (LTDs are 144, VOs are 10250, & Taaffeite are 120) - ") 
     main( commodityId )
