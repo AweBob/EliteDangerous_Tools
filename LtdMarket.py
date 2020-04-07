@@ -3,16 +3,25 @@ from EliteExtraJsonParser import CargoJsonParser #for reading Cargo.json
 import requests #For pinging inara
 from bs4 import BeautifulSoup #for sorting inara
 
-def main(  ) :
+def main() :
     print()
-    json_Cargo = CargoJsonParser() 
+    inputVal = input("") #Blank input (it's implied hitting enter reloads it)
 
-    tonsAboard = 0
-    for item in json_Cargo["Inventory"] :
-        if ( item["Name_Localised"] == "Low Temperature Diamonds" ) :
-            tonsAboard = item["Count"]
+    if (len(inputVal) == 0) :
+        json_Cargo = CargoJsonParser() 
+        tonsAboard = 0
+        for item in json_Cargo["Inventory"] :
+            if ( item["Name_Localised"] == "Low Temperature Diamonds" ) :
+                tonsAboard = item["Count"]
+    else :
+        inputVals = inputVal.split(" ") #split it into a list of values at the space
+        valAmounts = len(inputVals)
+        totalAmount = 0
+        for amount in inputVals :
+            totalAmount = totalAmount + int(amount)
+        tonsAboard = int(totalAmount / valAmounts)
 
-    print("You have " + str(tonsAboard) + " tons of LTDs aboard.")
+    print("Computing for " + str(tonsAboard) + " tons of LTDs.")
 
     url='https://inara.cz/ajaxaction.php?act=goodsdata&refname=sellmax&refid=144&refid2=0' #get this link from inara inspect element - THIS IS THE LINK FOR LOW TEMPATURE DIAMONDS
     params ={}
@@ -126,7 +135,6 @@ def main(  ) :
             print(printoutInfo[rowIndex][columnIndex] + spaces , end='')
         print() #new line
 
-    nothing = input("") #Blank input (it's implied hitting enter reloads it)
     main()
 
 if __name__ == "__main__":
