@@ -63,7 +63,6 @@ def fileCleaner ( dirtyText , errorPos ) :
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #EXAMPLES
-
 #json_Cargo , json_Market , json_ModulesInfo , json_Outfitting , json_Shipyard , json_Status = ExtraJsonParserMain()      #this func outputs lists of events in each of these files, it is always in this order
 #print(json_Cargo)                                           #prints entire Cargo file
 #print(json_Cargo['Inventory'])                              #prints whats in the invenotry tag in the dictionary
@@ -72,6 +71,3 @@ def fileCleaner ( dirtyText , errorPos ) :
 #print(json_Outfitting['StationName'])                       #prints value for station name key in outfitting file dictionary
 #print(json_Outfitting['Items'][2]['Name'])                  #prints name of the second item in items in outfitting file
 
-
-
-#The error remover for this needs more testing, may cause errors, please report on github with a copy of your files at the time of crash, thanks

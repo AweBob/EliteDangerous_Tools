@@ -5,10 +5,12 @@ from bs4 import BeautifulSoup #for sorting inara
 
 json_Cargo , json_Market , json_ModulesInfo , json_Outfitting , json_Shipyard , json_Status = ExtraJsonParserMain() #Get all the 
 
-amountInHold = json_Cargo["Count"]
+tonsAboard = json_Cargo["Count"]
 for item in json_Cargo["Inventory"] :
     if ( item["Name_Localised"] == "Limpet" ) :
-        amountInHold = amountInHold - item["Count"]
+        tonsAboard = tonsAboard - item["Count"]
+
+print("You have " + str(tonsAboard) + " tons aboard.")
 
 url='https://inara.cz/ajaxaction.php?act=goodsdata&refname=sellmax&refid=144&refid2=0' #get this link from inara inspect element
 params ={}
@@ -27,6 +29,7 @@ trsOnPage = 40 #This is the number of items that are in the table (rows), or in 
 stationList = [] #str
 systemList = [] #Str
 largePadList = []  #If large pad true, if medium pad false - Bool
+distanceList = [] #Str
 quantityList = [] #Int
 priceList = [] #Int
 timeList = [] #Str
@@ -49,9 +52,46 @@ for i in range(0,trsOnPage) :
     stationList.append(station)
     systemList.append(system)
     largePadList.append(pad == "L") #If pad is large append True, if it isn't as in medium "M" 
+    distanceList.append(dist) #string for printing later
     quantityList.append( int(quantity.replace(",","")) ) #Remove the commas then convert to integer
     priceList.append(int( price.replace(",","")[:-3] )) #remove commas, remove last three characters " Cr" and convert to int
     timeList.append(time)  
     
-#Implement neotron's estimation algorithm
-#Printout top 3 systems to sell at as some may be in Colonia
+#=================================================================================================================================
+#==================CREDIT TO: https://github.com/neotron aka CMDR Neotron for the aproximation algorithm below====================
+#=================================================================================================================================
+estimatedPricePerTonList = []
+estimatedPriceTotalList = []
+perton = 0.00215 #0.215% per ton
+maxratio = 27.77777777777777
+#tonsAboard set above
+for i in range(0, trsOnPage) :
+    demand = quantityList[i] 
+    cost = priceList[i] 
+    perton = perton / ( demand / 504 )
+    reduction = 0
+    for i in range(0, tonsAboard) :
+        ratio = demand / (tonsAboard - i)
+        if (ratio <= maxratio) :
+            reduction = reduction + perton
+    reduction = min(0.7674, reduction)
+    estimatedPricePerTonList.append( cost*(1-reduction) )
+    estimatedPriceTotalList.append( estimatedPricePerTonList[i] * tonsAboard )
+#=================================================================================================================================
+
+print(str(estimatedPriceTotalList)) # [0,0,0,0,0,0,0] Something is wrong here
+
+firstVal = max(estimatedPriceTotalList)
+firstIndex = estimatedPriceTotalList.index( firstVal ) 
+estimatedPriceTotalList[firstIndex] = -1 #so it won't get chosen for the next bigest val
+print( estimatedPriceTotalList[firstIndex] )
+secondVal = max(estimatedPriceTotalList)
+secondIndex = estimatedPriceTotalList.index(secondVal)
+estimatedPriceTotalList[secondIndex] = -1
+thirdVal = max(estimatedPriceTotalList)
+thirdIndex = estimatedPriceTotalList.index(thirdVal)
+estimatedPriceTotalList[thirdIndex] = -1
+
+print("1. " + systemList[firstIndex] + " | " + stationList[firstIndex] + " " + distanceList[firstIndex] + " " + str(largePadList[firstIndex]) + " " + str(estimatedPricePerTonList[firstIndex])[:-3] + "k" )
+print("2. " + systemList[secondIndex] + " | " + stationList[secondIndex] + " " + distanceList[secondIndex] + " " + str(largePadList[secondIndex]) + " " + str(estimatedPricePerTonList[secondIndex])[:-3] + "k" )
+print("3. " + systemList[thirdIndex] + " | " + stationList[thirdIndex] + " " + distanceList[thirdIndex] + " " + str(largePadList[thirdIndex]) + " " + str(estimatedPricePerTonList[thirdIndex])[:-3] + "k" )
