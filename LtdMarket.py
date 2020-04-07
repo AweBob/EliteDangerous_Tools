@@ -44,7 +44,6 @@ def main(  ) :
         station = list(a.children)[0].get_text()
         system = list(a.children)[2].get_text()
         pad = list(tr.children)[1].get_text()
-        #scDist = list(tr.children)[2].get_text()
         dist = list(tr.children)[3].get_text()
         quantity = list(tr.children)[4].get_text()
         price = list(tr.children)[5].get_text()
@@ -131,5 +130,5 @@ def main(  ) :
     main()
 
 if __name__ == "__main__":
-    print("Imports sucessful. Running EliteMarket")
+    print("Imports sucessful. Running LtdMarket...")
     main( )
