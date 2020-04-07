@@ -131,12 +131,12 @@ def main() :
     estimatedPriceTotalList[fifthIndex] = -1
 
     printoutInfo =  [  
-        ["Rank", "≈Price Per Ton", "System", "Station", "≈Total Price", "Pad", "Last Updated"],
-        ["1.", "{:,.0f}".format(estimatedPricePerTonList[firstIndex]), systemList[firstIndex], stationList[firstIndex], "{:,.0f}".format(firstVal), largePadList[firstIndex], timeList[firstIndex] ],
-        ["2.", "{:,.0f}".format(estimatedPricePerTonList[secondIndex]), systemList[secondIndex], stationList[secondIndex], "{:,.0f}".format(secondVal), largePadList[secondIndex], timeList[secondIndex] ],
-        ["3.", "{:,.0f}".format(estimatedPricePerTonList[thirdIndex]), systemList[thirdIndex], stationList[thirdIndex], "{:,.0f}".format(thirdVal), largePadList[thirdIndex], timeList[thirdIndex] ],
-        ["4.", "{:,.0f}".format(estimatedPricePerTonList[fourthIndex]), systemList[fourthIndex], stationList[fourthIndex], "{:,.0f}".format(fourthVal), largePadList[fourthIndex], timeList[fourthIndex] ],
-        ["5.", "{:,.0f}".format(estimatedPricePerTonList[fifthIndex]), systemList[fifthIndex], stationList[fifthIndex], "{:,.0f}".format(fifthVal), largePadList[fifthIndex], timeList[fifthIndex] ]
+        ["Rank", "≈Price Per Ton", "≈Total Price", "System", "Station", "Pad", "Last Updated"],
+        ["1.", "{:,.0f}".format(estimatedPricePerTonList[firstIndex]), "{:,.0f}".format(firstVal), systemList[firstIndex], stationList[firstIndex],  largePadList[firstIndex], timeList[firstIndex] ],
+        ["2.", "{:,.0f}".format(estimatedPricePerTonList[secondIndex]), "{:,.0f}".format(secondVal), systemList[secondIndex], stationList[secondIndex], largePadList[secondIndex], timeList[secondIndex] ],
+        ["3.", "{:,.0f}".format(estimatedPricePerTonList[thirdIndex]), "{:,.0f}".format(thirdVal), systemList[thirdIndex], stationList[thirdIndex], largePadList[thirdIndex], timeList[thirdIndex] ],
+        ["4.", "{:,.0f}".format(estimatedPricePerTonList[fourthIndex]), "{:,.0f}".format(fourthVal), systemList[fourthIndex], stationList[fourthIndex], largePadList[fourthIndex], timeList[fourthIndex] ],
+        ["5.", "{:,.0f}".format(estimatedPricePerTonList[fifthIndex]), "{:,.0f}".format(fifthVal), systemList[fifthIndex], stationList[fifthIndex], largePadList[fifthIndex], timeList[fifthIndex] ]
     ]
 
     maxColumnList = [
@@ -162,9 +162,6 @@ def main() :
 if __name__ == "__main__":
     print("Imports sucessful. Running LtdMarket...")
     main()
-
-
-#Display the total sell price instead of distance
 
 #To Do: 
 #Use for loops for printing so amount of things printed can be easily changed
