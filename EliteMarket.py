@@ -3,7 +3,7 @@ from EliteExtraJsonParser import CargoJsonParser #for reading Cargo.json
 import requests #For pinging inara
 from bs4 import BeautifulSoup #for sorting inara
 
-def main() :
+def main( itemID ) :
     json_Cargo = CargoJsonParser() 
 
     tonsAboard = json_Cargo["Count"]
@@ -13,7 +13,7 @@ def main() :
 
     print("You have " + str(tonsAboard) + " tons aboard.")
 
-    url='https://inara.cz/ajaxaction.php?act=goodsdata&refname=sellmax&refid=144&refid2=0' #get this link from inara inspect element - THIS IS THE LINK FOR LOW TEMPATURE DIAMONDS
+    url='https://inara.cz/ajaxaction.php?act=goodsdata&refname=sellmax&refid=' + str(itemID) + '&refid2=0' #get this link from inara inspect element - THIS IS THE LINK FOR LOW TEMPATURE DIAMONDS
     params ={}
     response=requests.post(url, data=params)
     #print(response.status_code) #200 is good
@@ -96,9 +96,9 @@ def main() :
     print("3. " + systemList[thirdIndex] + " | " + stationList[thirdIndex] + " " + distanceList[thirdIndex] + " Large Pad:" + str(largePadList[thirdIndex]) + " " + str(estimatedPricePerTonList[thirdIndex])[:-3] + "k " + timeList[thirdIndex] )
 
     nothing = input("Press enter to run again.")
-    main()
+    main(itemID)
 
 if __name__ == "__main__":
     print("Imports sucessful. Running EliteMarket")
-    main()
-    
+    commodityId = input("Enter the commodity ID found on inara (LTDs are 144 & VOs are 10250 & Taaffeite are 120) - ") 
+    main( commodityId )
