@@ -1,13 +1,13 @@
 
 nothing = input("Welcome to EliteMarket, press enter to commence")
 
-from EliteExtraJsonParser import ExtraJsonParserMain #for reading Cargo.json
+from EliteExtraJsonParser import CargoJsonParser #for reading Cargo.json
 import requests #For pinging inara
 from bs4 import BeautifulSoup #for sorting inara
 
 print("Imports sucessful")
 
-json_Cargo , json_Market , json_ModulesInfo , json_Outfitting , json_Shipyard , json_Status = ExtraJsonParserMain() #Get all the 
+json_Cargo = CargoJsonParser() 
 
 tonsAboard = json_Cargo["Count"]
 for item in json_Cargo["Inventory"] :
@@ -83,6 +83,8 @@ for i in range(0, trsOnPage) :
     reduction = min(0.7674, reduction)
     estimatedPricePerTonList.append( cost*(1-reduction) )
     estimatedPriceTotalList.append( ( cost*(1-reduction) ) * tonsAboard )
+#=================================================================================================================================
+#=================================================================================================================================
 #=================================================================================================================================
 
 firstVal = max(estimatedPriceTotalList)

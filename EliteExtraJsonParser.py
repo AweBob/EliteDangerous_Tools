@@ -27,6 +27,15 @@ def ExtraJsonParserMain (  ) :
             Status = jsonOutput
     return( Cargo , Market , ModulesInfo , Outfitting , Shipyard , Status )
 
+def CargoJsonParser () :
+    location = os.path.expanduser('~\Saved Games\Frontier Developments\Elite Dangerous\*.json')               #Won't work for linux users - their thing is in a different file path
+    jsonFiles = glob.glob(location)                                                                           #finds all files in that location, make into a list
+    for eachFilePath in jsonFiles :
+        fileTypeCharacters = eachFilePath[-7:][:-5]                                                           #last 2 characters of name, enough to determine which file it is
+        if fileTypeCharacters=='go' :
+            fileString = openFile( eachFilePath )
+            jsonOutput = jsonCleanerAndConverter( fileString )
+            return(jsonOutput)
 
 def openFile ( fileLocationAndName ) :
     openText = open(fileLocationAndName , O_RDONLY)
