@@ -16,16 +16,30 @@ def main() :
             for item in json_Cargo["Inventory"] :
                 if ( item["Name_Localised"] == "Low Temperature Diamonds" ) :
                     tonsAboard = item["Count"]
+            singleValue(tonsAboard)
         else :
             inputVals = inputVal.split(" ") #split it into a list of values at the space
+            testVal = list(map(int,inputVals)) #Convert all things into an integer, this confirms someone didn't just type in a few words and isn't used later
             valAmounts = len(inputVals)
-            totalAmount = 0
-            for amount in inputVals :
-                totalAmount = totalAmount + int(amount)
-            tonsAboard = int(totalAmount / valAmounts)
+            if (valAmounts == 1) :
+                singleValue(int(inputVals[0])) 
+            elif (valAmounts <= 4) :
+                groupValue(inputVals)
+            else :
+                raise Exception  
     except :
         print("Error in handling input...")
         main()
+
+#=================================================================================================================================
+
+def groupValue( tonsList ) : #prints results for a maximum of 4 users, displays payout for each person and trade divdens for each person, if group is 2 or 3 people it will shows 1 person selling non getting trade divs
+    print("W.I.P.")
+    main()
+
+#=================================================================================================================================
+
+def singleValue( tonsAboard ) : #prints results for one user - print trade dividens results for 1 other person
 
     print("Computing for " + str(tonsAboard) + " tons of LTDs.")
 
@@ -132,5 +146,5 @@ if __name__ == "__main__":
     print("Imports sucessful. Running LtdMarket...")
     main()
 
-#To Do: 
-#printout amount everyone in a list will receive plus the trade dividens for each individual
+#Allow singleValue to printout trade dividens for group members
+#Develop groupValue function
