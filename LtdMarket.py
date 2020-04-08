@@ -16,20 +16,29 @@ def main() :
             for item in json_Cargo["Inventory"] :
                 if ( item["Name_Localised"] == "Low Temperature Diamonds" ) :
                     tonsAboard = item["Count"]
-            singleValue(tonsAboard)
+            try :
+                singleValue(tonsAboard)
+            except :
+                print("Error in calculation...")
         else :
             inputVals = inputVal.split(" ") #split it into a list of values at the space
             testVal = list(map(int,inputVals)) #Convert all things into an integer, this confirms someone didn't just type in a few words and isn't used later
             valAmounts = len(inputVals)
             if (valAmounts == 1) :
-                singleValue(int(inputVals[0])) 
+                try :
+                    singleValue(int(inputVals[0])) 
+                except :
+                    print("Error in calculation...")
             elif (valAmounts <= 4) :
-                groupValue(inputVals)
+                try :
+                    groupValue(inputVals)
+                except :
+                    print("Error in calculation...")
             else :
                 raise Exception  
     except :
         print("Error in handling input...")
-        main()
+    main() #If it gets to this point there must've been an error so just run it again
 
 #=================================================================================================================================
 
