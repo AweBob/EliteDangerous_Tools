@@ -171,7 +171,7 @@ def groupValue( tonsList ) : #prints results for a maximum of 4 users, displays 
                 "{:,.0f}".format( pricePerTonTre ), "{:,.0f}".format(int( pricePerTonTre * int(tonsList[2]) )), "{:,.0f}".format(int( ((pricePerTonTwo * int(tonsList[1]))*0.05) + ((pricePerTonOne * int(tonsList[0]))*0.05)  )),
                 "{:,.0f}".format(int( ((pricePerTonTwo * int(tonsList[1]))*0.05) + ((pricePerTonOne * int(tonsList[0]))*0.05) + ((pricePerTonTre * int(tonsList[2]))*0.05) )),
                 systemList[bigestIndexes[i]], stationList[bigestIndexes[i]],  largePadList[bigestIndexes[i]], timeList[bigestIndexes[i]]
-            ]) #WIP
+            ]) 
 
     else : # ( len(tonsList) == 4 ) <-- is the only other possible thing
         printoutInfo = [ [
@@ -188,12 +188,12 @@ def groupValue( tonsList ) : #prints results for a maximum of 4 users, displays 
             pricePerTonFor = pricePerTon(priceList[i], quantityList[i], int(tonsList[3]))
             printoutInfo.append([
                 str(i) + ".",
-                "{:,.0f}".format( pricePerTonOne ), "{:,.0f}".format(int( pricePerTonOne * int(tonsList[0]) )), "000000",
-                "{:,.0f}".format( pricePerTonTwo ), "{:,.0f}".format(int( pricePerTonTwo * int(tonsList[1]) )), "000000",
-                "{:,.0f}".format( pricePerTonTre ), "{:,.0f}".format(int( pricePerTonTre * int(tonsList[2]) )), "000000",
-                "{:,.0f}".format( pricePerTonFor ), "{:,.0f}".format(int( pricePerTonFor * int(tonsList[3]) )), "000000",
+                "{:,.0f}".format( pricePerTonOne ), "{:,.0f}".format(int( pricePerTonOne * int(tonsList[0]) )), "{:,.0f}".format(int( ((pricePerTonTwo * int(tonsList[1]))*0.05) + ((pricePerTonTre * int(tonsList[2]))*0.05) + ((pricePerTonFor * int(tonsList[3]))*0.05) )),
+                "{:,.0f}".format( pricePerTonTwo ), "{:,.0f}".format(int( pricePerTonTwo * int(tonsList[1]) )), "{:,.0f}".format(int( ((pricePerTonOne * int(tonsList[0]))*0.05) + ((pricePerTonTre * int(tonsList[2]))*0.05) + ((pricePerTonFor * int(tonsList[3]))*0.05) )),
+                "{:,.0f}".format( pricePerTonTre ), "{:,.0f}".format(int( pricePerTonTre * int(tonsList[2]) )), "{:,.0f}".format(int( ((pricePerTonOne * int(tonsList[0]))*0.05) + ((pricePerTonTwo * int(tonsList[1]))*0.05) + ((pricePerTonFor * int(tonsList[3]))*0.05) )),
+                "{:,.0f}".format( pricePerTonFor ), "{:,.0f}".format(int( pricePerTonFor * int(tonsList[3]) )), "{:,.0f}".format(int( ((pricePerTonOne * int(tonsList[0]))*0.05) + ((pricePerTonTwo * int(tonsList[1]))*0.05) + ((pricePerTonTre * int(tonsList[2]))*0.05) )),
                 systemList[bigestIndexes[i]], stationList[bigestIndexes[i]],  largePadList[bigestIndexes[i]], timeList[bigestIndexes[i]]
-            ]) #WIP
+            ]) 
 
     maxColumnList = []
     for i in range(0,len(printoutInfo[0])) :
