@@ -146,9 +146,9 @@ def singleValue( tonsAboard ) : #prints results for one user - print trade divid
         bigestIndexes.append(index)
         bigestValues.append(bigestVal)
 
-    printoutInfo = [ ["Rank", "≈Price Per Ton", "≈Total Price", "System", "Station", "Pad", "Last Updated"] ] #initialize it with the header
+    printoutInfo = [ ["Rank", "≈Price Per Ton", "≈Total Price", "≈Trade Dividends", "System", "Station", "Pad", "Last Updated"] ] #initialize it with the header
     for i in range(1,numValues + 1) :
-        printoutInfo.append( [ str(i) + ".", "{:,.0f}".format(estimatedPricePerTonList[bigestIndexes[i]]), "{:,.0f}".format(bigestValues[i]), systemList[bigestIndexes[i]], stationList[bigestIndexes[i]],  largePadList[bigestIndexes[i]], timeList[bigestIndexes[i]] ]  )
+        printoutInfo.append( [ str(i) + ".", "{:,.0f}".format(estimatedPricePerTonList[bigestIndexes[i]]), "{:,.0f}".format(bigestValues[i]), "{:,.0f}".format( int(bigestValues[i] * .05) ), systemList[bigestIndexes[i]], stationList[bigestIndexes[i]],  largePadList[bigestIndexes[i]], timeList[bigestIndexes[i]] ]  )
 
     maxColumnList = []
     for i in range(0,len(printoutInfo[0])) :
