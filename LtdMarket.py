@@ -134,16 +134,62 @@ def groupValue( tonsList ) : #prints results for a maximum of 4 users, displays 
 
     if ( len(tonsList) == 2 ) :
         printoutInfo = [ ["Rank", "≈Price Per Ton #1", "≈Total Price #1", "≈Trade Dividends #1", "≈Price Per Ton #2", "≈Total Price #2", "≈Trade Dividends #2", "≈Trade Dividends #3", "System", "Station", "Pad", "Last Updated"] ] #initialize it with the header
+        for i in range(1,numValues + 1) :
+            pricePerTonOne = pricePerTon(priceList[i], quantityList[i], int(tonsList[0]))
+            pricePerTonTwo = pricePerTon(priceList[i], quantityList[i], int(tonsList[1]))
+            printoutInfo.append([str(i) + ".", "{:,.0f}".format( pricePerTonOne ), "{:,.0f}".format(int( pricePerTonOne * int(tonsList[0]) )), "{:,.0f}".format(int( (pricePerTonTwo * int(tonsList[1])) * 0.05 )), "{:,.0f}".format( pricePerTonTwo ), "{:,.0f}".format(int( pricePerTonTwo * int(tonsList[1]) )), "{:,.0f}".format(int( (pricePerTonOne * int(tonsList[0])) * 0.05 )),  "{:,.0f}".format(int( ((pricePerTonTwo * int(tonsList[1])) * 0.05) + ((pricePerTonOne * int(tonsList[0])) * 0.05) )), systemList[bigestIndexes[i]], stationList[bigestIndexes[i]],  largePadList[bigestIndexes[i]], timeList[bigestIndexes[i]] ]) #WIP
 
     elif ( len(tonsList) == 3 ) :
         printoutInfo = [ ["Rank", "≈Price Per Ton #1", "≈Total Price #1", "≈Trade Dividends #1", "≈Price Per Ton #2", "≈Total Price #2", "≈Trade Dividends #2", "≈Price Per Ton #3", "≈Total Price #3", "≈Trade Dividends #3", "≈Trade Dividends #4", "System", "Station", "Pad", "Last Updated"] ] #initialize it with the header
+        for i in range(1,numValues + 1) :
+            pricePerTonOne = pricePerTon(priceList[i], quantityList[i], int(tonsList[0]))
+            pricePerTonTwo = pricePerTon(priceList[i], quantityList[i], int(tonsList[1]))
+            pricePerTonTre = pricePerTon(priceList[i], quantityList[i], int(tonsList[2]))
+            printoutInfo.append([str(i) + "."]) #WIP
 
     else : # ( len(tonsList) == 4 ) <-- is the only other possible thing
         printoutInfo = [ ["Rank", "≈Price Per Ton #1", "≈Total Price #1", "≈Trade Dividends #1", "≈Price Per Ton #2", "≈Total Price #2", "≈Trade Dividends #2", "≈Price Per Ton #3", "≈Total Price #3", "≈Trade Dividends #3", "≈Price Per Ton #4", "≈Total Price #4", "≈Trade Dividends #4", "System", "Station", "Pad", "Last Updated"] ] #initialize it with the header
+        for i in range(1,numValues + 1) :
+            pricePerTonOne = pricePerTon(priceList[i], quantityList[i], int(tonsList[0]))
+            pricePerTonTwo = pricePerTon(priceList[i], quantityList[i], int(tonsList[1]))
+            pricePerTonTre = pricePerTon(priceList[i], quantityList[i], int(tonsList[2]))
+            pricePerTonFor = pricePerTon(priceList[i], quantityList[i], int(tonsList[3]))
+            printoutInfo.append([str(i) + "."]) #WIP
 
-    print(str(printoutInfo[0]))
+    maxColumnList = []
+    for i in range(0,len(printoutInfo[0])) :
+        columnList = []
+        for j in range(0,numValues + 1) :
+            columnList.append( printoutInfo[j][i] )
+        maxColumnList.append( len(max( columnList , key=len)) + 2 )
+
+    for rowIndex in range(0,len(printoutInfo)) :
+        for columnIndex in range(0,len(printoutInfo[0])) : 
+            spaces = " " * ( maxColumnList[columnIndex] - len(printoutInfo[rowIndex][columnIndex]) )
+            print(printoutInfo[rowIndex][columnIndex] + spaces , end='')
+        print() #new line
 
     main()
+
+#=================================================================================================================================
+
+#=================================================================================================================================
+#==================CREDIT TO: https://github.com/neotron aka CMDR Neotron for the aproximation algorithm below====================
+#=================================================================================================================================
+def pricePerTon( stationPrice, stationDemand, tonsAboard ) :
+    perton = 0.00215 #0.215% per ton
+    maxratio = 27.77777777777777
+    perton = perton / ( stationDemand / 504 )
+    reduction = 0
+    for i in range(0, tonsAboard) :
+        ratio = stationDemand / (tonsAboard - i)
+        if (ratio <= maxratio) :
+            reduction = reduction + perton
+    reduction = min(0.7674, reduction)
+    return (int( stationPrice * (1-reduction) ))
+#=================================================================================================================================
+#=================================================================================================================================
+#=================================================================================================================================
 
 #=================================================================================================================================
 
@@ -227,7 +273,7 @@ def singleValue( tonsAboard ) : #prints results for one user - print trade divid
         bigestIndexes.append(index)
         bigestValues.append(bigestVal)
 
-    printoutInfo = [ ["Rank", "≈Price Per Ton", "≈Total Price", "≈Trade Dividends", "System", "Station", "Pad", "Last Updated"] ] #initialize it with the header
+    printoutInfo = [ ["Rank", "≈Price Per Ton", "≈Total Price", "≈Trade Dividends For Wing", "System", "Station", "Pad", "Last Updated"] ] #initialize it with the header
     for i in range(1,numValues + 1) :
         printoutInfo.append( [ str(i) + ".", "{:,.0f}".format(estimatedPricePerTonList[bigestIndexes[i]]), "{:,.0f}".format(bigestValues[i]), "{:,.0f}".format( int(bigestValues[i] * .05) ), systemList[bigestIndexes[i]], stationList[bigestIndexes[i]],  largePadList[bigestIndexes[i]], timeList[bigestIndexes[i]] ]  )
 
@@ -251,6 +297,7 @@ def singleValue( tonsAboard ) : #prints results for one user - print trade divid
 if __name__ == "__main__":
     print("Imports sucessful. Running LtdMarket...")
     main()
+    #groupValue([100,200])
 
 #Allow singleValue to printout trade dividens for group members
 #Develop groupValue function
