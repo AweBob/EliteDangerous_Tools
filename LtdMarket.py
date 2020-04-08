@@ -90,7 +90,7 @@ def groupValue( tonsList ) : #prints results for a maximum of 4 users, displays 
         dist = list(tr.children)[3].get_text()
         quantity = list(tr.children)[4].get_text()
         price = list(tr.children)[5].get_text()
-        time = list(tr.children)[6].get_text()
+        time = list(tr.children)[7].get_text()
         if (float(dist[:-3]) <  10000) : #exclude colonia ones or ones more than 10,000 lys out 
             stationList.append(station)
             systemList.append(system)
@@ -134,10 +134,10 @@ def groupValue( tonsList ) : #prints results for a maximum of 4 users, displays 
 
     if ( len(tonsList) == 2 ) :
         printoutInfo = [ [
-            "Rank",
-            "≈Price/Ton #1", "≈Total Price #1", "≈Trade Divs #1",
-            "≈Price/Ton #2", "≈Total Price #2", "≈Trade Divs #2",
-            "≈Trade Divs #3", 
+            "Key",
+            "≈Price/Ton 1", "≈ΣPrice 1", "≈Trade Divs 1",
+            "≈Price/Ton 2", "≈ΣPrice 2", "≈Trade Divs 2",
+            "≈Trade Divs 3", 
             "System", "Station", "Pad", "Last Updated"
         ] ] 
         for i in range(1,numValues + 1) :
@@ -153,11 +153,11 @@ def groupValue( tonsList ) : #prints results for a maximum of 4 users, displays 
 
     elif ( len(tonsList) == 3 ) :
         printoutInfo = [ [
-            "Rank",
-            "≈Price/Ton #1", "≈Total Price #1", "≈Trade Divs #1",
-            "≈Price/Ton #2", "≈Total Price #2", "≈Trade Divs #2",
-            "≈Price/Ton #3", "≈Total Price #3", "≈Trade Divs #3",
-            "≈Trade Divs #4",
+            "Key",
+            "≈Price/Ton 1", "≈ΣPrice 1", "≈Trade Divs 1",
+            "≈Price/Ton 2", "≈ΣPrice 2", "≈Trade Divs 2",
+            "≈Price/Ton 3", "≈ΣPrice 3", "≈Trade Divs 3",
+            "≈Trade Divs 4",
             "System", "Station", "Pad", "Last Updated"
         ] ]
         for i in range(1,numValues + 1) :
@@ -175,11 +175,11 @@ def groupValue( tonsList ) : #prints results for a maximum of 4 users, displays 
 
     else : # ( len(tonsList) == 4 ) <-- is the only other possible thing
         printoutInfo = [ [
-            "Rank",
-            "≈Price/Ton #1", "≈Total Price #1", "≈Trade Divs #1",
-            "≈Price/Ton #2", "≈Total Price #2", "≈Trade Divs #2",
-            "≈Price/Ton #3", "≈Total Price #3", "≈Trade Divs #3",
-            "≈Price/Ton #4", "≈Total Price #4", "≈Trade Divs #4",
+            "Key",
+            "≈Price/Ton 1", "≈ΣPrice 1", "≈Trade Divs 1",
+            "≈Price/Ton 2", "≈ΣPrice 2", "≈Trade Divs 2",
+            "≈Price/Ton 3", "≈ΣPrice 3", "≈Trade Divs 3",
+            "≈Price/Ton 4", "≈ΣPrice 4", "≈Trade Divs 4",
             "System", "Station", "Pad", "Last Updated"] ] 
         for i in range(1,numValues + 1) :
             pricePerTonOne = pricePerTon(priceList[i], quantityList[i], int(tonsList[0]))
@@ -268,7 +268,7 @@ def singleValue( tonsAboard ) : #prints results for one user - print trade divid
         dist = list(tr.children)[3].get_text()
         quantity = list(tr.children)[4].get_text()
         price = list(tr.children)[5].get_text()
-        time = list(tr.children)[6].get_text()
+        time = list(tr.children)[7].get_text()
         if (float(dist[:-3]) <  10000) : #exclude colonia ones or ones more than 10,000 lys out 
             stationList.append(station)
             systemList.append(system)
@@ -312,7 +312,7 @@ def singleValue( tonsAboard ) : #prints results for one user - print trade divid
         bigestIndexes.append(index)
         bigestValues.append(bigestVal)
 
-    printoutInfo = [ ["Rank", "≈Price/Ton", "≈Total Price", "≈Trade Divs", "System", "Station", "Pad", "Last Updated"] ] #initialize it with the header
+    printoutInfo = [ ["Key", "≈Price/Ton", "≈ΣPrice", "≈Trade Divs", "System", "Station", "Pad", "Last Updated"] ] #initialize it with the header
     for i in range(1,numValues + 1) :
         printoutInfo.append( [ str(i) + ".", "{:,.0f}".format(estimatedPricePerTonList[bigestIndexes[i]]), "{:,.0f}".format(bigestValues[i]), "{:,.0f}".format( int(bigestValues[i] * .05) ), systemList[bigestIndexes[i]], stationList[bigestIndexes[i]],  largePadList[bigestIndexes[i]], timeList[bigestIndexes[i]] ]  )
 
