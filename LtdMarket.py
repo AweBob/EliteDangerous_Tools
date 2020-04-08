@@ -135,9 +135,9 @@ def groupValue( tonsList ) : #prints results for a maximum of 4 users, displays 
     if ( len(tonsList) == 2 ) :
         printoutInfo = [ [
             "Rank",
-            "≈Price Per Ton #1", "≈Total Price #1", "≈Trade Dividends #1",
-            "≈Price Per Ton #2", "≈Total Price #2", "≈Trade Dividends #2",
-            "≈Trade Dividends #3", 
+            "≈Price/Ton #1", "≈Total Price #1", "≈Trade Divs #1",
+            "≈Price/Ton #2", "≈Total Price #2", "≈Trade Divs #2",
+            "≈Trade Divs #3", 
             "System", "Station", "Pad", "Last Updated"
         ] ] 
         for i in range(1,numValues + 1) :
@@ -154,10 +154,10 @@ def groupValue( tonsList ) : #prints results for a maximum of 4 users, displays 
     elif ( len(tonsList) == 3 ) :
         printoutInfo = [ [
             "Rank",
-            "≈Price Per Ton #1", "≈Total Price #1", "≈Trade Dividends #1",
-            "≈Price Per Ton #2", "≈Total Price #2", "≈Trade Dividends #2",
-            "≈Price Per Ton #3", "≈Total Price #3", "≈Trade Dividends #3",
-            "≈Trade Dividends #4",
+            "≈Price/Ton #1", "≈Total Price #1", "≈Trade Divs #1",
+            "≈Price/Ton #2", "≈Total Price #2", "≈Trade Divs #2",
+            "≈Price/Ton #3", "≈Total Price #3", "≈Trade Divs #3",
+            "≈Trade Divs #4",
             "System", "Station", "Pad", "Last Updated"
         ] ]
         for i in range(1,numValues + 1) :
@@ -176,10 +176,10 @@ def groupValue( tonsList ) : #prints results for a maximum of 4 users, displays 
     else : # ( len(tonsList) == 4 ) <-- is the only other possible thing
         printoutInfo = [ [
             "Rank",
-            "≈Price Per Ton #1", "≈Total Price #1", "≈Trade Dividends #1",
-            "≈Price Per Ton #2", "≈Total Price #2", "≈Trade Dividends #2",
-            "≈Price Per Ton #3", "≈Total Price #3", "≈Trade Dividends #3",
-            "≈Price Per Ton #4", "≈Total Price #4", "≈Trade Dividends #4",
+            "≈Price/Ton #1", "≈Total Price #1", "≈Trade Divs #1",
+            "≈Price/Ton #2", "≈Total Price #2", "≈Trade Divs #2",
+            "≈Price/Ton #3", "≈Total Price #3", "≈Trade Divs #3",
+            "≈Price/Ton #4", "≈Total Price #4", "≈Trade Divs #4",
             "System", "Station", "Pad", "Last Updated"] ] 
         for i in range(1,numValues + 1) :
             pricePerTonOne = pricePerTon(priceList[i], quantityList[i], int(tonsList[0]))
@@ -312,7 +312,7 @@ def singleValue( tonsAboard ) : #prints results for one user - print trade divid
         bigestIndexes.append(index)
         bigestValues.append(bigestVal)
 
-    printoutInfo = [ ["Rank", "≈Price Per Ton", "≈Total Price", "≈Trade Dividends For Wing", "System", "Station", "Pad", "Last Updated"] ] #initialize it with the header
+    printoutInfo = [ ["Rank", "≈Price/Ton", "≈Total Price", "≈Trade Divs", "System", "Station", "Pad", "Last Updated"] ] #initialize it with the header
     for i in range(1,numValues + 1) :
         printoutInfo.append( [ str(i) + ".", "{:,.0f}".format(estimatedPricePerTonList[bigestIndexes[i]]), "{:,.0f}".format(bigestValues[i]), "{:,.0f}".format( int(bigestValues[i] * .05) ), systemList[bigestIndexes[i]], stationList[bigestIndexes[i]],  largePadList[bigestIndexes[i]], timeList[bigestIndexes[i]] ]  )
 
