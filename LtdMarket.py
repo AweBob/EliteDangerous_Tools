@@ -43,7 +43,23 @@ def main() :
 #=================================================================================================================================
 
 def groupValue( tonsList ) : #prints results for a maximum of 4 users, displays payout for each person and trade divdens for each person, if group is 2 or 3 people it will shows 1 person selling non getting trade divs
-    print("W.I.P.")
+    
+    averageTonsAboard = 0
+    stringTonsList = ""
+    for i in range(0,len(tonsList)) :
+        averageTonsAboard = averageTonsAboard + int(tonsList[i])
+        if ( i ==  len(tonsList) - 2 ) :
+            stringTonsList = stringTonsList + str(tonsList[i]) + ", and "
+        elif ( i ==  len(tonsList) - 1 ) :
+            stringTonsList = stringTonsList + str(tonsList[i]) 
+        else :
+            stringTonsList = stringTonsList + str(tonsList[i]) + ", "
+    averageTonsAboard = int(averageTonsAboard / len(tonsList))
+
+    print("Computing for " + str(averageTonsAboard) + " tons of LTDs which is the average of " + str(stringTonsList) + "." )
+
+
+
     main()
 
 #=================================================================================================================================
