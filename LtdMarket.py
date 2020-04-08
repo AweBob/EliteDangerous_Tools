@@ -165,8 +165,12 @@ def groupValue( tonsList ) : #prints results for a maximum of 4 users, displays 
             pricePerTonTwo = pricePerTon(priceList[i], quantityList[i], int(tonsList[1]))
             pricePerTonTre = pricePerTon(priceList[i], quantityList[i], int(tonsList[2]))
             printoutInfo.append([
-                str(i) + "."
-                
+                str(i) + ".",
+                "{:,.0f}".format( pricePerTonOne ), "{:,.0f}".format(int( pricePerTonOne * int(tonsList[0]) )), "000000",
+                "{:,.0f}".format( pricePerTonTwo ), "{:,.0f}".format(int( pricePerTonTwo * int(tonsList[1]) )), "000000",
+                "{:,.0f}".format( pricePerTonTre ), "{:,.0f}".format(int( pricePerTonTre * int(tonsList[2]) )), "000000",
+                "000000",
+                systemList[bigestIndexes[i]], stationList[bigestIndexes[i]],  largePadList[bigestIndexes[i]], timeList[bigestIndexes[i]]
             ]) #WIP
 
     else : # ( len(tonsList) == 4 ) <-- is the only other possible thing
@@ -183,7 +187,12 @@ def groupValue( tonsList ) : #prints results for a maximum of 4 users, displays 
             pricePerTonTre = pricePerTon(priceList[i], quantityList[i], int(tonsList[2]))
             pricePerTonFor = pricePerTon(priceList[i], quantityList[i], int(tonsList[3]))
             printoutInfo.append([
-                str(i) + "."
+                str(i) + ".",
+                "{:,.0f}".format( pricePerTonOne ), "{:,.0f}".format(int( pricePerTonOne * int(tonsList[0]) )), "000000",
+                "{:,.0f}".format( pricePerTonTwo ), "{:,.0f}".format(int( pricePerTonTwo * int(tonsList[1]) )), "000000",
+                "{:,.0f}".format( pricePerTonTre ), "{:,.0f}".format(int( pricePerTonTre * int(tonsList[2]) )), "000000",
+                "{:,.0f}".format( pricePerTonFor ), "{:,.0f}".format(int( pricePerTonFor * int(tonsList[3]) )), "000000",
+                systemList[bigestIndexes[i]], stationList[bigestIndexes[i]],  largePadList[bigestIndexes[i]], timeList[bigestIndexes[i]]
                 
             ]) #WIP
 
