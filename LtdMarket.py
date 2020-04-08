@@ -133,28 +133,59 @@ def groupValue( tonsList ) : #prints results for a maximum of 4 users, displays 
         bigestValues.append(bigestVal)
 
     if ( len(tonsList) == 2 ) :
-        printoutInfo = [ ["Rank", "≈Price Per Ton #1", "≈Total Price #1", "≈Trade Dividends #1", "≈Price Per Ton #2", "≈Total Price #2", "≈Trade Dividends #2", "≈Trade Dividends #3", "System", "Station", "Pad", "Last Updated"] ] #initialize it with the header
+        printoutInfo = [ [
+            "Rank",
+            "≈Price Per Ton #1", "≈Total Price #1", "≈Trade Dividends #1",
+            "≈Price Per Ton #2", "≈Total Price #2", "≈Trade Dividends #2",
+            "≈Trade Dividends #3", 
+            "System", "Station", "Pad", "Last Updated"
+        ] ] 
         for i in range(1,numValues + 1) :
             pricePerTonOne = pricePerTon(priceList[i], quantityList[i], int(tonsList[0]))
             pricePerTonTwo = pricePerTon(priceList[i], quantityList[i], int(tonsList[1]))
-            printoutInfo.append([str(i) + ".", "{:,.0f}".format( pricePerTonOne ), "{:,.0f}".format(int( pricePerTonOne * int(tonsList[0]) )), "{:,.0f}".format(int( (pricePerTonTwo * int(tonsList[1])) * 0.05 )), "{:,.0f}".format( pricePerTonTwo ), "{:,.0f}".format(int( pricePerTonTwo * int(tonsList[1]) )), "{:,.0f}".format(int( (pricePerTonOne * int(tonsList[0])) * 0.05 )),  "{:,.0f}".format(int( ((pricePerTonTwo * int(tonsList[1])) * 0.05) + ((pricePerTonOne * int(tonsList[0])) * 0.05) )), systemList[bigestIndexes[i]], stationList[bigestIndexes[i]],  largePadList[bigestIndexes[i]], timeList[bigestIndexes[i]] ]) #WIP
+            printoutInfo.append([
+                str(i) + ".", 
+                "{:,.0f}".format( pricePerTonOne ), "{:,.0f}".format(int( pricePerTonOne * int(tonsList[0]) )), "{:,.0f}".format(int( (pricePerTonTwo * int(tonsList[1])) * 0.05 )),
+                "{:,.0f}".format( pricePerTonTwo ), "{:,.0f}".format(int( pricePerTonTwo * int(tonsList[1]) )), "{:,.0f}".format(int( (pricePerTonOne * int(tonsList[0])) * 0.05 )),
+                "{:,.0f}".format(int( ((pricePerTonTwo * int(tonsList[1])) * 0.05) + ((pricePerTonOne * int(tonsList[0])) * 0.05) )),
+                systemList[bigestIndexes[i]], stationList[bigestIndexes[i]],  largePadList[bigestIndexes[i]], timeList[bigestIndexes[i]]
+            ])
 
     elif ( len(tonsList) == 3 ) :
-        printoutInfo = [ ["Rank", "≈Price Per Ton #1", "≈Total Price #1", "≈Trade Dividends #1", "≈Price Per Ton #2", "≈Total Price #2", "≈Trade Dividends #2", "≈Price Per Ton #3", "≈Total Price #3", "≈Trade Dividends #3", "≈Trade Dividends #4", "System", "Station", "Pad", "Last Updated"] ] #initialize it with the header
+        printoutInfo = [ [
+            "Rank",
+            "≈Price Per Ton #1", "≈Total Price #1", "≈Trade Dividends #1",
+            "≈Price Per Ton #2", "≈Total Price #2", "≈Trade Dividends #2",
+            "≈Price Per Ton #3", "≈Total Price #3", "≈Trade Dividends #3",
+            "≈Trade Dividends #4",
+            "System", "Station", "Pad", "Last Updated"
+        ] ]
         for i in range(1,numValues + 1) :
             pricePerTonOne = pricePerTon(priceList[i], quantityList[i], int(tonsList[0]))
             pricePerTonTwo = pricePerTon(priceList[i], quantityList[i], int(tonsList[1]))
             pricePerTonTre = pricePerTon(priceList[i], quantityList[i], int(tonsList[2]))
-            printoutInfo.append([str(i) + "."]) #WIP
+            printoutInfo.append([
+                str(i) + "."
+                
+            ]) #WIP
 
     else : # ( len(tonsList) == 4 ) <-- is the only other possible thing
-        printoutInfo = [ ["Rank", "≈Price Per Ton #1", "≈Total Price #1", "≈Trade Dividends #1", "≈Price Per Ton #2", "≈Total Price #2", "≈Trade Dividends #2", "≈Price Per Ton #3", "≈Total Price #3", "≈Trade Dividends #3", "≈Price Per Ton #4", "≈Total Price #4", "≈Trade Dividends #4", "System", "Station", "Pad", "Last Updated"] ] #initialize it with the header
+        printoutInfo = [ [
+            "Rank",
+            "≈Price Per Ton #1", "≈Total Price #1", "≈Trade Dividends #1",
+            "≈Price Per Ton #2", "≈Total Price #2", "≈Trade Dividends #2",
+            "≈Price Per Ton #3", "≈Total Price #3", "≈Trade Dividends #3",
+            "≈Price Per Ton #4", "≈Total Price #4", "≈Trade Dividends #4",
+            "System", "Station", "Pad", "Last Updated"] ] 
         for i in range(1,numValues + 1) :
             pricePerTonOne = pricePerTon(priceList[i], quantityList[i], int(tonsList[0]))
             pricePerTonTwo = pricePerTon(priceList[i], quantityList[i], int(tonsList[1]))
             pricePerTonTre = pricePerTon(priceList[i], quantityList[i], int(tonsList[2]))
             pricePerTonFor = pricePerTon(priceList[i], quantityList[i], int(tonsList[3]))
-            printoutInfo.append([str(i) + "."]) #WIP
+            printoutInfo.append([
+                str(i) + "."
+                
+            ]) #WIP
 
     maxColumnList = []
     for i in range(0,len(printoutInfo[0])) :
@@ -297,7 +328,6 @@ def singleValue( tonsAboard ) : #prints results for one user - print trade divid
 if __name__ == "__main__":
     print("Imports sucessful. Running LtdMarket...")
     main()
-    #groupValue([100,200])
 
-#Allow singleValue to printout trade dividens for group members
+
 #Develop groupValue function
