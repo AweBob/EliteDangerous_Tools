@@ -334,5 +334,5 @@ def singleValue( tonsAboard ) : #prints results for one user - print trade divid
 #=================================================================================================================================
 
 if __name__ == "__main__":
-    print("Imports sucessful. Running LtdMarket...")
+    print("Imports successful. Running LtdMarket...")
     main()
