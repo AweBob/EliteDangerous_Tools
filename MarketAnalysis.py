@@ -1,10 +1,10 @@
 
 import requests #For pinging inara
-import numpy as np
+import numpy as np #for distance calculation 
 
-#from bs4 import BeautifulSoup #for sorting inara
+#from bs4 import BeautifulSoup 
 #import json
-#from EliteExtraJsonParser import CargoJsonParser #for reading Cargo.json
+#from EliteExtraJsonParser import CargoJsonParser 
 
 #================================Credit for this idea to CMDR Longman.P.J.===========================================================
 
@@ -43,9 +43,22 @@ def systemsThatMatchActiveStates (doStatusPrintout) :
 
 #====================================================================================================================================
 
-def stationsThatMatchEconomy(systemEddbIds, doStatusPrintout) : #Industrial, High Tech, Refinery or Tourism station enconomies required
-    
-    return("placeholder") #return [systemName, stationName, systemId, stationId]
+def stationsThatMatchEconomy(rawSystemList) : 
+    systemEddbIds = []
+    for rawSystem in rawSystemList :
+        systemEddbIds.append(rawSystem[1]) 
+    eddbUrl = "https://eddb.io/archive/v6/stations.json"
+    response = requests.get(eddbUrl)  
+    eddbGrab = response.json()
+    stations = []
+    #stationsCount = len(eddbGrab)
+    for station in eddbGrab :
+        if station["system_id"] in systemEddbIds :
+            economiesList = station["economies"]
+            for economy in economiesList :
+                if economy=="Industrial" or economy=="High Tech" or economy=="Tourism" :  #Industrial, High Tech, Refinery or Tourism station enconomies required
+                    stations.append([ station["name"], station["system_id"], station["id"] ])
+    return(stations, systemEddbIds) #return [stationName, systemId, stationId]
 
 #====================================================================================================================================
 
@@ -80,22 +93,30 @@ def getSystemDistance(sys1CordinateList, sys2CordinateList) : #cordinate list lo
     dist = np.sqrt(squared_dist)
     return(dist)
 
+def getSystemNames(systemIdList) :
+    systemNames = []
+    eddbUrl = "https://eddb.io/archive/v6/systems_populated.json" 
+    response = requests.get(eddbUrl)  
+    eddbGrab = response.json()
+    for system in eddbGrab :
+        for inputId in systemIdList :
+            if inputId==system["id"] :
+                systemNames.append(system["name"])
+    return(systemNames)
+
 #====================================================================================================================================
 
 def printMatchesToEconomyAndState() :
     rawSystemsList, systemsCount = systemsThatMatchActiveStates(False)
-    systemEddbIds = []
-    for rawSystem in rawSystemsList :
-        systemEddbIds.append(rawSystem[1]) 
-    rawStationsList = stationsThatMatchEconomy(systemEddbIds, False)
-    print("After analyzing " + str(systemsCount) + " systems. The following are stations that match economy and active BGS states:")
-    for rawStation in rawStationsList :
-        print(str(rawStation)) 
-
+    rawStationsList, systemEddbIds = stationsThatMatchEconomy(rawSystemsList)
+    rawSystemNames = getSystemNames(systemEddbIds)
+    print("After analyzing " + str(systemsCount) + " populated systems. The following are stations that match economy and active BGS states:")
+    for count, value in enumerate(rawStationsList) :
+        print(value[0] + ", " + rawSystemNames[count])
+        
 #====================================================================================================================================
 
 if __name__ == "__main__":
-    #foo = "bar" #placeholder
     printMatchesToEconomyAndState()
 
 #====================================================================================================================================
