@@ -21,18 +21,15 @@ def systemsThatMatchActiveStates (doStatusPrintout) :
         cle = False #civil liberty
         phe = False #public holiday
         ee = False #expansion
-        minorFacts = system["minor_faction_presences"]
-        for minorFact in minorFacts :
-            activeStatesList = minorFact["active_states"]
-            for state in activeStatesList :
-                if (state["name"]=="Boom" or state["name"]=="Investment"):
-                    ibe = True
-                elif (state["name"]=="Civil Liberty"):
-                    cle = True
-                elif (state["name"]=="Public Holiday"):
-                    phe = True
-                elif (state["name"]=="Expansion"):
-                    ee = True
+        for state in system["states"] :
+            if (state["name"]=="Boom" or state["name"]=="Investment"):
+                ibe = True
+            elif (state["name"]=="Civil Liberty"):
+                cle = True
+            elif (state["name"]=="Public Holiday"):
+                phe = True
+            elif (state["name"]=="Expansion"):
+                ee = True
         if (ibe and cle and phe and ee):
             systems.append( [system["name"], system["id"] ])
         if doStatusPrintout :
