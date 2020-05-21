@@ -9,9 +9,7 @@ import numpy as np #for distance calculation
 #================================Credit for this idea to CMDR Longman.P.J.===========================================================
 
 def systemsThatMatchActiveStates (doStatusPrintout) : 
-    eddbUrl = "https://eddb.io/archive/v6/systems_populated.json" 
-    response = requests.get(eddbUrl)  
-    eddbGrab = response.json()
+    eddbGrab = eddbSystems
     systems = []
     systemsCount = len(eddbGrab)
     if doStatusPrintout :
@@ -30,7 +28,7 @@ def systemsThatMatchActiveStates (doStatusPrintout) :
                 phe = True
             elif (state["name"]=="Expansion"):
                 ee = True
-        if (ibe and cle and phe and ee):
+        if (ibe and cle and ee):
             systems.append( [system["name"], system["id"] ])
         if doStatusPrintout :
             print("\rCompleted " + str(count + 1) + "/" + str(systemsCount) + "                                                ",end="")
@@ -44,9 +42,7 @@ def stationsThatMatchEconomy(rawSystemList) :
     systemEddbIds = []
     for rawSystem in rawSystemList :
         systemEddbIds.append(rawSystem[1]) 
-    eddbUrl = "https://eddb.io/archive/v6/stations.json"
-    response = requests.get(eddbUrl)  
-    eddbGrab = response.json()
+    eddbGrab = eddbStations
     stations = []
     #stationsCount = len(eddbGrab)
     for station in eddbGrab :
@@ -67,18 +63,14 @@ def hasBeenUpdated(stationEddbIds) :
 #====================================================================================================================================
 
 def getSystemCordinatesFromId(systemEddbId) :
-    eddbUrl = "https://eddb.io/archive/v6/systems_populated.json" 
-    response = requests.get(eddbUrl)  
-    eddbGrab = response.json()
+    eddbGrab = eddbSystems
     for systemDict in eddbGrab :
         if systemDict["id"]==systemEddbId :
             return (True, [systemDict["x"], systemDict["y"], systemDict["z"]])
     return (False,[]) 
 
 def getSystemCordinatesFromName(systemName) :
-    eddbUrl = "https://eddb.io/archive/v6/systems_populated.json" 
-    response = requests.get(eddbUrl)  
-    eddbGrab = response.json()
+    eddbGrab = eddbSystems
     for systemDict in eddbGrab :
         if systemDict["name"]==systemName :
             return (True, [systemDict["x"], systemDict["y"], systemDict["z"]])
@@ -93,9 +85,7 @@ def getSystemDistance(sys1CordinateList, sys2CordinateList) : #cordinate list lo
 
 def getSystemNames(systemIdList) :
     systemNames = []
-    eddbUrl = "https://eddb.io/archive/v6/systems_populated.json" 
-    response = requests.get(eddbUrl)  
-    eddbGrab = response.json()
+    eddbGrab = eddbSystems
     for system in eddbGrab :
         for inputId in systemIdList :
             if inputId==system["id"] :
@@ -103,14 +93,21 @@ def getSystemNames(systemIdList) :
     return(systemNames)
 
 def getSystemName(sysId) :
-    eddbUrl = "https://eddb.io/archive/v6/systems_populated.json" 
-    response = requests.get(eddbUrl)  
-    eddbGrab = response.json()
+    eddbGrab = eddbSystems
     for system in eddbGrab :
         if sysId==system["id"] :
             return(system["name"])
     print("System " + str(sysId) + " does not exist.")
     return("DNE")
+
+def doEddbPings() :
+    eddbUrl = "https://eddb.io/archive/v6/systems_populated.json" 
+    response = requests.get(eddbUrl)  
+    eddbGrab1 = response.json()
+    eddbUrl = "https://eddb.io/archive/v6/stations.json"
+    response = requests.get(eddbUrl)  
+    eddbGrab2 = response.json()
+    return(eddbGrab1, eddbGrab2)
 
 #====================================================================================================================================
 
@@ -125,6 +122,7 @@ def printMatchesToEconomyAndState() :
 #====================================================================================================================================
 
 if __name__ == "__main__":
+    eddbSystems, eddbStations = doEddbPings()
     printMatchesToEconomyAndState()
 
 #====================================================================================================================================
