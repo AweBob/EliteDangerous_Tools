@@ -31,7 +31,7 @@ def systemsThatMatchActiveStates (doStatusPrintout) :
                 pae = True
             elif (state["name"]=="Expansion"):
                 ee = True
-        if (ibe and cle and ee and (pae or phe):
+        if (ibe and cle and ee and (pae or phe)):
             systems.append( [system["name"], system["id"] ])
         if doStatusPrintout :
             print("\rCompleted " + str(count + 1) + "/" + str(systemsCount) + "                                                ",end="")
@@ -41,7 +41,7 @@ def systemsThatMatchActiveStates (doStatusPrintout) :
 
 #====================================================================================================================================
 
-def stationsThatMatchEconomy(rawSystemList) : 
+def stationsThatMatchEconomy (rawSystemList) : 
     systemEddbIds = []
     for rawSystem in rawSystemList :
         systemEddbIds.append(rawSystem[1]) 
