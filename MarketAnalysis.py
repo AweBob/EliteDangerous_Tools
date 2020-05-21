@@ -19,6 +19,7 @@ def systemsThatMatchActiveStates (doStatusPrintout) :
         cle = False #civil liberty
         phe = False #public holiday
         ee = False #expansion
+        pae = False #pirate attack
         for state in system["states"] :
             if (state["name"]=="Boom" or state["name"]=="Investment"):
                 ibe = True
@@ -26,9 +27,11 @@ def systemsThatMatchActiveStates (doStatusPrintout) :
                 cle = True
             elif (state["name"]=="Public Holiday"):
                 phe = True
+            elif (state["name"]=="Pirate Attack") :
+                pae = True
             elif (state["name"]=="Expansion"):
                 ee = True
-        if (ibe and cle and ee):
+        if (ibe and cle and ee and (pae or phe):
             systems.append( [system["name"], system["id"] ])
         if doStatusPrintout :
             print("\rCompleted " + str(count + 1) + "/" + str(systemsCount) + "                                                ",end="")
