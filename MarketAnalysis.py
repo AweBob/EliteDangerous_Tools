@@ -57,8 +57,9 @@ def stationsThatMatchEconomy(rawSystemList) :
             economiesList = station["economies"]
             for economy in economiesList :
                 if economy=="Industrial" or economy=="High Tech" or economy=="Tourism" :  #Industrial, High Tech, Refinery or Tourism station enconomies required
-                    stations.append([ station["name"], station["system_id"], station["id"] ])
-    return(stations, systemEddbIds) #return [stationName, systemId, stationId]
+                    stations.append([ station["name"], getSystemName(station["system_id"]), station["id"], station["system_id"] ]) #running get system name every time is ineficient asf but whatever lol
+                    break
+    return(stations) #[[stationame,sysname,statioid,sysid], [], []]
 
 #====================================================================================================================================
 
@@ -104,16 +105,26 @@ def getSystemNames(systemIdList) :
                 systemNames.append(system["name"])
     return(systemNames)
 
+def getSystemName(sysId) :
+    eddbUrl = "https://eddb.io/archive/v6/systems_populated.json" 
+    response = requests.get(eddbUrl)  
+    eddbGrab = response.json()
+    for system in eddbGrab :
+        if sysId==system["id"] :
+            return(system["name"])
+    print("System " + str(sysId) + " does not exist.")
+    return("DNE")
+
 #====================================================================================================================================
 
 def printMatchesToEconomyAndState() :
-    rawSystemsList, systemsCount = systemsThatMatchActiveStates(False)
-    rawStationsList, systemEddbIds = stationsThatMatchEconomy(rawSystemsList)
-    rawSystemNames = getSystemNames(systemEddbIds)
+    rawSystemsList, systemsCount = systemsThatMatchActiveStates(False) #rawSystemList =  [[sysname, sysid], [], []]
+    rawStationsList = stationsThatMatchEconomy(rawSystemsList) #rawStationsList = [[stationame,sysname,statioid,sysid], [], []]
+
     print("After analyzing " + str(systemsCount) + " populated systems. The following are stations that match economy and active BGS states:")
-    for count, value in enumerate(rawStationsList) :
-        print(value[0] + ", " + rawSystemNames[count])
-        
+    for i in range(0,len(rawStationsList)) :
+        print(rawStationsList[i][0] + ", " + rawStationsList[i][1])
+
 #====================================================================================================================================
 
 if __name__ == "__main__":
