@@ -31,7 +31,7 @@ def systemsThatMatchActiveStates (doStatusPrintout) :
                 pae = True
             elif (state["name"]=="Expansion"):
                 ee = True
-        if (ibe and cle and ee and (pae or phe)):
+        if (ibe and cle and ee and phe):
             systems.append( [system["name"], system["id"] ])
         if doStatusPrintout :
             print("\rCompleted " + str(count + 1) + "/" + str(systemsCount) + "                                                ",end="")
@@ -56,12 +56,6 @@ def stationsThatMatchEconomy (rawSystemList) :
                     stations.append([ station["name"], getSystemName(station["system_id"]), station["id"], station["system_id"] ]) #running get system name every time is ineficient asf but whatever lol
                     break
     return(stations) #[[stationame,sysname,statioid,sysid], [], []]
-
-#====================================================================================================================================
-
-def hasBeenUpdated(stationEddbIds) :
-
-    return("placeholder") 
 
 #====================================================================================================================================
 
@@ -114,11 +108,39 @@ def doEddbPings() :
 
 #====================================================================================================================================
 
-def printMatchesToEconomyAndState() :
+def print1dot6Mil() :
     rawSystemsList, systemsCount = systemsThatMatchActiveStates(False) #rawSystemList =  [[sysname, sysid], [], []]
     rawStationsList = stationsThatMatchEconomy(rawSystemsList) #rawStationsList = [[stationame,sysname,statioid,sysid], [], []]
+    print("\nAnalyzed " + str(systemsCount) + " systems. States: public holiday, civil liverty, expansion, boom or investment  Economy: Industrial High Tech Tourism")
+    if len(rawStationsList)==0:
+        print("yeah there's fuckin nothing")
+    for i in range(0,len(rawStationsList)) :
+        print(rawStationsList[i][0] + ", " + rawStationsList[i][1])
 
-    print("After analyzing " + str(systemsCount) + " populated systems. The following are stations that match economy and active BGS states:")
+def print1dot3Mil() : #Needs to be coded
+    systemsCount = ''
+    rawStationsList = [[]]
+    print("\nAnalyzed " + str(systemsCount) + " systems.  States: Civil Liberty, Expansion, Investment, Public Holiday  Economy: Refinery")
+    if len(rawStationsList)==0:
+        print("yeah there's fuckin nothing")
+    for i in range(0,len(rawStationsList)) :
+        print(rawStationsList[i][0] + ", " + rawStationsList[i][1])
+
+def print1dot2Mil() : #Needs to be coded
+    systemsCount = ''
+    rawStationsList = [[]]
+    print("\nAnalyzed " + str(systemsCount) + " systems.  States: Civil Liberty, Expansion, Investment, Pirate attack  Economy: industrial or high tech or tourism")
+    if len(rawStationsList)==0:
+        print("yeah there's fuckin nothing")
+    for i in range(0,len(rawStationsList)) :
+        print(rawStationsList[i][0] + ", " + rawStationsList[i][1])
+
+def print1dot1Mil() : #Needs to be coded
+    systemsCount = ''
+    rawStationsList = [[]]
+    print("\nAnalyzed " + str(systemsCount) + " systems. States: Boom, Civil Liberty, Expansion, Pirate Attack and Economies: Extraction, Refinery")
+    if len(rawStationsList)==0:
+        print("yeah there's fuckin nothing")
     for i in range(0,len(rawStationsList)) :
         print(rawStationsList[i][0] + ", " + rawStationsList[i][1])
 
@@ -126,6 +148,8 @@ def printMatchesToEconomyAndState() :
 
 if __name__ == "__main__":
     eddbSystems, eddbStations = doEddbPings()
-    printMatchesToEconomyAndState()
+    print1dot6Mil()
 
 #====================================================================================================================================
+
+#This is rlly inefficient, just meant to be used for some quick analysis
