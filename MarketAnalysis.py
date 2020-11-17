@@ -2,10 +2,6 @@
 import requests #For pinging inara
 import numpy as np #for distance calculation 
 
-#from bs4 import BeautifulSoup 
-#import json
-#from EliteExtraJsonParser import CargoJsonParser 
-
 #================================Credit for this idea to CMDR Longman.P.J.===========================================================
 
 def systemsThatMatchActiveStates (doStatusPrintout) : 
@@ -108,7 +104,10 @@ def doEddbPings() :
 
 #====================================================================================================================================
 
-def print1dot6Mil() :
+if __name__ == "__main__" :
+
+    eddbSystems, eddbStations = doEddbPings()
+
     rawSystemsList, systemsCount = systemsThatMatchActiveStates(False) #rawSystemList =  [[sysname, sysid], [], []]
     rawStationsList = stationsThatMatchEconomy(rawSystemsList) #rawStationsList = [[stationame,sysname,statioid,sysid], [], []]
     print("\nAnalyzed " + str(systemsCount) + " systems. States: public holiday, civil liverty, expansion, boom or investment  Economy: Industrial High Tech Tourism")
@@ -117,39 +116,5 @@ def print1dot6Mil() :
     for i in range(0,len(rawStationsList)) :
         print(rawStationsList[i][0] + ", " + rawStationsList[i][1])
 
-def print1dot3Mil() : #Needs to be coded
-    systemsCount = ''
-    rawStationsList = [[]]
-    print("\nAnalyzed " + str(systemsCount) + " systems.  States: Civil Liberty, Expansion, Investment, Public Holiday  Economy: Refinery")
-    if len(rawStationsList)==0:
-        print("yeah there's fuckin nothing")
-    for i in range(0,len(rawStationsList)) :
-        print(rawStationsList[i][0] + ", " + rawStationsList[i][1])
-
-def print1dot2Mil() : #Needs to be coded
-    systemsCount = ''
-    rawStationsList = [[]]
-    print("\nAnalyzed " + str(systemsCount) + " systems.  States: Civil Liberty, Expansion, Investment, Pirate attack  Economy: industrial or high tech or tourism")
-    if len(rawStationsList)==0:
-        print("yeah there's fuckin nothing")
-    for i in range(0,len(rawStationsList)) :
-        print(rawStationsList[i][0] + ", " + rawStationsList[i][1])
-
-def print1dot1Mil() : #Needs to be coded
-    systemsCount = ''
-    rawStationsList = [[]]
-    print("\nAnalyzed " + str(systemsCount) + " systems. States: Boom, Civil Liberty, Expansion, Pirate Attack and Economies: Extraction, Refinery")
-    if len(rawStationsList)==0:
-        print("yeah there's fuckin nothing")
-    for i in range(0,len(rawStationsList)) :
-        print(rawStationsList[i][0] + ", " + rawStationsList[i][1])
 
 #====================================================================================================================================
-
-if __name__ == "__main__":
-    eddbSystems, eddbStations = doEddbPings()
-    print1dot6Mil()
-
-#====================================================================================================================================
-
-#This is rlly inefficient, just meant to be used for some quick analysis
