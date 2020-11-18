@@ -329,6 +329,6 @@ def marketAnalysis3() :
 #====================================================================================================================================
 
 if __name__ == "__main__":
-    #marketAnalysis1() #Ugly code but it works 100%
+    marketAnalysis1() #Ugly code but it works 100%
     #marketAnalysis2() #Uses latest information, but takes forever to run
-    marketAnalysis3() #Cleaner code, needs more testing to be confirmed functional
+    #marketAnalysis3() #Cleaner code, needs more testing to be confirmed functional
