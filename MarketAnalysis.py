@@ -342,14 +342,14 @@ def marketAnalysis4() :
     print(f"Filtering {len(rawEddbStations)} stations by economy")
     economyMatches = []
     for rawEddbStation in rawEddbStations :
-        for economy in station["economies"] :
+        for economy in rawEddbStation["economies"] :
             if economy=="Industrial" or economy=="High Tech" or economy=="Tourism" :  #Industrial, High Tech, Refinery or Tourism station enconomies required
                 sysName = "?"
                 for system in rawEddbPopulatedSystems :
-                    if station["system_id"]==system["id"] :
+                    if rawEddbStation["system_id"]==system["id"] :
                         sysName = system["name"]
                         break #No need to keep searching
-                economyMatches.append([ station["name"], sysName, station["id"], station["system_id"] ])
+                economyMatches.append([ rawEddbStation["name"], sysName, rawEddbStation["id"], rawEddbStation["system_id"] ])
                 break #onto next station
 
     print(f"Calculating number of different systems from {len(economyMatches)} stations")
