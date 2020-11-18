@@ -1,7 +1,7 @@
 
 import requests #For apis
 import numpy as np #for distance calculation 
-import time
+import time #For timing how long all this junk takes
 
 #If you get errors on the above 2 things run: 
 # py -m pip install requests
@@ -260,15 +260,38 @@ class AdvancedEddbSystem :
         return(dist)
 
     def hasFourLuckyStates(self) :
-        return ("placeholder")
+        ibe = False #investement/boom
+        cle = False #civil liberty
+        phe = False #public holiday
+        ee = False #expansion
+        pae = False #pirate attack
+        for state in self.states :
+            if (state=="Boom" or state=="Investment"):
+                ibe = True
+            elif (state=="Civil Liberty"):
+                cle = True
+            elif (state=="Public Holiday"):
+                phe = True
+            elif (state=="Pirate Attack") :
+                pae = True
+            elif (state=="Expansion"):
+                ee = True
+        return(ibe and cle and ee and phe)
 
     def getStationsWithLuckyEconomy(self) :
-        return ("placeholder")
+        returningStations = [] #list of station names
+        for station in self.stations :
+            for economy in station[1] :
+                if economy=="Industrial" or economy=="High Tech" or economy=="Tourism" :  #Industrial, High Tech, Refinery or Tourism station enconomies required
+                    returningStations.append(station[0]) #add the station name
+                    break #onto next station
+        return(returningStations)
 
 def marketAnalysis3() :
-    input("Market Analysis - By: AweBob#6221 - Press enter to begin - ")
+    input("Market Analysis 3 - By: AweBob#6221 - Press enter to begin - ")
 
     print("Downloading eddb")
+    startTime = int(time.time())
     rawEddbPopulatedSystems = requests.get( "https://eddb.io/archive/v6/systems_populated.json" ).json()
     rawEddbStations = requests.get( "https://eddb.io/archive/v6/stations.json" ).json()
     
@@ -290,12 +313,10 @@ def marketAnalysis3() :
     """
 
     print("Processing Individual Systems\n")
-    startTime = int(time.time())
     for eddbSystem in eddbSystems :
         if eddbSystem.hasFourLuckyStates() :
             for station in eddbSystem.getStationsWithLuckyEconomy() :
-                #print(f"\n{station.getSys()} - {station.getStat()} - {int(eddbSystem.getDistanceFromSol())}lys\n")
-                print("placeholder")
+                print(f"\n{station} - {eddbSystem.getName()} - {int(eddbSystem.getDistanceFromSol())}lys\n")
 
     print(f"\nDone in {int(time.time()) - startTime} secs")
 
@@ -308,6 +329,6 @@ def marketAnalysis3() :
 #====================================================================================================================================
 
 if __name__ == "__main__":
-    marketAnalysis1() #Ugly code but it works 100%
+    #marketAnalysis1() #Ugly code but it works 100%
     #marketAnalysis2() #Uses latest information, but takes forever to run
-    #marketAnalysis3() #Not completed yet
+    marketAnalysis3() #Cleaner code, needs more testing to be confirmed functional
