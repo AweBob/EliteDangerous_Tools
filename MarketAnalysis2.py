@@ -4,10 +4,15 @@
 #Credit for this idea to CMDR Longman.P.J.
 #All code by CMDR AweBob
 
+#Please Note:
+#This code will take like 6 hours to run, all the elitebgs pings takes a longass time
+#see MarketAnalysis.py for it being done with eddb dumps instead
+
 #====================================================================================================================================
 
 import requests #For grabbin from eddb and from elitebgs
 import numpy as np #for distance calculation 
+import time #for timing 
 
 #====================================================================================================================================
 
@@ -107,12 +112,21 @@ def main() :
     """
 
     print("Processing Individual Systems\n")
-    for eddbSystem in eddbSystems :
+    startTime = int(time.time())
+    for index, eddbSystem in enumerate(eddbSystems) :
         if eddbSystem.hasFourLuckyStates() :
             for station in eddbSystem.getStationsWithLuckyEconomy() :
-                print(f"{station.getSys()} - {station.getStat()} - {int(eddbSystem.getDistanceFromSol())}lys")
+                print(f"\n{station.getSys()} - {station.getStat()} - {int(eddbSystem.getDistanceFromSol())}lys\n")
 
-    print("\nDone")
+        """
+        #Used this to get my time estimate for how long this would take
+        try :
+            print(f"Processed {index} out of {len(eddbSystems)} in {int(time.time()) - startTime} secs projecting finished in {int(((int(time.time()) - startTime) /  index ) * len(eddbSystems))} secs")
+        except ZeroDivisionError:
+            print(f"Processed {index} out of {len(eddbSystems)} in {int(time.time()) - startTime} secs projecting finished in ? secs")
+        """
+
+    print(f"\nDone in {int(time.time()) - startTime} secs")
 
 #====================================================================================================================================
 

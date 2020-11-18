@@ -1,6 +1,10 @@
 
-import requests #For pinging inara
+import requests #
 import numpy as np #for distance calculation 
+
+#If you get errors on the above 2 things run: 
+# py -m pip install requests
+# py -m pip install numpy
 
 #================================Credit for this idea to CMDR Longman.P.J.===========================================================
 
@@ -112,9 +116,8 @@ if __name__ == "__main__" :
     rawStationsList = stationsThatMatchEconomy(rawSystemsList) #rawStationsList = [[stationame,sysname,statioid,sysid], [], []]
     print("\nAnalyzed " + str(systemsCount) + " systems. States: public holiday, civil liverty, expansion, boom or investment  Economy: Industrial High Tech Tourism")
     if len(rawStationsList)==0:
-        print("yeah there's fuckin nothing")
+        print("not a single system meets the requirements F")
     for i in range(0,len(rawStationsList)) :
         print(rawStationsList[i][0] + ", " + rawStationsList[i][1])
-
 
 #====================================================================================================================================
