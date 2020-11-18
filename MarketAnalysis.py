@@ -328,7 +328,69 @@ def marketAnalysis3() :
 #====================================================================================================================================
 #====================================================================================================================================
 
+#Attempt #4 - Using ELite BGS, but filtering out shitty economies first
+
+
+def marketAnalysis4() :
+    input("Market Analysis 4 - By: AweBob#6221 - Press enter to begin - ")
+
+    print("Downloading eddb")
+    startTime = int(time.time())
+    rawEddbStations = requests.get( "https://eddb.io/archive/v6/stations.json" ).json()
+    rawEddbPopulatedSystems = requests.get( "https://eddb.io/archive/v6/systems_populated.json" ).json()
+
+    print(f"Filtering {len(rawEddbStations)} stations by economy")
+    economyMatches = []
+    for rawEddbStation in rawEddbStations :
+        for economy in station["economies"] :
+            if economy=="Industrial" or economy=="High Tech" or economy=="Tourism" :  #Industrial, High Tech, Refinery or Tourism station enconomies required
+                sysName = "?"
+                for system in rawEddbPopulatedSystems :
+                    if station["system_id"]==system["id"] :
+                        sysName = system["name"]
+                        break #No need to keep searching
+                economyMatches.append([ station["name"], sysName, station["id"], station["system_id"] ])
+                break #onto next station
+
+    print(f"Calculating number of different systems from {len(economyMatches)} stations")
+    systemsForAnalysis = []
+    for stationInfo in economyMatches :
+        if stationInfo[3] not in systemsForAnalysis : #If the system id isn't on the list
+            systemsForAnalysis.append( stationInfo[3] ) #add the system id
+
+    print(f"Filtering {len(economyMatches)} stations over {len(systemsForAnalysis)} systems by system state")
+    cachedSystemInfo = {}
+    economyStateMatches = [] #Matches Economy and State! (economy checked above, state checked below)
+    for stationList in economyMatches :
+        try :
+            systemInfo = cachedSystemInfo[str(stationList[3])] #try and grabbed the cached data
+        except KeyError : #if it's not cached
+            systemInfo = requests.get( f"https://elitebgs.app/api/ebgs/v4/systems?name={stationList[1]}"  ).json()["docs"] #THIS API IS RLLY DIFFICULT TO GET THE INFO I WANT OUT OF, I WANT ALL STATES OF SYSTEM
+            cachedSystemInfo[str(stationList[3])] = systemInfo #cache it
+        finally :
+            #DETERMINE IF THE STATION IS IN A SYSTEM THAT MEETS THE REQUIREMENTS
+            #ADD IT TO economyStateMatches
+            print("placeholder")
+                    
+    print("Completed system state checking, printing results")
+    if len(economyStateMatches) == 0 :
+        print("lol jk no systems meet the requirements")
+    else :
+        for stationList in economyStateMatches :
+            print(f"{stationList[0]} - {stationList[1]}")
+    
+    print(f"Total this took {int(time.time()) - startTime} seconds.")
+
+#====================================================================================================================================
+#====================================================================================================================================
+#====================================================================================================================================
+#====================================================================================================================================
+#====================================================================================================================================
+#====================================================================================================================================
+#====================================================================================================================================
+
 if __name__ == "__main__":
-    marketAnalysis1() #Ugly code but it works 100%
+    #marketAnalysis1() #Ugly code but it works 100%
     #marketAnalysis2() #Uses latest information, but takes forever to run
     #marketAnalysis3() #Cleaner code, needs more testing to be confirmed functional
+    marketAnalysis4() #Uses latest information, based on the asumption station economies are constant, faster then market analysis 2, but still uses elitebgs
