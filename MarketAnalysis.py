@@ -330,7 +330,6 @@ def marketAnalysis3() :
 
 #Attempt #4 - Using ELite BGS, but filtering out shitty economies first
 
-
 def marketAnalysis4() :
     input("Market Analysis 4 - By: AweBob#6221 - Press enter to begin - ")
 
@@ -344,7 +343,7 @@ def marketAnalysis4() :
     for rawEddbStation in rawEddbStations :
         for economy in rawEddbStation["economies"] :
             if economy=="Industrial" or economy=="High Tech" or economy=="Tourism" :  #Industrial, High Tech, Refinery or Tourism station enconomies required
-                sysName = "?"
+                sysName = "?" #gets overriden with the actual if it is found
                 for system in rawEddbPopulatedSystems :
                     if rawEddbStation["system_id"]==system["id"] :
                         sysName = system["name"]
@@ -365,13 +364,29 @@ def marketAnalysis4() :
         try :
             systemInfo = cachedSystemInfo[str(stationList[3])] #try and grabbed the cached data
         except KeyError : #if it's not cached
-            systemInfo = requests.get( f"https://elitebgs.app/api/ebgs/v4/systems?name={stationList[1]}"  ).json()["docs"] #THIS API IS RLLY DIFFICULT TO GET THE INFO I WANT OUT OF, I WANT ALL STATES OF SYSTEM
+            systemInfo = requests.get( f"https://eddbapi.kodeblox.com/api/v4/populatedsystems?name={stationList[1]}"  ).json()["docs"][0]
             cachedSystemInfo[str(stationList[3])] = systemInfo #cache it
         finally :
-            #DETERMINE IF THE STATION IS IN A SYSTEM THAT MEETS THE REQUIREMENTS
-            #ADD IT TO economyStateMatches
-            print("placeholder")
-                    
+            ibe = False #investement/boom
+            cle = False #civil liberty
+            phe = False #public holiday
+            ee = False #expansion
+            pae = False #pirate attack
+            for minorFact in systemInfo["minor_faction_presences"] : #For every minor faction within the current system
+                for state in minorFact["active_states"] : #For each state that is active for the current faction
+                    if (state["name"]=="Boom" or state["name"]=="Investment"):
+                        ibe = True
+                    elif (state["name"]=="Civil Liberty"):
+                        cle = True
+                    elif (state["name"]=="Public Holiday"):
+                        phe = True
+                    elif (state["name"]=="Pirate Attack") :
+                        pae = True
+                    elif (state["name"]=="Expansion"):
+                        ee = True
+            if (ibe and cle and ee and phe) :
+                economyStateMatches.append(stationList) #add the station to the matches
+   
     print("Completed system state checking, printing results")
     if len(economyStateMatches) == 0 :
         print("lol jk no systems meet the requirements")
@@ -390,7 +405,7 @@ def marketAnalysis4() :
 #====================================================================================================================================
 
 if __name__ == "__main__":
-    #marketAnalysis1() #Ugly code but it works 100%
-    #marketAnalysis2() #Uses latest information, but takes forever to run
-    #marketAnalysis3() #Cleaner code, needs more testing to be confirmed functional
-    marketAnalysis4() #Uses latest information, based on the asumption station economies are constant, faster then market analysis 2, but still uses elitebgs
+    marketAnalysis1() #Ugly code but it works 100% - few minute runtime
+    #marketAnalysis2() #Uses latest information, but takes forever to run - I don't think this actually works anyways 6h run time
+    #marketAnalysis3() #Cleaner code, needs more testing to be confirmed functional - basically marketanalysis1, but with a nice class - few minute run time
+    #marketAnalysis4() #Uses latest information, based on the asumption station economies are constant, faster then market analysis 2 barely, 2:30h run time
