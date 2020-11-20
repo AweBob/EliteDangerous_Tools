@@ -3,8 +3,6 @@ import requests
 import csv
 import time
 import numpy as np
-import progressbar 
-import pandas as pd
 import json
 
 LISTINGS_URL = "https://eddb.io/archive/v6/listings.csv"

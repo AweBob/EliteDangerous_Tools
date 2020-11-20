@@ -161,8 +161,6 @@ class EddbSystem :
                 returningStations.append(BasicStation(self.name, stationDict["name"]))
         return(returningStations)
 
-#====================================================================================================================================
-
 class BasicStation :
     def __init__(self, sysName, statName) :
         self.sysName = sysName
@@ -171,8 +169,6 @@ class BasicStation :
         return(self.sysName)
     def getStat(self) :
         return(self.getStat)
-
-#====================================================================================================================================
 
 def marketAnalysis2 () :
     input("Market Analysis 2 - By: AweBob#6221 - Press enter to begin - ")
@@ -338,7 +334,7 @@ def marketAnalysis4() :
     rawEddbStations = requests.get( "https://eddb.io/archive/v6/stations.json" ).json()
     rawEddbPopulatedSystems = requests.get( "https://eddb.io/archive/v6/systems_populated.json" ).json()
 
-    print(f"Filtering {len(rawEddbStations)} stations by economy")
+    print(f"Filtering {len(rawEddbStations)} stations by economy - {int(time.time()) - startTime}  seconds elapsed")
     economyMatches = []
     for rawEddbStation in rawEddbStations :
         for economy in rawEddbStation["economies"] :
@@ -351,13 +347,13 @@ def marketAnalysis4() :
                 economyMatches.append([ rawEddbStation["name"], sysName, rawEddbStation["id"], rawEddbStation["system_id"] ])
                 break #onto next station
 
-    print(f"Calculating number of different systems from {len(economyMatches)} stations")
+    print(f"Calculating number of different systems from {len(economyMatches)} stations - {int(time.time()) - startTime}  seconds elapsed") #This step is kinda time consuming and ultimely useless, but it gives us how many systems were actually gonna need to check
     systemsForAnalysis = []
     for stationInfo in economyMatches :
         if stationInfo[3] not in systemsForAnalysis : #If the system id isn't on the list
             systemsForAnalysis.append( stationInfo[3] ) #add the system id
 
-    print(f"Filtering {len(economyMatches)} stations over {len(systemsForAnalysis)} systems by system state")
+    print(f"Filtering {len(economyMatches)} stations over {len(systemsForAnalysis)} systems by system state - {int(time.time()) - startTime}  seconds elapsed")
     cachedSystemInfo = {}
     economyStateMatches = [] #Matches Economy and State! (economy checked above, state checked below)
     for stationList in economyMatches :
@@ -387,7 +383,7 @@ def marketAnalysis4() :
             if (ibe and cle and ee and phe) :
                 economyStateMatches.append(stationList) #add the station to the matches
    
-    print("Completed system state checking, printing results")
+    print(f"Printing final results - {int(time.time()) - startTime}  seconds elapsed")
     if len(economyStateMatches) == 0 :
         print("lol jk no systems meet the requirements")
     else :
@@ -404,8 +400,84 @@ def marketAnalysis4() :
 #====================================================================================================================================
 #====================================================================================================================================
 
+def marketAnalysis5() : #The Longman way :p
+    input("Market Analysis 5 - By: AweBob#6221 & Pete#1168 - Press enter to begin - ")
+    
+    print("Downloading EDDB Stations")
+    startTime = int(time.time())
+    rawEddbStations = requests.get( "https://eddb.io/archive/v6/stations.json" ).json()
+    rawEddbPopulatedSystems = requests.get( "https://eddb.io/archive/v6/systems_populated.json" ).json()
+
+    print(f"Filtering {len(rawEddbStations)} stations - {int(time.time()) - startTime}  seconds elapsed so far")
+    outputStations = []
+    for rawEddbStation in rawEddbStations :
+        economies = rawEddbStation["economies"] #economy=="Industrial" or economy=="High Tech" or economy=="Tourism"
+        ind = False #industrial
+        hte = False#high tech
+        tou = False #tourism
+        ref = False #refinery
+        for economy in economies :
+            if economy=="Industrial" :
+                ind = True
+            elif economy=="High Tech" :
+                hte = True
+            elif economy=="Tourism" :
+                tou = True
+            elif economy=="Refinery" :
+                ref = True
+        states = rawEddbStation["states"] 
+        cleanStates = []
+        ibe = False #investement/boom
+        cle = False #civil liberty
+        phe = False #public holiday (idk why i put an e in this lmao)
+        ee = False #expansion
+        pae = False #pirate attack
+        for stateGroup in states :
+            state = stateGroup["name"] #Just grab the name of the state
+            if state != "None" :
+                cleanStates.append( state )
+            if (state=="Boom" or state=="Investment"):
+                ibe = True
+            elif (state=="Civil Liberty"):
+                cle = True
+            elif (state=="Public Holiday"):
+                phe = True
+            elif (state=="Pirate Attack") :
+                pae = True
+            elif (state=="Expansion"):
+                ee = True
+        if (ibe and cle and phe) and (ind or hte or tou) : #This can be changed to fit the exact criteria you're looking for
+            sysName = "?" #gets overriden with the actual if it is found
+            for system in rawEddbPopulatedSystems :
+                if rawEddbStation["system_id"]==system["id"] :
+                    sysName = system["name"]
+                    break #No need to keep searching
+            outputStations.append([str(rawEddbStation["name"]), sysName, str( time.strftime( "%H:%M:%S" , time.gmtime(startTime - int(rawEddbStation["updated_at"]) ))), cleanStates, economies ])
+
+    print(f"Printing final results - {int(time.time()) - startTime}  seconds elapsed so far")
+    if len(outputStations) == 0 :
+        print("lol jk no systems meet the requirements")
+    else :
+        print() #Do a new line
+        for outputStation in outputStations :
+            economyStr = ", ".join(outputStation[4])
+            statesStr = ", ".join(outputStation[3])
+            #print(outputStation[0] + " - " + outputStation[1] + " - " + economyStr + " - " + statesStr + " - " + outputStation[2] + " Hours:Minutes:Seconds")
+            print(outputStation[0] + " - " + outputStation[1] + " - " + economyStr + " - " + statesStr ) #getting the last updated to work properly is really annoying so just gonna disregard it for now
+        print() #newline
+    print(f"Process took {int(time.time()) - startTime} seconds")
+
+#====================================================================================================================================
+#====================================================================================================================================
+#====================================================================================================================================
+#====================================================================================================================================
+#====================================================================================================================================
+#====================================================================================================================================
+#====================================================================================================================================
+
 if __name__ == "__main__":
-    marketAnalysis1() #Ugly code but it works 100% - few minute runtime
+    #marketAnalysis1() #Ugly code but it works 100% - few minute runtime
     #marketAnalysis2() #Uses latest information, but takes forever to run - I don't think this actually works anyways 6h run time
     #marketAnalysis3() #Cleaner code, needs more testing to be confirmed functional - basically marketanalysis1, but with a nice class - few minute run time
     #marketAnalysis4() #Uses latest information, based on the asumption station economies are constant, faster then market analysis 2 barely, 2:30h run time
+    marketAnalysis5() #Yes :p
