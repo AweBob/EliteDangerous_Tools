@@ -416,6 +416,7 @@ def marketAnalysis5() : #The Longman way :p
         hte = False#high tech
         tou = False #tourism
         ref = False #refinery
+        ext = False #Extraction
         for economy in economies :
             if economy=="Industrial" :
                 ind = True
@@ -425,6 +426,8 @@ def marketAnalysis5() : #The Longman way :p
                 tou = True
             elif economy=="Refinery" :
                 ref = True
+            elif economy=="Extraction" :
+                ext = True
         states = rawEddbStation["states"] 
         cleanStates = []
         ibe = False #investement/boom
@@ -446,7 +449,7 @@ def marketAnalysis5() : #The Longman way :p
                 pae = True
             elif (state=="Expansion"):
                 ee = True
-        if (ibe and cle and phe) and (ind or hte or tou) : #This can be changed to fit the exact criteria you're looking for
+        if (ibe and cle and phe) and (ind or hte or tou) and (not ext) : #This can be changed to fit the exact criteria you're looking for
             sysName = "?" #gets overriden with the actual if it is found
             for system in rawEddbPopulatedSystems :
                 if rawEddbStation["system_id"]==system["id"] :
