@@ -14,7 +14,7 @@ import time #For timing how long all this junk takes
 #====================================================================================================================================
 
 def marketAnalysis() :
-    input("Market Analysis 5 - By: AweBob#6221 & Pete#1168 - Press enter to begin - ")
+    input("Market Analysis 5 - By: AweBob#6221 & Pete#1168 - Press enter to run - ")
     
     print("Downloading EDDB Stations & Populated Systems")
     startTime = time.time()
@@ -89,11 +89,12 @@ def marketAnalysis() :
                     outputStations[3].append([str(rawEddbStation["name"]), sysName, rawEddbStation["max_landing_pad_size"], str(rawEddbStation["distance_to_star"]), distanceToSol ])
     print(f"Filtering Took {round(time.time() - startTime, 2)} Seconds")
 
-    print(f"Printing Final Results\n")
+    print(f"Printing Final Results\n\nStation; System; Pad Size; Stn dist to star; Sys distance to Sol")
     for index, stationQualityLevel in enumerate(outputStations) :
         for outputStation in stationQualityLevel :
             print(str(index + 1) + ". " + outputStation[0] + "; " + outputStation[1] + "; " + outputStation[2] + " pad; " + outputStation[3] + " ls; " + outputStation[4] + " lys" )
-    print() #newline
+
+    input("\n Press enter to close - ")
 
 #====================================================================================================================================
 
