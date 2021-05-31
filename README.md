@@ -1,3 +1,2 @@
 # EliteDangerous_Tools
-This is for all my Elite Dangerous Tools
-Currently contains my exploration tool and coriolis to engineer script
+This is for all my Elite Dangerous Tools. Pretty much just a bunch of small projects I've done over time all related to Elite Dangerous. A lot of them, and all of the releases currently, aren't functional anymore and I haven't put the effort into fixing them as the metas in Elite have changed over time. As far as using APIs go this repository has a lot of good examples for that and some of the stuff regarding interpretting Elite's log files is decent. Other then that a lot of the code here admittedly is pretty garbage; I like to think I've gotten a lot better at writing code over time. Rule of thumb is files with more recent commits is far more likely to be functional. 
